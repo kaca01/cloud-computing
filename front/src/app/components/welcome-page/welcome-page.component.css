@@ -68,3 +68,9 @@ h2{
     height: 250px;
     width: 250px;
 }
+
+p{
+    color: #808080;
+    font-size: 25px;
+    text-align: center;
+}
