@@ -13,7 +13,7 @@ import { LoginComponent } from './components/login/login.component';
   declarations: [
     AppComponent,
     WelcomePageComponent,
-    RegistrationPageComponent
+    RegistrationPageComponent,
     LoginComponent
   ],
   imports: [

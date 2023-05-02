@@ -16,7 +16,7 @@
             </div>
             
             
-            <form formGroup="registrationForm" fxLayout="column" (ngSubmit)="reg()">
+            <form [formGroup]="registrationForm" fxLayout="column" (ngSubmit)="reg()">
 
             <mat-form-field appearance="outline" class="advanced_width">
                 <mat-label>Name</mat-label>
