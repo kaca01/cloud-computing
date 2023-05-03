@@ -8,13 +8,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { WelcomePageComponent } from './components/welcome-page/welcome-page.component';
 import { RegistrationPageComponent } from './components/registration-page/registration-page.component';
 import { LoginComponent } from './components/login/login.component';
+import { TestPageComponent } from './components/test-page/test-page.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     WelcomePageComponent,
     RegistrationPageComponent,
-    LoginComponent
+    LoginComponent,
+    TestPageComponent
   ],
   imports: [
     BrowserModule,
