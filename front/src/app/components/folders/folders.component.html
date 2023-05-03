@@ -12,18 +12,11 @@
             <p class="folder-name">New folder</p>
         </span>
 
-        <span class="item">
+        <span class="item" *ngFor="let i of folderNames;" (dblclick)="openFolder(i)">
             <img class="item-image" src="../../../assets/images/folder.png"/>
             <div class="tooltip">
-                <p class="folder-name">Birthday picsss</p>
-                <p class="tooltiptext">Birthday picsss</p>
-            </div>
-        </span>
-        <span class="item">
-            <img class="item-image" src="../../../assets/images/folder.png"/>
-            <div class="tooltip">
-                <p class="folder-name">New folder</p>
-                <p class="tooltiptext">New folder</p>
+                <p class="folder-name">{{ i }}</p>
+                <p class="tooltiptext">{{ i }}</p>
             </div>
         </span>
     </div>

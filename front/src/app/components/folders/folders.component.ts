@@ -7,6 +7,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FoldersComponent implements OnInit {
 
+  folderNames: string[] = ["Birthday picsss", "Me", "Friends", "Family", "Party", "New Years Eve", "Christmas", 
+                          "Algorithms and data structures", "Movies", "Favorite TV Shows", "Cloud Computing"];
+
   constructor() {}
 
   ngOnInit(): void {
@@ -14,7 +17,11 @@ export class FoldersComponent implements OnInit {
   }
 
   createNewFolder() {
-    
+
+  }
+
+  openFolder(name: string) {
+    console.log(name);
   }
 
   openSnackBar(snackMsg : string) : void {
