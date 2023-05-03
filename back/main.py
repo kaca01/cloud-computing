@@ -1,7 +1,6 @@
 import boto3
 import os
 import datetime
-import json
 
 aws_access_key = 'AKIAXTEDOKGSG3RZHLUF'
 aws_secret_access_key = '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'
@@ -43,6 +42,7 @@ def upload_file(file_path, file_name, description='', tags={}):
         Body=open(file_path, 'rb'),
         ContentType=file_type,
         ContentLength=file_size,
+        ContentEncoding='base64',
         Metadata={
             'created-time': str(file_created_time),
             'last-modified-time': str(file_modified_time),
@@ -82,9 +82,9 @@ def delete_bucket():
     bucket.delete()
 
 if __name__ == '__main__':
-    # create_bucket()
-    # list_buckets()
-    # upload_file('sunflower.png', 'glupo','ovo je opis slike', {'kljuc': 'vrednost', 'anastasija': 'carina'})
-    # list_objects()
+    create_bucket()
+    list_buckets()
+    upload_file('sunflower.png', 'slidza')
+    list_objects()
     # delete_object('mojaslika')
-    delete_bucket()
+    # delete_bucket()
