@@ -37,12 +37,19 @@ export class RegistrationPageComponent implements OnInit {
   }
 
   public signUpWithCognito(){
+    //todo check password and repeat password
+    //todo check password characters
+    
+    this.setUserData();
+    console.log(this.user);
+
     if (this.user && this.user.email && this.user.password){
       this.cognitoService.signUp(this.user)
       .then(() => {
         this.isConfirm = true;
       })
       .catch((error:any) => {
+        console.log(error.message);
         //todo display error.message
       })
     }
@@ -51,13 +58,25 @@ export class RegistrationPageComponent implements OnInit {
     }
   }
 
+  private setUserData(){
+    this.user!.email = this.registrationForm.get('email')?.value!;
+    this.user!.password = this.registrationForm.get('password')?.value!;
+    this.user!.telephoneNumber = this.registrationForm.get('telephoneNumber')?.value!;
+    this.user!.address = this.registrationForm.get('address')?.value!;
+    this.user!.name = this.registrationForm.get('name')?.value!;
+    this.user!.surname = this.registrationForm.get('surname')?.value!;
+    this.user!.code = "";
+  }
+
   public confirmSignUp(){
     if (this.user){
       this.cognitoService.confirmSignUp(this.user)
       .then(() => {
         this.router.navigate(['/login'])
+        //todo display that account has been successfully created
       })
       .catch((error: any) => {
+        console.log(error.message);
         //todo display error.message
       })
     }
@@ -65,8 +84,6 @@ export class RegistrationPageComponent implements OnInit {
       // todo "Missing user information"
     }
   }
-
-
 
   login() {
     this.router.navigate(['login']);

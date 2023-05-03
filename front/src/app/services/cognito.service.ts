@@ -22,8 +22,8 @@ export class CognitoService {
       email : user.email,
       given_name: user.name,
       family_name: user.surname,
-      phone: user.phone,
-      birthdate: user.birthdate,
+      phone_number: user.telephoneNumber,
+      address: user.address,
     }
   })
   }

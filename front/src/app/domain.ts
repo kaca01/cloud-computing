@@ -4,6 +4,6 @@ export interface User{
     name: string,
     surname: string, 
     code: string,
-    phone: string,
-    birthdate: string
+    telephoneNumber: string,
+    address: string
 }

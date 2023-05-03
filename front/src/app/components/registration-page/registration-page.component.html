@@ -91,7 +91,7 @@
                 <p>A verification code sent to {{user?.email}}</p>
                 <mat-form-field class="full-width" appearance="outline">
                     <mat-label>Code</mat-label>
-                    <input type="text" name="verificationCode" matInput #code maxlength="6" placeholder="Ex. 941305" required>
+                    <input type="text" name="verificationCode" matInput #code [(ngModel)]="user!.code" maxlength="6" placeholder="Ex. 941305" required>
                     <mat-hint align="end">{{code.value.length}}/6</mat-hint>
                 </mat-form-field>
             </div>

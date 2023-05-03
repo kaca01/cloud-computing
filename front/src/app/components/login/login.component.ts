@@ -16,12 +16,11 @@ export class LoginComponent implements OnInit {
     password: new FormControl('', [Validators.required]),
   });
 
-
   hide: boolean = true;
   submitted = false;
   notification!: DisplayMessage;
 
-  user:User | undefined;
+  user: User | undefined;
 
   constructor(private router : Router, private cognitoService : CognitoService) {}
 
@@ -30,6 +29,9 @@ export class LoginComponent implements OnInit {
   }
 
   login(): void { 
+    this.user!.email = this.loginForm.get('email')?.value!;
+    this.user!.password = this.loginForm.get('password')?.value!;
+    
     if (this.user && this.user.email && this.user.password){
       this.cognitoService.signIn(this.user)
       .then(() => {
