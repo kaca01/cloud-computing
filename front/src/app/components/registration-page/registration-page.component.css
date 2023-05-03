@@ -144,6 +144,11 @@ mat-label {
     font-size: 14px !important;
 }
 
+.error{
+    color: red;
+    margin-top: 0 !important;
+}
+
 #verification{
     margin-top: 10%;
 }
