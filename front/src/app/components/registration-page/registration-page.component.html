@@ -45,7 +45,7 @@
                     {{hide ? 'visibility_off' : 'visibility'}}
                 </mat-icon>
             </button>
-                <mat-error *ngIf="!registrationForm.controls['password'].valid"></mat-error>
+                <mat-error *ngIf="!registrationForm.controls['password'].valid">Password must have a symbol, number, uppercase, lowercase and min 8 characters</mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="advanced_width">
@@ -72,7 +72,6 @@
                 <mat-error *ngIf="!registrationForm.controls['address'].valid"></mat-error>
             </mat-form-field >
 
-            <p *ngIf="notification" [class]="notification.msgType">{{notification.msgBody}}</p>
             <button mat-raised-button type="submit" class="reg-btn">Sign up</button>
         </form>
     </mat-card-content>

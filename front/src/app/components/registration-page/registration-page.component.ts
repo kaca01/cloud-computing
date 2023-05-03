@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { User } from 'src/app/domain';
 import { CognitoService } from 'src/app/services/cognito.service';
@@ -15,7 +16,7 @@ export class RegistrationPageComponent implements OnInit {
     name: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z][a-zA-Z ]+')]),
     surname: new FormControl('', [Validators.required, Validators.pattern('[a-zA-Z][a-zA-Z ]+')]),
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required]),
+    password: new FormControl('', [Validators.required, Validators.minLength(8), this.createPasswordStrengthValidator()]),
     repeatPassword: new FormControl('', [Validators.required]),
     telephoneNumber: new FormControl('', [Validators.required, Validators.pattern('[- +()0-9]+')]),
     address: new FormControl('', [Validators.required]),
@@ -24,12 +25,11 @@ export class RegistrationPageComponent implements OnInit {
 
   hide : boolean = true;
   hideAgain : boolean = true;
-  notification!: DisplayMessage;
 
   user: User | undefined;
   isConfirm: boolean = false;
 
-  constructor(private router: Router, private cognitoService: CognitoService) {}
+  constructor(private router: Router, private cognitoService: CognitoService, private _snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.user = {} as User;
@@ -37,9 +37,11 @@ export class RegistrationPageComponent implements OnInit {
   }
 
   public signUpWithCognito(){
-    //todo check password and repeat password
-    //todo check password characters
-    
+    if (this.registrationForm.get('password')?.value! != this.registrationForm.get('repeatPassword')?.value!){
+      this.openSnackBar("Passwords not matching!");
+      return;
+    }
+
     this.setUserData();
     console.log(this.user);
 
@@ -50,11 +52,11 @@ export class RegistrationPageComponent implements OnInit {
       })
       .catch((error:any) => {
         console.log(error.message);
-        //todo display error.message
+        this.openSnackBar(error.message);
       })
     }
     else{
-      // todo "Missing data"
+      this.openSnackBar("Missing data!");
     }
   }
 
@@ -73,26 +75,50 @@ export class RegistrationPageComponent implements OnInit {
       this.cognitoService.confirmSignUp(this.user)
       .then(() => {
         this.router.navigate(['/login'])
-        //todo display that account has been successfully created
+        this.openSnackBar("Account has been successfully created! You can login now!");
       })
       .catch((error: any) => {
         console.log(error.message);
-        //todo display error.message
+        this.openSnackBar(error.message);
       })
     }
     else{
-      // todo "Missing user information"
+      this.openSnackBar("Missing user information");
     }
   }
 
   login() {
     this.router.navigate(['login']);
   }
+  
+  private openSnackBar(snackMsg : string) : void {
+    this._snackBar.open(snackMsg, "Dismiss", {
+      duration: 2000
+    });
+  }      
 
-}
+  createPasswordStrengthValidator(): ValidatorFn {
+    return (control:AbstractControl) : ValidationErrors | null => {
 
-interface DisplayMessage {
-  msgType: string;
-  msgBody: string;
+        const value = control.value;
+
+        if (!value) {
+            return null;
+        }
+
+        const hasUpperCase = /[A-Z]+/.test(value);
+
+        const hasLowerCase = /[a-z]+/.test(value);
+
+        const hasNumeric = /[0-9]+/.test(value);
+
+        const specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(value);
+
+        const passwordValid = hasUpperCase && hasLowerCase && hasNumeric && specialChars;
+
+        return !passwordValid ? {passwordStrength:true}: null;
+    }
+
+  }
 
 }
