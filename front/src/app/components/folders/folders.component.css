@@ -13,6 +13,10 @@
     border-bottom: 1.8px solid gray;
 }
 
+#container {
+    position: relative;
+}
+
 .item {
     width: 100px;
     margin-left: 2.5em;
@@ -25,6 +29,7 @@
     width: 7em;
     height: 7em;
     margin-top: 2em;
+    /* visibility: hidden; */
 }
 
 .folder-name {
@@ -53,6 +58,21 @@
   }
   
   .tooltip:hover .tooltiptext{
+    visibility: visible;
+  }
+
+  .hover-element {
+    width: 7em;
+    height: 7em;
+    background-color: #4F4F4F;
+    border-radius: 5px;
+    visibility: hidden;
+    position: absolute;
+    transform: translate(0%, -105%);
+    z-index: 1;
+  }
+
+  .item:hover .hover-element {
     visibility: visible;
   }
   
