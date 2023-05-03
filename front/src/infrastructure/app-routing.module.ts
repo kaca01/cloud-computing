@@ -4,12 +4,14 @@ import { AppComponent } from 'src/app/app.component';
 import { RegistrationPageComponent } from 'src/app/components/registration-page/registration-page.component';
 import { LoginComponent } from 'src/app/components/login/login.component';
 import { WelcomePageComponent } from 'src/app/components/welcome-page/welcome-page.component';
+import { FoldersComponent } from 'src/app/components/folders/folders.component';
 
 const routes: Routes = [
   { path: 'welcome-page', component: WelcomePageComponent},
   { path: 'login', component: LoginComponent},
   { path: '', redirectTo: '/welcome-page', pathMatch: 'full' },
   { path: 'registration', component: RegistrationPageComponent},
+  { path: 'folders', component: FoldersComponent},
   { path: '**', component: WelcomePageComponent },
 ];
 

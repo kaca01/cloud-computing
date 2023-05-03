@@ -1,0 +1,38 @@
+.highlightTableColor{
+    background-color: #ebe9e9b7;
+}
+
+#main-container {
+    margin: 50px 5% 65px 5%;
+}
+
+.title {
+    margin-top: 1.4em;
+    font-size: 3em;
+    font-weight: 550;
+}
+
+.tools {
+    display: flex;
+    float: right;
+}
+
+.add {
+    padding-top: 5px;
+}
+
+.add:hover {
+    cursor: pointer;
+}
+
+#plus-icon {
+    height: 15px;
+    width: 15px;
+    margin-right: 8px;
+}
+
+span {
+    margin-right: 30px;
+    font-size: 1.15em;
+    font-weight: 600;
+}
