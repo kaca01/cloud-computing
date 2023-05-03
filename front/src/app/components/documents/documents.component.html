@@ -1,0 +1,31 @@
+<app-navigation></app-navigation>
+
+<div id="main-container">
+
+    <p class="title">naziv_foldera</p>
+
+    <div class="tools">
+        <div class="add" (click)="openDialog()">
+            <img id="plus-icon" src="../../assets/images/plus.png"/>
+            <span>Upload document</span>
+        </div>
+    </div>
+
+    <p id="line"></p>
+
+    <div id="container">
+        <span class="item" *ngFor="let i of documentsNames;" (dblclick)="openFile(i)">
+            <img class="item-image" [src]="choosePicture(i)"/>
+            <div class="hover-element">
+                <span><img class="option" src="../../../assets/images/edit-text.png" (click)="edit()"/></span>
+                <span><img class="option" src="../../../assets/images/information.png" (click)="openInfo()"/></span>
+                <span><img class="option" src="../../../assets/images/add-group.png" (click)="addPeople()"/></span>
+                <span><img class="option" src="../../../assets/images/download.png" (click)="download()"/></span>
+            </div>
+            <div class="tooltip">
+                <p class="folder-name">{{ i }}</p>
+                <p class="tooltiptext">{{ i }}</p>
+            </div>
+        </span>
+    </div>
+</div>
