@@ -1,6 +1,7 @@
 import boto3
 import os
 import datetime
+import json
 
 aws_access_key = 'AKIAXTEDOKGSG3RZHLUF'
 aws_secret_access_key = '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'
@@ -27,11 +28,9 @@ def list_buckets():
     for bucket in response['Buckets']:
         print(f"\t{bucket['Name']}")
 
-def upload_file():
+def upload_file(file_path, file_name, description='', tags={}):
     # Write file to bucket
     print("=== Write file to bucket ===")
-    file_path = 'sunflower.png'
-    file_name = 'nekaslika'
 
     file_size = os.path.getsize(file_path)
     file_type = file_path.split('.')[1]  
@@ -46,9 +45,19 @@ def upload_file():
         ContentLength=file_size,
         Metadata={
             'created-time': str(file_created_time),
-            'last-modified-time': str(file_modified_time)
+            'last-modified-time': str(file_modified_time),
+            'description': description
         }
     )
+    
+    if tags:
+        s3_client.put_object_tagging(
+            Bucket=bucket_name,
+            Key=file_name,
+            Tagging={
+                'TagSet': [{'Key': k, 'Value': v} for k, v in tags.items()]
+            },
+        )
 
 def list_objects():
     # List all objects in bucket
@@ -75,7 +84,7 @@ def delete_bucket():
 if __name__ == '__main__':
     # create_bucket()
     # list_buckets()
-    # upload_file()
+    # upload_file('sunflower.png', 'glupo','ovo je opis slike', {'kljuc': 'vrednost', 'anastasija': 'carina'})
     # list_objects()
-    delete_object('nekaslika')
+    # delete_object('mojaslika')
     delete_bucket()
