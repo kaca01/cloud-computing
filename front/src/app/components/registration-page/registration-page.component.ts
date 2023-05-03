@@ -33,7 +33,7 @@ export class RegistrationPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.user = {} as User;
-    this.isConfirm = true;
+    this.isConfirm = false;
   }
 
   public signUpWithCognito(){

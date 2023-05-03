@@ -14,21 +14,33 @@ export class CognitoService {
     })
    }
 
-   public signUp(user: User): Promise<any> {
-    return Auth.signUp({
-      username : user.email,
-      password: user.password,
-      attributes :{
-        email : user.email,
-        given_name: user.name,
-        family_name: user.surname,
-        phone: user.phone,
-        birthdate: user.birthdate,
-      }
-    })
-   }
+  public signUp(user: User): Promise<any> {
+  return Auth.signUp({
+    username : user.email,
+    password: user.password,
+    attributes :{
+      email : user.email,
+      given_name: user.name,
+      family_name: user.surname,
+      phone: user.phone,
+      birthdate: user.birthdate,
+    }
+  })
+  }
 
-   public confirmSignUp(user : User): Promise<any>{
-    return Auth.confirmSignUp(user.email, user.code);
-   }
+  public confirmSignUp(user : User): Promise<any>{
+  return Auth.confirmSignUp(user.email, user.code);
+  }
+
+  public getUser(): Promise<any>{
+    return Auth.currentUserInfo();
+  }
+
+  public signIn(user:User): Promise<any>{
+    return Auth.signIn(user.email, user.password);
+  }
+
+  public signOut(): Promise<any>{
+    return Auth.signOut();
+  }
 }
