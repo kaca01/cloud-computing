@@ -9,6 +9,7 @@ import { WelcomePageComponent } from './components/welcome-page/welcome-page.com
 import { RegistrationPageComponent } from './components/registration-page/registration-page.component';
 import { LoginComponent } from './components/login/login.component';
 import { FoldersComponent } from './components/folders/folders.component';
+import { NavigationComponent } from './components/navigation/navigation.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { FoldersComponent } from './components/folders/folders.component';
     WelcomePageComponent,
     RegistrationPageComponent,
     LoginComponent,
-    FoldersComponent
+    FoldersComponent,
+    NavigationComponent
   ],
   imports: [
     BrowserModule,
