@@ -2,10 +2,21 @@
     margin: 50px 5% 65px 5%;
 }
 
+#back {
+    height: 3em;
+    width: 3em;
+    margin-right: 1.5em;
+    vertical-align: text-bottom;
+}
+
 .title {
-    margin-top: 1.4em;
     font-size: 3em;
     font-weight: 550;
+    display: inline-block;
+}
+
+#hover-span:hover {
+    cursor: pointer;
 }
 
 .tools {

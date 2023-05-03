@@ -2,12 +2,17 @@
 
 <div id="main-container">
 
-    <p class="title">naziv_foldera</p>
+    <span id="hover-span" [routerLink]="['/folders']">
+        <img id="back" src="../../../assets/images/back.png"/> 
+        <p class="title">naziv_foldera</p>
+    </span>
+
+    <p></p>
 
     <div class="tools">
         <div class="add" (click)="openDialog()">
             <img id="plus-icon" src="../../assets/images/plus.png"/>
-            <span>Upload document</span>
+            <span>Upload file</span>
         </div>
     </div>
 
