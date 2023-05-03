@@ -2,7 +2,7 @@
     <img src="../../assets/images/close.png" id="bgCloseImg" class="close" [routerLink]="['/welcome-page']"/>
     <div class="row">
 
-    <mat-card>
+    <mat-card *ngIf="!isConfirm">
         <mat-card-content>
             <img src="../../assets/images/close.png" id="cardCloseImg" class="close" [routerLink]="['/welcome-page']"/>
             <div id="cardHeader">
@@ -16,7 +16,7 @@
             </div>
             
             
-            <form [formGroup]="registrationForm" fxLayout="column" (ngSubmit)="reg()">
+            <form [formGroup]="registrationForm" fxLayout="column" (ngSubmit)="signUpWithCognito()">
 
             <mat-form-field appearance="outline" class="advanced_width">
                 <mat-label>Name</mat-label>
@@ -67,15 +67,37 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="advanced_width">
-                <mat-label>Country</mat-label>
-                <input matInput type="text" name="country" formControlName="country" />
-                <mat-error *ngIf="!registrationForm.controls['country'].valid"></mat-error>
+                <mat-label>Address</mat-label>
+                <input matInput type="text" name="address" formControlName="address" />
+                <mat-error *ngIf="!registrationForm.controls['address'].valid"></mat-error>
             </mat-form-field >
 
             <p *ngIf="notification" [class]="notification.msgType">{{notification.msgBody}}</p>
             <button mat-raised-button type="submit" class="reg-btn">Sign up</button>
         </form>
     </mat-card-content>
+    </mat-card>
+
+
+    <!--email verification-->
+
+    <mat-card *ngIf="isConfirm" id="verification">
+        <mat-card-content>
+            <div id="cardHeader">
+              <p class="title-verify">Email verification</p>
+            </div>    
+      
+            <div class="email-input">
+                <p>A verification code sent to {{user?.email}}</p>
+                <mat-form-field class="full-width" appearance="outline">
+                    <mat-label>Code</mat-label>
+                    <input type="text" name="verificationCode" matInput #code maxlength="6" placeholder="Ex. 941305" required>
+                    <mat-hint align="end">{{code.value.length}}/6</mat-hint>
+                </mat-form-field>
+            </div>
+            
+            <button mat-raised-button class="reg-btn" id="verify" (click)="confirmSignUp()">CONFIRM</button>
+          </mat-card-content>
     </mat-card>
     </div>
 </div>

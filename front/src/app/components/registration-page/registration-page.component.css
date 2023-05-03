@@ -138,6 +138,28 @@ mat-label {
     color: white;
 }
 
+.full-width {
+    width: 100%;
+    padding-top: 5px;
+    font-size: 14px !important;
+}
+
+#verification{
+    margin-top: 10%;
+}
+
+.title-verify {
+    padding-top: 10px;
+    margin-bottom: 50px;
+    font-size: 3em;
+}
+  
+#verify {
+    margin-top: 35px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
 @media (max-width:1200px) {
     #sign-up-p {
         font-size: xx-large;

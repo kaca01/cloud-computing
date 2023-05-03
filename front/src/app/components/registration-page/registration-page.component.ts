@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { User } from 'src/app/domain';
+import { CognitoService } from 'src/app/services/cognito.service';
 
 @Component({
   selector: 'app-registration-page',
@@ -16,7 +18,7 @@ export class RegistrationPageComponent implements OnInit {
     password: new FormControl('', [Validators.required]),
     repeatPassword: new FormControl('', [Validators.required]),
     telephoneNumber: new FormControl('', [Validators.required, Validators.pattern('[- +()0-9]+')]),
-    country: new FormControl('', [Validators.required]),
+    address: new FormControl('', [Validators.required]),
   
   }) ;
 
@@ -24,14 +26,47 @@ export class RegistrationPageComponent implements OnInit {
   hideAgain : boolean = true;
   notification!: DisplayMessage;
 
-  constructor(private router: Router) {}
+  user: User | undefined;
+  isConfirm: boolean = false;
+
+  constructor(private router: Router, private cognitoService: CognitoService) {}
 
   ngOnInit(): void {
-      
+    this.user = {} as User;
+    this.isConfirm = true;
   }
 
-  reg() {
+  public signUpWithCognito(){
+    if (this.user && this.user.email && this.user.password){
+      this.cognitoService.signUp(this.user)
+      .then(() => {
+        this.isConfirm = true;
+      })
+      .catch((error:any) => {
+        //todo display error.message
+      })
+    }
+    else{
+      // todo "Missing data"
+    }
   }
+
+  public confirmSignUp(){
+    if (this.user){
+      this.cognitoService.confirmSignUp(this.user)
+      .then(() => {
+        this.router.navigate(['/login'])
+      })
+      .catch((error: any) => {
+        //todo display error.message
+      })
+    }
+    else{
+      // todo "Missing user information"
+    }
+  }
+
+
 
   login() {
     this.router.navigate(['login']);
