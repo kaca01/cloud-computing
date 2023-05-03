@@ -12,27 +12,50 @@
     font-weight: 550;
 }
 
-.tools {
-    display: flex;
-    float: right;
+#line {
+    margin-top: 4em;
+    border-bottom: 1.8px solid gray;
 }
 
-.add {
-    padding-top: 5px;
-}
-
-.add:hover {
+.item {
+    width: 100px;
+    margin-left: 2.5em;
+    margin-right: 2em;
+    display: inline-block;
     cursor: pointer;
 }
 
-#plus-icon {
-    height: 15px;
-    width: 15px;
-    margin-right: 8px;
+.item-image {
+    width: 5em;
+    height: 5em;
+    margin-top: 2em;
 }
 
-span {
-    margin-right: 30px;
-    font-size: 1.15em;
-    font-weight: 600;
+.folder-name {
+    display: block;
+    width: 90px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: fit-content;
+    background-color: #4F4F4F;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 5px;
+    font-size: medium;
+  
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+  }
+  
+  .tooltip:hover .tooltiptext{
+    visibility: visible;
+  }
+  

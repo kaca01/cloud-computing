@@ -3,11 +3,28 @@
 <div id="main-container">
 
     <P class="title">Your folders</P>
-    <div class="tools" (click)="createNewFolder()">
-        <div class="add">
-            <img id="plus-icon" src="../../assets/images/plus.png"/>
-            <span>Create new folder</span>
-        </div>
-    
+
+    <p id="line"></p>
+
+    <div id="container">
+        <span class="item">
+            <img class="item-image" src="../../../assets/images/plus.png"/>
+            <p class="folder-name">New folder</p>
+        </span>
+
+        <span class="item">
+            <img class="item-image" src="../../../assets/images/folder.png"/>
+            <div class="tooltip">
+                <p class="folder-name">Birthday picsss</p>
+                <p class="tooltiptext">Birthday picsss</p>
+            </div>
+        </span>
+        <span class="item">
+            <img class="item-image" src="../../../assets/images/folder.png"/>
+            <div class="tooltip">
+                <p class="folder-name">New folder</p>
+                <p class="tooltiptext">New folder</p>
+            </div>
+        </span>
     </div>
 </div>
