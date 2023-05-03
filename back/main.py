@@ -1,16 +1,54 @@
-# This is a sample Python script.
+import boto3
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+aws_access_key = 'AKIAXTEDOKGSG3RZHLUF'
+aws_secret_access_key = '6QVlONMK4F5eGSmzVurn5XE2xPh8Gdsp/mxhvraV'
+
+session = boto3.Session(
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_access_key
+)
+
+def hello_s3():
+    # Creating high level object for interacting with S3 service
+    s3_client = session.client('s3')
+
+    bucket_name = 'kofetina'
+
+    # Creating S3 bucket
+    print("=== Create bucket ===")
+    bucket = s3_client.create_bucket(Bucket=bucket_name)
+    
+    # List all existing S3 buckets
+    print("=== List buckets ===")
+    response = s3_client.list_buckets()
+    for bucket in response['Buckets']:
+        print(f"\t{bucket['Name']}")
+
+    # Write object to bucket
+    print("=== Write object to bucket ===")
+    file_name = 'object.json'
+    object_key = 'object1'
+    s3_client.upload_file(file_name, bucket_name, object_key)
+
+    # List all objects in bucket
+    print("=== List all objects in bucket ===")
+    response = s3_client.list_objects(Bucket=bucket_name)
+    for o in response['Contents']:
+        print(f"\t{o['Key']}")
+    
+    # Delete object
+    print("=== Delete object from bucket ===")
+    # s3_client.delete_objects(Bucket=bucket_name, Delete={'Objects': [{'Key': object_key}]})
+
+    # List all objects in bucket
+    print("=== List all objects in bucket ===")
+    response = s3_client.list_objects(Bucket=bucket_name)
+    try:
+        for o in response['Contents']:
+            print(f"\t{o['Key']}")
+    except (KeyError):
+        print(f"\tNo content in bucket")
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    hello_s3()
