@@ -91,7 +91,7 @@ form {
 .sign-up {
     text-decoration: none;
     color: #c4ae78;
-    font-size: small;
+    font-size: medium;
     cursor: pointer;
 }
 
@@ -111,7 +111,7 @@ form {
     float: right;
     text-decoration: none;
     color: #c4ae78;
-    font-size: 12px;
+    font-size: medium;
     cursor: pointer;
 }
 
