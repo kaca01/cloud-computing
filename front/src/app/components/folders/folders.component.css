@@ -77,11 +77,11 @@
   }
 
   .option {
-    width: 2em;
-    height: 2em;
+    width: 4em;
+    height: 4em;
     border-radius: 10px;
-    margin-left: 1em;
-    margin-top: 0.9em;
+    margin-left: 20%;
+    margin-top: 1.5em;
   }
 
   .option:hover {
