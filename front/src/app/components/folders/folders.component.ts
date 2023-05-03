@@ -24,20 +24,8 @@ export class FoldersComponent implements OnInit {
     console.log(name);
   }
 
-  edit() {
-    console.log("edit");
-  }
-
-  openInfo() {
-    console.log("info");
-  }
-
   addPeople() {
     console.log("add people");
-  }
-
-  download() {
-    console.log("download");
   }
 
   openSnackBar(snackMsg : string) : void {
