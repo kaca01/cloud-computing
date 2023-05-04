@@ -149,15 +149,18 @@ mat-label {
     margin-top: 0 !important;
 }
 
+#verificationHeader{
+    padding-top: 10px;
+    margin-bottom: 20px;
+    font-size: 3em;
+    line-height: normal;
+    height: fit-content;
+}
+
 #verification{
     margin-top: 10%;
 }
 
-.title-verify {
-    padding-top: 10px;
-    margin-bottom: 50px;
-    font-size: 3em;
-}
   
 #verify {
     margin-top: 35px;
