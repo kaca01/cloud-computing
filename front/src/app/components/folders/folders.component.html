@@ -2,7 +2,14 @@
 
 <div id="main-container">
 
-    <P class="title">Your folders</P>
+    <p class="title">Your folders</p>
+
+    <div class="tools">
+        <div class="delete-container" (click)="openDialog()">
+            <img id="trash" src="../../assets/images/trash.png"/>
+            <span><p id="delete">Delete folder</p></span>
+        </div>
+    </div>
 
     <p id="line"></p>
 

@@ -34,5 +34,9 @@ export class FoldersComponent implements OnInit {
     // });
   }
 
+  openDialog() {
+    
+  }
+
 
 }
