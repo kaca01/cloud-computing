@@ -1,0 +1,89 @@
+#main-container {
+    margin: 50px 5% 65px 5%;
+}
+
+.title {
+    margin-top: 1.4em;
+    font-size: 3em;
+    font-weight: 550;
+}
+
+#line {
+    margin-top: 4em;
+    border-bottom: 1.8px solid gray;
+}
+
+#container {
+    position: relative;
+}
+
+.item {
+    width: 100px;
+    margin-left: 2.5em;
+    margin-right: 2em;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.item-image {
+    width: 7em;
+    height: 7em;
+    margin-top: 2em;
+    /* visibility: hidden; */
+}
+
+.folder-name {
+    display: block;
+    width: 7em;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: fit-content;
+    background-color: #4F4F4F;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 5px;
+    font-size: medium;
+  
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+  }
+  
+  .tooltip:hover .tooltiptext{
+    visibility: visible;
+  }
+
+  .hover-element {
+    width: 7em;
+    height: 7em;
+    background-color: #4F4F4F;
+    border-radius: 5px;
+    visibility: hidden;
+    position: absolute;
+    transform: translate(0%, -105%);
+    z-index: 1;
+  }
+
+  .item:hover .hover-element {
+    visibility: visible;
+  }
+
+  .option {
+    width: 2em;
+    height: 2em;
+    border-radius: 10px;
+    margin-left: 1em;
+    margin-top: 2.3em;
+  }
+
+  .option:hover {
+    background-color: #8d8d8d38;
+  }
