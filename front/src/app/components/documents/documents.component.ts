@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { CognitoService } from 'src/app/services/cognito.service';
 
 @Component({
   selector: 'app-documents',
@@ -9,9 +11,24 @@ export class DocumentsComponent implements OnInit {
 
   documentsNames: string[] = ['file.pdf', 'picture.png', 'audio.mp3', 'video.mp4', 'word.docx', 'picture2.jpg', 'picture3.jpeg'];
 
-  constructor() { }
+  constructor(private router: Router, private cognitoService: CognitoService) { }
 
   ngOnInit(): void {
+    this.getUserDetails();
+  }
+
+  private getUserDetails(){
+    this.cognitoService.getUser()
+    .then((user: any) => {
+      if (user){
+        // loged in
+        console.log(user);
+      }
+      else{
+        // if not logged in, send user to login
+        this.router.navigate(['/welcome-page']);
+      }
+    })
   }
 
   openFile(name: string) {

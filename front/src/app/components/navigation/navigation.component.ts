@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { CognitoService } from 'src/app/services/cognito.service';
 
 @Component({
   selector: 'app-navigation',
@@ -7,13 +9,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavigationComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router, private cognitoService: CognitoService) { }
 
   ngOnInit(): void {
   }
 
-  logOut() {
-    
+  
+  logOut(){
+    this.cognitoService.signOut()
+    .then((user: any) => {
+      this.router.navigate(['/welcome-page']);
+    })
   }
 
 }

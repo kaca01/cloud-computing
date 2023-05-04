@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
       .then(() => {
         this.notification;
         this.submitted = true;
-        this.router.navigate(['test-page']);
+        this.router.navigate(['folders']);
       })
       .catch((error:any) => {
         console.log(error.message);
