@@ -20,7 +20,7 @@ import { DocumentsComponent } from './components/documents/documents.component';
     LoginComponent,
     FoldersComponent,
     NavigationComponent,
-    DocumentsComponent
+    DocumentsComponent,
   ],
   imports: [
     BrowserModule,

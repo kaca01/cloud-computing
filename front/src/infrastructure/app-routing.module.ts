@@ -10,11 +10,11 @@ import { DocumentsComponent } from 'src/app/components/documents/documents.compo
 const routes: Routes = [
   { path: 'welcome-page', component: WelcomePageComponent},
   { path: 'login', component: LoginComponent},
-  { path: '', redirectTo: '/welcome-page', pathMatch: 'full' },
   { path: 'registration', component: RegistrationPageComponent},
   { path: 'folders', component: FoldersComponent},
   { path: 'documents', component: DocumentsComponent},
   { path: '**', component: WelcomePageComponent },
+  { path: '', redirectTo: '/welcome-page', pathMatch: 'full' },
 ];
 
 @NgModule({

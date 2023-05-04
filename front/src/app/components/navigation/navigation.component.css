@@ -20,16 +20,11 @@ mat-toolbar ul {
 mat-toolbar ul li a {
     display: inline-block;
     padding: 15px 17px;
-    cursor: pointer;
     text-decoration: none;
 }
   
 .nav {
     color: black;   
-}
-
-.nav:hover {
-    color:#C4AE78;
 }
 
 .logo {
