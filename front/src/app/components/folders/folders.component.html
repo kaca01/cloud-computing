@@ -4,13 +4,6 @@
 
     <p class="title">Your folders</p>
 
-    <div class="tools">
-        <div class="delete-container" (click)="openDialog()">
-            <img id="trash" src="../../assets/images/trash.png"/>
-            <span><p id="delete">Delete folder</p></span>
-        </div>
-    </div>
-
     <p id="line"></p>
 
     <div id="container">
@@ -24,6 +17,7 @@
             <div class="hover-element">
                 <!-- <span><img class="option" src="../../../assets/images/open_folder.png" (click)="openFolder(i)"/></span> -->
                 <span><img class="option" src="../../../assets/images/add-group.png" (click)="addPeople()"/></span>
+                <span><img class="option" src="../../../assets/images/trash.png" (click)="openDialog()"/></span>
             </div>
             <div class="tooltip">
                 <p class="folder-name">{{ i }}</p>

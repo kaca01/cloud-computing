@@ -8,33 +8,6 @@
     font-weight: 550;
 }
 
-.tools {
-  display: flex;
-  float: right;
-}
-
-.delete-container {
-  padding-top: 5px;
-}
-
-.delete-container:hover {
-  cursor: pointer;
-}
-
-#delete {
-  color: rgb(224, 4, 4);
-  font-weight: 600;
-  font-size: larger;
-  display: inline-block;
-}
-
-#trash {
-  height: 20px;
-  width: 20px;
-  margin-right: 8px;
-  vertical-align: text-bottom;
-}
-
 #line {
     margin-top: 4em;
     border-bottom: 1.8px solid gray;
@@ -104,11 +77,11 @@
   }
 
   .option {
-    width: 4em;
-    height: 4em;
+    width: 2em;
+    height: 2em;
     border-radius: 10px;
-    margin-left: 20%;
-    margin-top: 1.5em;
+    margin-left: 1em;
+    margin-top: 2.3em;
   }
 
   .option:hover {
