@@ -34,6 +34,7 @@ export class LoginComponent implements OnInit {
     this.user!.password = this.loginForm.get('password')?.value!;
 
     if (this.user && this.user.email && this.user.password){
+      this.openSnackBar("Loading...");
       this.cognitoService.signIn(this.user)
       .then(() => {
         this.notification;
@@ -43,7 +44,6 @@ export class LoginComponent implements OnInit {
       .catch((error:any) => {
         console.log(error.message);
         this.notification = {msgType: 'error', msgBody: 'Incorrect username or password'};
-        this.openSnackBar(error.message);
       })
     }
     else{

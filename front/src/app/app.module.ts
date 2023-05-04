@@ -8,7 +8,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { WelcomePageComponent } from './components/welcome-page/welcome-page.component';
 import { RegistrationPageComponent } from './components/registration-page/registration-page.component';
 import { LoginComponent } from './components/login/login.component';
-import { TestPageComponent } from './components/test-page/test-page.component';
 import { FoldersComponent } from './components/folders/folders.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { DocumentsComponent } from './components/documents/documents.component';
@@ -19,7 +18,6 @@ import { DocumentsComponent } from './components/documents/documents.component';
     WelcomePageComponent,
     RegistrationPageComponent,
     LoginComponent,
-    TestPageComponent,
     FoldersComponent,
     NavigationComponent,
     DocumentsComponent,
