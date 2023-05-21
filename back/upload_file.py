@@ -9,6 +9,8 @@ def lambda_handler(event, context):
     # ownera treba dodati i u okviru naziva fajla, kao naziv foldera, kako bismo znali ciji je ciji resurs
     # i da bi razliciti korisnici mogli da imaju iste foldere
     # razdvojiti ovu funkciju na 2????
+    # da li za serverless treba svakako da podesi kredencijale (kljuceve) kod sebe
+    # da li je okej globalno postaviti role
 
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('mojatabelica')

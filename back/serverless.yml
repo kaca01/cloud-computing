@@ -23,7 +23,6 @@ frameworkVersion: '3'
 provider:
   name: aws
   runtime: python3.8
-  profile: ja
   # Deployment stage
   stage: dev
   # Deplotment region
@@ -34,22 +33,23 @@ provider:
   timeout: 10
 
 # you can add statements to the Lambda function's IAM Role here
-#  iam:
-#    role:
-#      statements:
-#        - Effect: "Allow"
-#          Action:
-#            - "s3:ListBucket"
-#          Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-#        - Effect: "Allow"
-#          Action:
-#            - "s3:PutObject"
-#          Resource:
-#            Fn::Join:
-#              - ""
-#              - - "arn:aws:s3:::"
-#                - "Ref" : "ServerlessDeploymentBucket"
-#                - "/*"
+  iam:
+    role:
+      statements:
+          - Effect: "Allow"
+            Action:
+              - "s3:ListBucket"
+            Resource: 
+              - "arn:aws:s3:::mojakofica"
+          - Effect: "Allow"
+            Action:
+              - "s3:PutObject"
+            Resource:
+              - "arn:aws:s3:::mojakofica/*"
+          - Effect: "Allow"
+            Action:
+              - "dynamodb:PutItem"
+            Resource: "arn:aws:dynamodb:eu-central-1:522114191780:table/mojatabelica"
 
 # you can define service wide environment variables here
 #  environment:
@@ -67,10 +67,16 @@ functions:
   uploadFile:
     runtime: python3.8
     handler: upload_file.lambda_handler
-    role: S3PutObjectRole
-    events:
-      - s3:
-          bucket: mojakofica
+    # Public URL
+    url:
+      # CORS configuration
+      cors:
+        allowedOrigins:
+          - '*'
+        allowedHeaders:
+          - Authorization
+        allowedMethods:
+          - GET
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
