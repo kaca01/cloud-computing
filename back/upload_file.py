@@ -18,8 +18,8 @@ def lambda_handler(event, context):
     bucket_name = 'mojakofica'
 
     file_path = event['filePath']
-    file_name = event['fileName']
-    file_type = file_path.split('.')[1]  
+    file_type = file_path.split('.')[1] 
+    file_name = event['fileName'] + '.' + file_type 
     file_created = datetime.fromtimestamp(os.path.getctime(file_path)).strftime('%Y-%m-%d %H:%M:%S')
     file_modified = datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%Y-%m-%d %H:%M:%S')
     file_size = os.path.getsize(file_path)
