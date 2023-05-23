@@ -19,6 +19,9 @@ service: back
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 frameworkVersion: '3'
+	
+plugins:
+  - serverless-iam-roles-per-function
 
 provider:
   name: aws
@@ -31,25 +34,6 @@ provider:
   memorySize: 128 #ovo je najmanja vrednost koju mozemo da dodelimo
   # Function timeout in seconds (default 6s)
   timeout: 10
-
-# you can add statements to the Lambda function's IAM Role here
-  iam:
-    role:
-      statements:
-          - Effect: "Allow"
-            Action:
-              - "s3:ListBucket"
-            Resource: 
-              - "arn:aws:s3:::mojakofica"
-          - Effect: "Allow"
-            Action:
-              - "s3:PutObject"
-            Resource:
-              - "arn:aws:s3:::mojakofica/*"
-          - Effect: "Allow"
-            Action:
-              - "dynamodb:PutItem"
-            Resource: "arn:aws:dynamodb:eu-central-1:522114191780:table/mojatabelica"
 
 # you can define service wide environment variables here
 #  environment:
@@ -67,6 +51,15 @@ functions:
   uploadFile:
     runtime: python3.8
     handler: upload_file.lambda_handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+        Resource: "arn:aws:s3:::mojakofica/*"
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: "arn:aws:dynamodb:eu-central-1:522114191780:table/mojatabelica"
     # Public URL
     url:
       # CORS configuration
