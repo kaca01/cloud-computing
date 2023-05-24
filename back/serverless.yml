@@ -36,40 +36,47 @@ provider:
   timeout: 10
 
 # you can define service wide environment variables here
-#  environment:
-#    variable1: value1
+  environment:
+    TABLE_NAME:
+      Ref: filesTable
+    BUCKET_NAME:
+      Ref: filesBucket
 
 # you can add packaging information here
-#package:
-#  patterns:
-#    - '!exclude-me.js'
-#    - '!exclude-me-dir/**'
-#    - include-me.js
-#    - include-me-dir/**
+package:
+  # Create separate zip for each Lambda function
+  individually: true
+  patterns:
+    # Exclude everything (each Lambda will specify which directory should be included)
+    # To exclude use '!' prefix
+    - '!**/**'
+    # Include utility directory for every Lambda function
+    - 'utility/**'
 
 functions:
   uploadFile:
     runtime: python3.8
-    handler: upload_file.lambda_handler
+    handler: uploadFile/upload_file.lambda_handler
     iamRoleStatements:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::mojakofica/*"
+        Resource: 
+        - "Fn::GetAtt": [filesBucket, Arn]
       - Effect: Allow
         Action:
           - dynamodb:PutItem
-        Resource: "arn:aws:dynamodb:eu-central-1:522114191780:table/mojatabelica"
-    # Public URL
-    url:
-      # CORS configuration
-      cors:
-        allowedOrigins:
-          - '*'
-        allowedHeaders:
-          - Authorization
-        allowedMethods:
-          - GET
+        Resource:
+          - "Fn::GetAtt": [filesTable, Arn]
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: dogs
+          # HTTP method for this endpoint
+          method: put
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
@@ -111,13 +118,22 @@ functions:
 #      variable2: value2
 
 # you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
+resources:
+  Resources:
+    filesBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: serverlessfilebucket
+    filesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: serverlessfiletable
+        AttributeDefinitions:
+          - AttributeName: fileName
+            AttributeType: S
+        KeySchema:
+          - AttributeName: fileName
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
