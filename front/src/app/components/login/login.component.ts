@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { User } from 'src/app/domain';
+import { CognitoService } from 'src/app/services/cognito.service';
 
 @Component({
   selector: 'app-login',
@@ -14,20 +17,46 @@ export class LoginComponent implements OnInit {
     password: new FormControl('', [Validators.required]),
   });
 
-
   hide: boolean = true;
-  returnUrl!: string;
   submitted = false;
   notification!: DisplayMessage;
 
-  constructor(private router : Router) {}
+  user: User | undefined;
 
-  ngOnInit(): void { }
+  constructor(private router : Router, private cognitoService : CognitoService, private _snackBar: MatSnackBar) {}
+
+  ngOnInit(): void { 
+    this.user = {} as User;
+  }
 
   login(): void { 
-    this.notification;
-    this.submitted = true;
+    this.user!.email = this.loginForm.get('email')?.value!;
+    this.user!.password = this.loginForm.get('password')?.value!;
+
+    if (this.user && this.user.email && this.user.password){
+      this.openSnackBar("Loading...");
+      this.cognitoService.signIn(this.user)
+      .then(() => {
+        this.notification;
+        this.submitted = true;
+        this.router.navigate(['folders']);
+      })
+      .catch((error:any) => {
+        console.log(error.message);
+        this.notification = {msgType: 'error', msgBody: 'Incorrect username or password'};
+      })
+    }
+    else{
+      this.submitted = false;
+      this.notification = {msgType: 'error', msgBody: 'Incorrect username or password'};
+    }
   } 
+  
+  private openSnackBar(snackMsg : string) : void {
+    this._snackBar.open(snackMsg, "Dismiss", {
+      duration: 2000
+    });
+  }
 }
 
 interface DisplayMessage {

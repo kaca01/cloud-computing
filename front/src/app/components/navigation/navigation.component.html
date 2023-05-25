@@ -1,0 +1,14 @@
+<mat-toolbar>
+    <!-- <span [routerLink]="['/certificate']" class="clickable logo">CertificateManager</span> -->
+    <span class="logo">GalleryApp</span>
+    <div id="navigation">
+      <ul>
+        <!-- below add router link to profile page (if this app even has profile page) -->
+        <li><a  class="nav">Hello, Ana</a></li>
+      </ul>
+    </div>
+      <span [routerLink]="['/home-page']" class="clickable, logout" (click)="logOut()">LogOut
+          <img id="logout-img" src="../../../assets/images/logout.png" />
+      </span>
+  </mat-toolbar>
+  
