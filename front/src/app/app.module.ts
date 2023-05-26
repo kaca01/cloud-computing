@@ -11,6 +11,7 @@ import { LoginComponent } from './components/login/login.component';
 import { FoldersComponent } from './components/folders/folders.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { DocumentsComponent } from './components/documents/documents.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { DocumentsComponent } from './components/documents/documents.component';
     BrowserAnimationsModule,
     MaterialModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
