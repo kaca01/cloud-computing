@@ -1,6 +1,5 @@
 import boto3
 import json
-from datetime import datetime
 import os
 
 from utility.utils import create_response
@@ -17,23 +16,15 @@ def lambda_handler(event, context):
     # ownera treba dodati i u okviru naziva fajla, kao naziv foldera, kako bismo znali ciji je ciji resurs
     # i da bi razliciti korisnici mogli da imaju iste foldere
     # razdvojiti ovu funkciju na 2
-
-    file_path = event['filePath']
-    file_type = file_path.split('.')[1] 
-    file_name = event['fileName'] + '.' + file_type 
-    file_created = datetime.fromtimestamp(os.path.getctime(file_path)).strftime('%Y-%m-%d %H:%M:%S')
-    file_modified = datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%Y-%m-%d %H:%M:%S')
-    file_size = os.path.getsize(file_path)
-    description = event['description']
-    tags = event['tags']    
+    body = json.loads(event['body'])
 
     table = dynamodb.Table(table_name)
     bucket = s3.Bucket(bucket_name)
 
     # Put item into table
-    table.put_item(Item={'fileName':file_name, 'fileType':file_type, 'fileSize':file_size, 'fileCreated':file_created, 'fileModified':file_modified, 'description':description, 'tags':tags})
+    table.put_item(Item={'fileName':body["fileName"], 'fileType':body["fileType"], 'fileSize':body["fileSize"], 'fileCreated':body["fileCreated"], 'fileModified':body["fileModified"], 'description':body["description"], 'tags':body["tags"]})
     # Upload file to s3
-    bucket.upload_file(Filename=file_path, Key=file_name)
+    bucket.put_object(Bucket=bucket_name, Key=body["fileName"], Body=bytes(body["fileContent"], 'utf-8'))
 
     # Create response
     body = {
