@@ -1,6 +1,7 @@
 import boto3
 import json
 import os
+import base64
 
 from utility.utils import create_response
 
@@ -24,7 +25,8 @@ def lambda_handler(event, context):
     # Put item into table
     table.put_item(Item={'fileName':body["fileName"], 'fileType':body["fileType"], 'fileSize':body["fileSize"], 'fileCreated':body["fileCreated"], 'fileModified':body["fileModified"], 'description':body["description"], 'tags':body["tags"]})
     # Upload file to s3
-    bucket.put_object(Bucket=bucket_name, Key=body["fileName"], Body=bytes(body["fileContent"], 'utf-8'))
+    decoded_data = base64.b64decode(body["fileContent"].split(',')[1].strip())
+    bucket.put_object(Bucket=bucket_name, Key=body["fileName"], Body=decoded_data)
 
     # Create response
     body = {
