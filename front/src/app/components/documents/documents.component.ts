@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CognitoService } from 'src/app/services/cognito.service';
+import { UploadFileDialogComponent } from '../dialogs/upload-file-dialog/upload-file-dialog.component';
 
 @Component({
   selector: 'app-documents',
@@ -11,7 +13,7 @@ export class DocumentsComponent implements OnInit {
 
   documentsNames: string[] = ['file.pdf', 'picture.png', 'audio.mp3', 'video.mp4', 'word.docx', 'picture2.jpg', 'picture3.jpeg'];
 
-  constructor(private router: Router, private cognitoService: CognitoService) { }
+  constructor(private router: Router, private cognitoService: CognitoService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.getUserDetails();
@@ -52,7 +54,12 @@ export class DocumentsComponent implements OnInit {
   }
 
   openDialog() {
+    const dialogConfig = new MatDialogConfig();
 
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    
+    this.dialog.open(UploadFileDialogComponent, dialogConfig);
   }
 
   findExtension(name: string): string {

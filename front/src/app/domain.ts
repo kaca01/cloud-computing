@@ -9,7 +9,7 @@ export interface User {
 }
 
 export interface UploadFile {
-    fileContent: any, // promeni kasnije!!!!!!
+    fileContent: string, 
     fileName: string,
     fileType: string,
     fileSize: number,

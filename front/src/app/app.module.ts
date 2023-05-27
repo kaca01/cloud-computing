@@ -12,6 +12,7 @@ import { FoldersComponent } from './components/folders/folders.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { DocumentsComponent } from './components/documents/documents.component';
 import { HttpClientModule } from '@angular/common/http';
+import { UploadFileDialogComponent } from './components/dialogs/upload-file-dialog/upload-file-dialog.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { HttpClientModule } from '@angular/common/http';
     FoldersComponent,
     NavigationComponent,
     DocumentsComponent,
+    UploadFileDialogComponent,
   ],
   imports: [
     BrowserModule,
