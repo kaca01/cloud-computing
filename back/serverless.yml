@@ -1,0 +1,102 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: back
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: '3'
+	
+plugins:
+  - serverless-iam-roles-per-function
+
+provider:
+  name: aws
+  runtime: python3.8
+  # Deployment stage
+  stage: dev
+  # Deplotment region
+  region: eu-central-1
+  # Global memory configuration (default 1024MB)
+  memorySize: 128 #ovo je najmanja vrednost koju mozemo da dodelimo
+  # Function timeout in seconds (default 6s)
+  timeout: 10
+
+# you can define service wide environment variables here
+  environment:
+    TABLE_NAME:
+      Ref: filesTable
+    BUCKET_NAME:
+      Ref: filesBucket
+
+# you can add packaging information here
+package:
+  # Create separate zip for each Lambda function
+  individually: true
+  patterns:
+    # Exclude everything (each Lambda will specify which directory should be included)
+    # To exclude use '!' prefix
+    - '!**/**'
+    # Include utility directory for every Lambda function
+    - 'utility/**'
+
+functions:
+  uploadFile:
+    runtime: python3.8
+    handler: uploadFile/upload_file.lambda_handler
+    package:
+      # Include 'createDogs' directory and all child directories
+      include: 'uploadFile/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+        Resource: "arn:aws:s3:::serverlessfilebucket/*"
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource:
+          - "Fn::GetAtt": [filesTable, Arn]
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: dogs
+          # HTTP method for this endpoint
+          method: post
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+
+# you can add CloudFormation resource templates here
+resources:
+  Resources:
+    filesBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: serverlessfilebucket
+    filesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: serverlessfiletable
+        AttributeDefinitions:
+          - AttributeName: fileName
+            AttributeType: S
+        KeySchema:
+          - AttributeName: fileName
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

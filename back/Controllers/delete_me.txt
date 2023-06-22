@@ -1,2 +1,0 @@
-This file is made so that the parent directory can be committed to git
-You can delete this when you create the first class in the parent directory

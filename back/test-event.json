@@ -1,0 +1,10 @@
+{
+    "fileContent": "Ovo je sadrzaj fajla",
+    "fileName": "nekiFajl123.csv",
+    "fileType": "csv",
+    "fileSize": 1234,
+    "fileCreated": "12/11/2022 11:50",
+    "fileModified": "12/11/2022 11:50",
+    "description": "neki fajl",
+    "tags": ["fajl", "test"]
+}

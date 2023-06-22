@@ -107,14 +107,6 @@ form {
     font-size: 14px !important;
 }
 
-.forgot-password {
-    float: right;
-    text-decoration: none;
-    color: #c4ae78;
-    font-size: medium;
-    cursor: pointer;
-}
-
 .login-btn {
     margin-top: 35px;
     margin-bottom: 50px;
