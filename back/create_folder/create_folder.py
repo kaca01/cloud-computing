@@ -1,5 +1,6 @@
 import os
 import boto3
+import json
 from utility.utils import create_response
 
 # bucket_name = os.environ['BUCKET_NAME']
@@ -7,9 +8,14 @@ s3 = boto3.resource('s3')
 source_bucket = 'serverlessfilebucket'
 
 
-def create_folder(folder_name):
+def create_folder(event, context):
     # TODO : should this key be 'more' unique ???
-    folder_key = folder_name + '/'
+    print("-" * 100)
+    print(event)
+    body = event['body']
+    print(body)
+
+    folder_key = body['folderName'] + '/'
     s3.Object(source_bucket, folder_key).put()
 
     body = {
@@ -92,4 +98,4 @@ def move_file(source_folder, destination_folder, file_name):
     return create_response(200, body)
 
 
-move_file('neki_folder/', 'prvi_folder/', 'nekifajl.docx')
+# move_file('neki_folder/', 'prvi_folder/', 'nekifajl.docx')

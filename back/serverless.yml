@@ -94,36 +94,6 @@ functions:
           method: post
           # Enable CORS. Don't forget to return the right header in your response
           cors: true
-  create_folder:
-    runtime: python3.8
-    handler: create_folder/create_folder.move_files
-    package:
-      # Include 'createDogs' directory and all child directories
-      include: 'create_folder/**'
-    events:
-      # REST API endpoint of API Gateway
-      - http:
-          # Path for this endpoint
-          path: move-files
-          # HTTP method for this endpoint
-          method: post
-          # Enable CORS. Don't forget to return the right header in your response
-          cors: true
-  create_folder:
-    runtime: python3.8
-    handler: create_folder/create_folder.move_file
-    package:
-      # Include 'createDogs' directory and all child directories
-      include: 'create_folder/**'
-    events:
-      # REST API endpoint of API Gateway
-      - http:
-          # Path for this endpoint
-          path: move-file
-          # HTTP method for this endpoint
-          method: post
-          # Enable CORS. Don't forget to return the right header in your response
-          cors: true
 
 # you can add CloudFormation resource templates here
 resources:
