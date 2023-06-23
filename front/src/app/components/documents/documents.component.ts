@@ -3,6 +3,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CognitoService } from 'src/app/services/cognito.service';
 import { UploadFileDialogComponent } from '../dialogs/upload-file-dialog/upload-file-dialog.component';
+import { CreateFolderComponent } from '../dialogs/create-folder/create-folder.component';
 
 @Component({
   selector: 'app-documents',
@@ -71,6 +72,15 @@ export class DocumentsComponent implements OnInit {
     dialogConfig.autoFocus = true;
     
     this.dialog.open(UploadFileDialogComponent, dialogConfig);
+  }
+
+  openCreateFolderDialog() {
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    
+    this.dialog.open(CreateFolderComponent, dialogConfig);
   }
 
   findExtension(name: string): string {

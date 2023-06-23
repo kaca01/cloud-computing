@@ -18,3 +18,7 @@ export interface UploadFile {
     description:  string,
     tags: Array<any>
 }
+
+export interface Folder {
+    name: string,
+}
