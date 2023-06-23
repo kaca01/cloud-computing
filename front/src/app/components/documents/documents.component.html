@@ -19,6 +19,23 @@
     <p id="line"></p>
 
     <div id="container">
+        <span class="item">
+            <img class="item-image" src="../../../assets/images/plus.png"/>
+            <p class="folder-name">New folder</p>
+        </span>
+        <!-- folders will be dispayed first and documents after -->
+        <span class="item" *ngFor="let i of folderNames;" (dblclick)="openFolder(i)">
+            <img class="item-image" src="../../../assets/images/folder.png"/>
+            <div class="hover-element">
+                <!-- <span><img class="option" src="../../../assets/images/open_folder.png" (click)="openFolder(i)"/></span> -->
+                <span><img class="option" src="../../../assets/images/add-group.png" (click)="addPeople()"/></span>
+                <span><img class="option" src="../../../assets/images/trash.png" (click)="openDialog()"/></span>
+            </div>
+            <div class="tooltip">
+                <p class="folder-name">{{ i }}</p>
+                <p class="tooltiptext">{{ i }}</p>
+            </div>
+        </span>
         <span class="item" *ngFor="let i of documentsNames;" (dblclick)="openFile(i)">
             <img class="item-image" [src]="choosePicture(i)"/>
             <div class="hover-element">

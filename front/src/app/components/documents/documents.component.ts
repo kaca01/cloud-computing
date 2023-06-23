@@ -11,6 +11,9 @@ import { UploadFileDialogComponent } from '../dialogs/upload-file-dialog/upload-
 })
 export class DocumentsComponent implements OnInit {
 
+  folderNames: string[] = ["Birthday picsss", "Me", "Friends", "Family", "Party", "New Years Eve", "Christmas", 
+  "Algorithms and data structures", "Movies", "Favorite TV Shows", "Cloud Computing"];
+
   documentsNames: string[] = ['file.pdf', 'picture.png', 'audio.mp3', 'video.mp4', 'word.docx', 'picture2.jpg', 'picture3.jpeg'];
 
   constructor(private router: Router, private cognitoService: CognitoService, private dialog: MatDialog) { }
@@ -31,6 +34,14 @@ export class DocumentsComponent implements OnInit {
         this.router.navigate(['/welcome-page']);
       }
     })
+  }
+
+  createNewFolder() {
+
+  }
+
+  openFolder(name: string) {
+    console.log(name);
   }
 
   openFile(name: string) {
