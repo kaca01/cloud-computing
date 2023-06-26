@@ -1,10 +1,20 @@
 import boto3
 from utility.utils import create_response
+from urllib.parse import unquote
 
 s3 = boto3.client('s3')
 
 
-def get_folder_contents(bucket_name, folder_name):
+def lambda_handler(event, context):
+    print("eventtt")
+    print(event)
+    bucket_name = "serverlessfilebucket"
+    path = event['pathParameters']['name']
+    folder_name = unquote(path)
+
+    # TODO : delete the following line later
+    folder_name = "folderrr/folder2"
+
     response = s3.list_objects_v2(
         Bucket=bucket_name,
         Prefix=folder_name
@@ -17,6 +27,3 @@ def get_folder_contents(bucket_name, folder_name):
     print("RESULTTTTT")
     print(body['data'])
     return create_response(200, body)
-
-
-get_folder_contents("serverlessfilebucket", "folderrr/folder2")

@@ -10,10 +10,17 @@ export class FolderService {
 
   constructor(private http: HttpClient) { }
 
-  private url = 'https://t9pgzw2u4d.execute-api.eu-central-1.amazonaws.com/dev/create-folder';
+  private url = 'https://x9pfbdqa5a.execute-api.eu-central-1.amazonaws.com/dev/';
+  private methodCreate = 'create-folder';
+  private methodGet = 'content';
 
   createFolder(file: any): Observable<any> {
     console.log(file);
-      return this.http.post<Folder>(this.url, file)
+    return this.http.post<any>(this.url + this.methodCreate, file);
+  }
+
+  getContent(folder: string): Observable<any> {
+    console.log(folder);
+    return this.http.get<any>(this.url + this.methodGet + '/' + folder);
   }
 }

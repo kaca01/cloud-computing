@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CognitoService } from 'src/app/services/cognito.service';
 import { UploadFileDialogComponent } from '../dialogs/upload-file-dialog/upload-file-dialog.component';
 import { CreateFolderComponent } from '../dialogs/create-folder/create-folder.component';
+import { FolderService } from 'src/app/services/folder.service';
 
 @Component({
   selector: 'app-documents',
@@ -12,15 +13,32 @@ import { CreateFolderComponent } from '../dialogs/create-folder/create-folder.co
 })
 export class DocumentsComponent implements OnInit {
 
+  response = 'The response will show up here';
+
   folderNames: string[] = ["Birthday picsss", "Me", "Friends", "Family", "Party", "New Years Eve", "Christmas", 
   "Algorithms and data structures", "Movies", "Favorite TV Shows", "Cloud Computing"];
 
   documentsNames: string[] = ['file.pdf', 'picture.png', 'audio.mp3', 'video.mp4', 'word.docx', 'picture2.jpg', 'picture3.jpeg'];
 
-  constructor(private router: Router, private cognitoService: CognitoService, private dialog: MatDialog) { }
+  constructor(private router: Router, private cognitoService: CognitoService, private dialog: MatDialog, 
+              private folderService: FolderService) { }
 
   ngOnInit(): void {
     this.getUserDetails();
+    this.getContent();
+  }
+
+  private getContent() {
+    this.folderService.getContent('folderrr').subscribe((data) => 
+            {
+              this.response = JSON.stringify(data, null, '\t')
+              console.log("success");
+              console.log(data);
+            }, error => {
+              console.log("error");
+              console.log(error);
+            }
+        )
   }
 
   private getUserDetails(){
