@@ -9,11 +9,7 @@ source_bucket = 'serverlessfilebucket'
 
 
 def create_folder(event, context):
-    # TODO : should this key be 'more' unique ???
-    print("-" * 100)
-    print(event)
     body = event['body']
-    print(body)
 
     folder_key = body['folderName'] + '/'
     s3.Object(source_bucket, folder_key).put()

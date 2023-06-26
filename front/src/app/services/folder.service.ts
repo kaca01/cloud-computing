@@ -10,11 +10,7 @@ export class FolderService {
 
   constructor(private http: HttpClient) { }
 
-  private apiUrl = 'https://ucflzlff97.execute-api.eu-central-1.amazonaws.com';
-  private stagePath = '/dev';
-  private resourcePath = '/create-folder';
-
-  private url = this.apiUrl + this.stagePath + this.resourcePath;
+  private url = 'https://t9pgzw2u4d.execute-api.eu-central-1.amazonaws.com/dev/create-folder';
 
   uploadFile(file: Folder): Observable<Folder> {
       return this.http.post<Folder>(this.url, file)

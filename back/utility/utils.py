@@ -1,10 +1,13 @@
 import json
 
+
 def create_response(status, body):
     return { 
         'statusCode': status, 
         'headers': {
-            'Access-Control-Allow-Origin': 'http://localhost:4200',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
         },
         'body': json.dumps(body, default=str)
         }

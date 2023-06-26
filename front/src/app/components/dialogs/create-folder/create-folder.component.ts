@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Folder } from 'src/app/domain';
+import { FolderService } from 'src/app/services/folder.service';
 
 @Component({
   selector: 'app-create-folder',
@@ -7,9 +9,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CreateFolderComponent implements OnInit {
 
-  constructor() { }
+  constructor(private service: FolderService) { }
 
   ngOnInit(): void {
   }
 
+  create(): void {
+    let folder: Folder = {} as Folder;
+    folder.name = "bajndovanje";
+    this.service.uploadFile(folder).subscribe((data : any) => {
+      console.log("success!!!");
+    }, error => {
+      console.log("error happened.");
+      console.log(error);
+    });
+    
+    
+  }
 }
