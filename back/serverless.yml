@@ -94,6 +94,15 @@ functions:
           method: post
           # Enable CORS. Don't forget to return the right header in your response
           cors: true
+  accessContent:
+    handler: accessContent/folder_contents.get_folder_contents
+    package:
+      include: 'accessContent/**'
+    events:
+      - http:
+          path: content
+          method: get
+          cors: true
 
 # you can add CloudFormation resource templates here
 resources:
