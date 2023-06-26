@@ -29,6 +29,8 @@ def lambda_handler(event, context):
         # TODO : or should here be just contents
         'data': [obj['Key'] for obj in contents]
     }
+    print("contents")
+    print(contents)
     print("RESULTTTTT")
     print(body['data'])
     return create_response(200, body)
