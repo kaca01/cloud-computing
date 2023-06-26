@@ -17,7 +17,11 @@ export class CreateFolderComponent implements OnInit {
   create(): void {
     let folder: Folder = {} as Folder;
     folder.name = "bajndovanje";
-    this.service.uploadFile(folder).subscribe((data : any) => {
+    this.service.createFolder({
+      "body": {
+      "folderName": folder.name
+      }
+    }).subscribe((data : any) => {
       console.log("success!!!");
     }, error => {
       console.log("error happened.");

@@ -12,7 +12,8 @@ export class FolderService {
 
   private url = 'https://t9pgzw2u4d.execute-api.eu-central-1.amazonaws.com/dev/create-folder';
 
-  uploadFile(file: Folder): Observable<Folder> {
+  createFolder(file: any): Observable<any> {
+    console.log(file);
       return this.http.post<Folder>(this.url, file)
   }
 }
