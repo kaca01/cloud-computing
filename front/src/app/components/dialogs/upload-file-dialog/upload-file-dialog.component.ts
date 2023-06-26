@@ -81,5 +81,4 @@ export class UploadFileDialogComponent implements OnInit {
     };
     this.snackBar.open(message, action, config);
   }
-
 }

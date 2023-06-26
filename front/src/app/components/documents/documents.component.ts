@@ -3,6 +3,9 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CognitoService } from 'src/app/services/cognito.service';
 import { UploadFileDialogComponent } from '../dialogs/upload-file-dialog/upload-file-dialog.component';
+import { FileService } from 'src/app/services/file.service';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import axios from 'axios';
 
 @Component({
   selector: 'app-documents',
@@ -16,7 +19,11 @@ export class DocumentsComponent implements OnInit {
 
   documentsNames: string[] = ['file.pdf', 'picture.png', 'audio.mp3', 'video.mp4', 'word.docx', 'picture2.jpg', 'picture3.jpeg'];
 
-  constructor(private router: Router, private cognitoService: CognitoService, private dialog: MatDialog) { }
+  constructor(private router: Router, 
+              private cognitoService: CognitoService, 
+              private dialog: MatDialog,
+              private snackBar: MatSnackBar,
+              private fileService: FileService) { }
 
   ngOnInit(): void {
     this.getUserDetails();
@@ -61,7 +68,34 @@ export class DocumentsComponent implements OnInit {
   }
 
   download() {
-    
+    axios
+    .get(this.fileService.apiUrl + "/download", { params: { "path": "stat_usmeni_okt1_2020.pdf" } }) // TODO izmeni ovo kasnije
+    .then((response) => {
+      const base64Data: string = response.data.body;
+      const byteCharacters: string = atob(base64Data);
+      const byteNumbers: number[] = Array.from(byteCharacters).map((char) => char.charCodeAt(0));
+      const byteArray: Uint8Array = new Uint8Array(byteNumbers);
+      const blob: Blob = new Blob([byteArray], { type: "pdf" });
+
+      // Create URL object for blob
+      const downloadUrl = window.URL.createObjectURL(blob);
+
+      // Create link element
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = "stat_usmeni_okt1_2020.pdf"; // TODO izmeni ovo kasnije
+
+      // Simulation of clicking on the link element to download the file
+      link.click();
+
+      // Releasing URL object resources
+      window.URL.revokeObjectURL(downloadUrl);
+
+      this.openSnackBar('Successfully download file', 'Close');
+    })
+    .catch((error) => {
+      console.log('Došlo je do greške prilikom preuzimanja fajla:', error);
+    });
   }
 
   openDialog() {
@@ -85,4 +119,13 @@ export class DocumentsComponent implements OnInit {
     else return "../../../assets/images/documents.png";
   }
 
+  openSnackBar(message: string, action: string) {
+    const config: MatSnackBarConfig = {
+      duration: 2000, 
+      panelClass: ['custom-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom'
+    };
+    this.snackBar.open(message, action, config);
+  }
 }
