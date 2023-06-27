@@ -12,7 +12,12 @@ def create_folder(event, context):
     body = event['body']
     print(body)
     data = json.loads(body)
-    folder_key = data['body']['folderName'] + '/'
+
+    folder_name = data['body']['folderName']
+    folder_path = data['body']['folderPath']
+
+    folder_key = folder_path + '/' + folder_name + '/'
+
     s3.Object(source_bucket, folder_key).put()
 
     body = {

@@ -19,7 +19,8 @@ export class CreateFolderComponent implements OnInit {
     folder.name = "bajndovanje";
     this.service.createFolder({
       "body": {
-      "folderName": folder.name
+      "folderName": folder.name,
+      "folderPath": "folderrr/folder2/neki-novi-folder"
       }
     }).subscribe((data : any) => {
       console.log("success!!!");
