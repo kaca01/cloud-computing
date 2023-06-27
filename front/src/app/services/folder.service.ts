@@ -20,7 +20,6 @@ export class FolderService {
   }
 
   getContent(folder: string): Observable<any> {
-    console.log(folder);
     return this.http.get<any>(this.url + this.methodGet + '/' + folder);
   }
 }

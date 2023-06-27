@@ -28,7 +28,7 @@ export class DocumentsComponent implements OnInit {
     this.getContent();
   }
 
-  updateView() {
+  private updateView() {
     this.getContent();
     this.cdr.markForCheck();
   }
@@ -40,12 +40,8 @@ export class DocumentsComponent implements OnInit {
     this.folderService.getContent(pathVariable).subscribe((data) => 
             {
               this.response = JSON.stringify(data, null, '\t')
-              console.log("success");
-              console.log(data);
-              console.log(typeof data);
               for (let i of data.data) {
                 i = this.getName(i); 
-                console.log(i);
                 if (i != '' && this.isFolder(i) && !this.folderNames.includes(i)) this.folderNames.push(i)
                 else if (i != '' && !this.isFolder(i) && !this.documentsNames.includes(i)) this.documentsNames.push(i);
               }
@@ -76,7 +72,6 @@ export class DocumentsComponent implements OnInit {
   }
 
   openFolder(name: string) {
-    console.log(name);
     this.currentPath += "/" + name;
     this.updateView();
   }
@@ -119,11 +114,11 @@ export class DocumentsComponent implements OnInit {
     this.dialog.open(CreateFolderComponent, dialogConfig);
   }
 
-  isFolder(name: string): boolean { 
+  private isFolder(name: string): boolean { 
     return !name.includes('.');
   }
 
-  findExtension(name: string): string {
+  private findExtension(name: string): string {
     return name.split('.')[1];
   }
 
@@ -135,9 +130,9 @@ export class DocumentsComponent implements OnInit {
     else return "../../../assets/images/documents.png";
   }
 
-  getName(input: string): string {
+  private getName(input: string): string {
     let result: string = input.replace(this.currentPath, "");
     result = result.replace('/', '');
-    return result.split("/")[0];;
+    return result.split("/")[0];
   }
 }
