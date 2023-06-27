@@ -169,8 +169,6 @@ export class DocumentsComponent implements OnInit {
     if (this.currentPath.includes('/')){ 
       let pathElements = this.currentPath.split('/');
       let result = pathElements[pathElements.length - 1];
-      console.log('resulttttt');
-      console.log(result);
       return result;
     } 
     return "Your documents";
