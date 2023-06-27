@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FileService } from 'src/app/services/file.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
+import axios from 'axios';
 
 @Component({
   selector: 'app-upload-file-dialog',
@@ -33,6 +34,18 @@ export class UploadFileDialogComponent implements OnInit {
 
   close() : void {
     this.dialogRef.close();
+  }
+
+  deleteFile(){
+    axios
+    .delete(this.fileService.apiUrl + "/deleteFile", { params: { "file_path": "after.pdf" } }) // TODO izmeni ovo kasnije
+    .then((response) => {
+      this.openSnackBar('Successfully deleted file', 'Close');
+    })
+    .catch((error) => {
+      this.openSnackBar('Delete error', 'Close');
+    });
+    this.close();
   }
 
   onSelectFile(event: any) {

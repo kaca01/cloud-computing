@@ -11,6 +11,21 @@
     cursor: pointer;
 }
 
+#trash{
+    padding: 5px;
+    width: 30px;
+    height: 30px;
+    margin-top: 10%;
+    margin-left: 25%;
+    margin-bottom: 5%;
+}
+
+#trash:hover{
+    background-color:rgb(243, 237, 237);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
 p {
     margin-left: 1em;
 }
