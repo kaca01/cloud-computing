@@ -41,6 +41,8 @@ provider:
       Ref: filesTable
     BUCKET_NAME:
       Ref: filesBucket
+    SQS_NAME:
+      Ref: filesSqsQueue
 
 # you can add packaging information here
 package:
@@ -54,11 +56,9 @@ package:
     - 'utility/**'
 
 functions:
-  uploadFile:
-    runtime: python3.8
-    handler: uploadFile/upload_file.lambda_handler
+  storageFile:
+    handler: uploadFile/upload_file.storage_file
     package:
-      # Include 'createDogs' directory and all child directories
       include: 'uploadFile/**'
     iamRoleStatements:
       - Effect: Allow
@@ -67,18 +67,32 @@ functions:
         Resource: "arn:aws:s3:::serverlessfilebucket/*"
       - Effect: Allow
         Action:
-          - dynamodb:PutItem
-        Resource:
-          - "Fn::GetAtt": [filesTable, Arn]
+          - sqs:SendMessage
+        Resource: 
+          - "Fn::GetAtt": [filesSqsQueue, Arn]
     events:
       # REST API endpoint of API Gateway
       - http:
           # Path for this endpoint
-          path: dogs
+          path: upload
           # HTTP method for this endpoint
           method: post
           # Enable CORS. Don't forget to return the right header in your response
           cors: true
+  storageMetadata:
+    handler: uploadFile/upload_file.storage_metadata
+    package:
+      include: 'uploadFile/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource:
+          - "Fn::GetAtt": [filesTable, Arn]
+    events:
+      - sqs:
+          arn: { "Fn::GetAtt": [filesSqsQueue, Arn] }
+          batchSize: 1
 
 # you can add CloudFormation resource templates here
 resources:
@@ -100,3 +114,7 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+    filesSqsQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: serverlessfilequeue
