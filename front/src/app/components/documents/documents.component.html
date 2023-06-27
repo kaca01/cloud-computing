@@ -3,7 +3,7 @@
 <div id="main-container">
 
     <span id="hover-span" (click)="back()">
-        <img id="back" src="../../../assets/images/back.png"/> 
+        <img id="back" src="../../../assets/images/back.png" *ngIf="currentFolder !== 'Your documents'"/> 
         <p class="title">{{ currentFolder }}</p>
     </span>
 

@@ -1,2 +1,13 @@
-<p>create-folder works!</p>
-<button (click)="create()">Create</button>
+<img src="../../assets/images/close.png" id="close-dialog" class="close" (click)="close()"/>
+<p id="title">Create New Folder</p>
+
+<div class="form">
+    <mat-form-field id="name">
+        <mat-label>Folder name</mat-label>
+        <input matInput [(ngModel)]="name">
+    </mat-form-field>
+</div>
+
+<span id="btn-container">
+    <button mat-raised-button color="brown" id="create" (click)="create()">CREATE</button>
+</span>  
