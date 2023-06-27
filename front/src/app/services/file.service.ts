@@ -16,7 +16,7 @@ export class FileService {
       return this.http.post<UploadFile>(this.apiUrl + "/upload", file)
   }
 
-  downloadFile(fileName: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl + "/download", fileName)
+  editFile(file: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl + "/edit", file)
   }
 }

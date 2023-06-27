@@ -56,7 +56,13 @@ export class DocumentsComponent implements OnInit {
   }
 
   edit() {
+    const dialogConfig = new MatDialogConfig();
 
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = { type: "edit" } 
+    
+    this.dialog.open(UploadFileDialogComponent, dialogConfig);
   }
 
   openInfo() {
@@ -94,7 +100,7 @@ export class DocumentsComponent implements OnInit {
       this.openSnackBar('Successfully download file', 'Close');
     })
     .catch((error) => {
-      console.log('Došlo je do greške prilikom preuzimanja fajla:', error);
+      this.openSnackBar('Download error', 'Close');
     });
   }
 
@@ -103,6 +109,7 @@ export class DocumentsComponent implements OnInit {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
+    dialogConfig.data = { type: "upload" } 
     
     this.dialog.open(UploadFileDialogComponent, dialogConfig);
   }

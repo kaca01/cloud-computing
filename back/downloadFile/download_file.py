@@ -10,7 +10,6 @@ s3 = boto3.client('s3')
 def lambda_handler(event, contex):
     file_path = event['queryStringParameters']['path']
 
-    # response = s3.get_object(Bucket=bucket_name, Key=file_path)
     file_body = base64.b64encode(
         s3.get_object(
             Bucket=bucket_name,

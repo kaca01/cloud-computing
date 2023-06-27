@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FileService } from 'src/app/services/file.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
@@ -19,10 +19,15 @@ export class UploadFileDialogComponent implements OnInit {
   fileContent: string = '';
   file: any;
 
+  type: string = "";
+
   constructor(private dialogRef: MatDialogRef<UploadFileDialogComponent>,
               private fileService: FileService,
               private snackBar: MatSnackBar,
-              private datePipe: DatePipe) { }
+              private datePipe: DatePipe,
+              @Inject(MAT_DIALOG_DATA) public data: any) {
+                this.type = data.type;
+              }
 
   ngOnInit(): void { }
 
@@ -80,5 +85,31 @@ export class UploadFileDialogComponent implements OnInit {
       verticalPosition: 'bottom'
     };
     this.snackBar.open(message, action, config);
+  }
+
+  editFile() : void {
+    // TODO prvo setuj tags i description od trenutnog fajla
+    if(this.file != undefined) {
+      console.log(this.file['type'].split('/')[1])
+      if(this.file['type'].split('/')[1] != 'pdf') // TODO promeniti da ne bude pdf nego tip izabranog fajla
+        this.openSnackBar('Invalid file type', 'Close');
+      else 
+        this.callEditFunction();
+    }
+    else 
+      this.callEditFunction();
+    this.close();
+  }
+
+  callEditFunction() {
+    this.fileService.editFile({     
+      "fileContent": this.fileContent,
+      "fileName": "stat_usmeni_okt1_2020.pdf",  // TODO uzmi naziv od izabranog fajla
+      "description": this.description,
+      "tags": this.exportTags()
+    }).subscribe((data : any) => {
+      console.log(data)
+      this.openSnackBar(data['message'], 'Close');
+    })
   }
 }
