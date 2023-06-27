@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CognitoService } from 'src/app/services/cognito.service';
@@ -15,36 +15,41 @@ export class DocumentsComponent implements OnInit {
 
   response = 'The response will show up here';
 
-  currentPath : string = '';
+  currentPath : string = 'folderrr';
 
   folderNames: string[] = [];
   documentsNames: string[] = [];
 
-  // folderNames: string[] = ["Birthday picsss", "Me", "Friends", "Family", "Party", "New Years Eve", "Christmas", 
-  // "Algorithms and data structures", "Movies", "Favorite TV Shows", "Cloud Computing"];
-
-  // documentsNames: string[] = ['file.pdf', 'picture.png', 'audio.mp3', 'video.mp4', 'word.docx', 'picture2.jpg', 'picture3.jpeg'];
-
   constructor(private router: Router, private cognitoService: CognitoService, private dialog: MatDialog, 
-              private folderService: FolderService) { }
+              private folderService: FolderService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.getUserDetails();
     this.getContent();
   }
 
+  updateView() {
+    this.getContent();
+    this.cdr.markForCheck();
+  }
+
   private getContent() {
-    this.folderService.getContent('folderrr').subscribe((data) => 
+    this.documentsNames = [];
+    this.folderNames = [];
+    let pathVariable : string = encodeURIComponent(this.currentPath);
+    this.folderService.getContent(pathVariable).subscribe((data) => 
             {
               this.response = JSON.stringify(data, null, '\t')
               console.log("success");
               console.log(data);
               console.log(typeof data);
               for (let i of data.data) {
-                i = this.getTextBetweenFirstAndSecondSlash(i); 
+                i = this.getName(i); 
+                console.log(i);
                 if (i != '' && this.isFolder(i) && !this.folderNames.includes(i)) this.folderNames.push(i)
                 else if (i != '' && !this.isFolder(i) && !this.documentsNames.includes(i)) this.documentsNames.push(i);
               }
+
             }, error => {
               console.log("error");
               console.log(error);
@@ -56,7 +61,7 @@ export class DocumentsComponent implements OnInit {
     this.cognitoService.getUser()
     .then((user: any) => {
       if (user){
-        // loged in
+        // logged in
         console.log(user);
       }
       else{
@@ -72,6 +77,8 @@ export class DocumentsComponent implements OnInit {
 
   openFolder(name: string) {
     console.log(name);
+    this.currentPath += "/" + name;
+    this.updateView();
   }
 
   openFile(name: string) {
@@ -128,14 +135,9 @@ export class DocumentsComponent implements OnInit {
     else return "../../../assets/images/documents.png";
   }
 
-  getTextBetweenFirstAndSecondSlash(input: string): string {
-    const regex = /\/([^\/]*)\//;
-    const matches = input.match(regex);
-    
-    if (matches && matches.length >= 2) {
-      return matches[1];
-    } else {
-      return '';
-    }
+  getName(input: string): string {
+    let result: string = input.replace(this.currentPath, "");
+    result = result.replace('/', '');
+    return result.split("/")[0];;
   }
 }
