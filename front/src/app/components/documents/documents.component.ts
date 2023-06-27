@@ -6,6 +6,7 @@ import { UploadFileDialogComponent } from '../dialogs/upload-file-dialog/upload-
 import { FileService } from 'src/app/services/file.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import axios from 'axios';
+import { HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-documents',
@@ -101,6 +102,18 @@ export class DocumentsComponent implements OnInit {
     })
     .catch((error) => {
       this.openSnackBar('Download error', 'Close');
+    });
+  }
+
+  deleteFolder(){
+
+    axios
+    .delete(this.fileService.apiUrl + "/deleteFolder", { params: { "folder_path": "test_folder" } }) // TODO izmeni ovo kasnije
+    .then((response) => {
+      this.openSnackBar('Successfully deleted folder', 'Close');
+    })
+    .catch((error) => {
+      this.openSnackBar('Delete error', 'Close');
     });
   }
 

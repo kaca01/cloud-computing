@@ -10,7 +10,7 @@ export class FileService {
 
   constructor(private http: HttpClient) { }
 
-  public apiUrl = 'https://xgp35756df.execute-api.eu-central-1.amazonaws.com/dev'
+  public apiUrl = 'https://3z9beer3v0.execute-api.eu-central-1.amazonaws.com/dev'
 
   uploadFile(file: UploadFile): Observable<UploadFile> {
       return this.http.post<UploadFile>(this.apiUrl + "/upload", file)
@@ -18,5 +18,9 @@ export class FileService {
 
   editFile(file: any): Observable<any> {
     return this.http.post<any>(this.apiUrl + "/edit", file)
+  }
+
+  deleteFolder(folder: any): Observable<any> {
+    return this.http.put<any>(this.apiUrl + "/deleteFolder", folder)
   }
 }
