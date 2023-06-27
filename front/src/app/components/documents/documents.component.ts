@@ -67,6 +67,12 @@ export class DocumentsComponent implements OnInit {
     })
   }
 
+  back(): void {
+    const lastIndex = this.currentPath.lastIndexOf("/");
+    this.currentPath = this.currentPath.substring(0, lastIndex);
+    this.updateView();
+  }
+
   createNewFolder() {
 
   }
