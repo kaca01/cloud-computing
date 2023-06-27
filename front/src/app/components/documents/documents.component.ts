@@ -106,7 +106,6 @@ export class DocumentsComponent implements OnInit {
   }
 
   deleteFolder(){
-
     axios
     .delete(this.fileService.apiUrl + "/deleteFolder", { params: { "folder_path": "test_folder" } }) // TODO izmeni ovo kasnije
     .then((response) => {

@@ -6,7 +6,7 @@ import base64
 from utility.utils import create_response
 
 s3 = boto3.client('s3')
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.client('dynamodb')
 bucket_name = os.environ['BUCKET_NAME']
 table_name = os.environ['TABLE_NAME']
 

@@ -144,6 +144,38 @@ functions:
           method: delete
           # Enable CORS. Don't forget to return the right header in your response
           cors: true
+  deleteFile:
+    handler: deleteFile/delete_file.lambda_handler
+    package:
+      # Include 'createDogs' directory and all child directories
+      include: 'deleteFile/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+          - s3:GetObjectAcl
+          - s3:DeleteObject
+          - s3:ListObjectsV2
+          - s3:ListBucket
+          - s3:ListBucketVersions
+        Resource: 
+          - "arn:aws:s3:::serverlessfilebucket/*"
+          - "arn:aws:s3:::serverlessfilebucket"
+
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource:
+          - "Fn::GetAtt": [filesTable, Arn]
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: deleteFile
+          # HTTP method for this endpoint
+          method: delete
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
 # you can add CloudFormation resource templates here
 resources:
   Resources:

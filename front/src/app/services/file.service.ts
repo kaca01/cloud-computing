@@ -19,8 +19,4 @@ export class FileService {
   editFile(file: any): Observable<any> {
     return this.http.post<any>(this.apiUrl + "/edit", file)
   }
-
-  deleteFolder(folder: any): Observable<any> {
-    return this.http.put<any>(this.apiUrl + "/deleteFolder", folder)
-  }
 }
