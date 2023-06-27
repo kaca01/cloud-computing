@@ -121,6 +121,27 @@ functions:
             parameters:
               paths:
                 name: true
+  addPermission:
+    handler: addPermission/add_permission.lambda_handler
+    package:
+      include: 'addPermission/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:UpdateItem
+          - dynamodb:DeleteItem
+        Resource:
+          - "Fn::GetAtt": [filesTable, Arn]
+    events:
+      - http:
+          # Path for this endpoint
+          path: addPermission
+          # HTTP method for this endpoint
+          method: put
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
 
 # you can add CloudFormation resource templates here
 resources:
