@@ -19,9 +19,14 @@ p {
     width: 17em;
     margin-right: 5%;
     margin-top: 1.5em;
-    margin-bottom: 0.5em;
+    margin-bottom: 1.5em;
     font-size: x-large;
     font-weight: bold;
+}
+
+#container {
+    height: 30em;
+    overflow-y: scroll;
 }
 
 .left {
@@ -29,10 +34,17 @@ p {
     margin-top: 1.5em;
     width: 45%;
     display: inline-block;
+    vertical-align: top;
+    font-weight: bold;
 }
 
 .right {
     margin-top: 1.5em;
     width: 45%;
     display: inline-block;
+    word-wrap: break-word;
+}
+
+#list {
+    margin-left: 2em;
 }

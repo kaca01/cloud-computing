@@ -26,4 +26,13 @@
         <p class="left">Type</p>
         <p class="right">{{ file.fileType }}</p>
     </span>
+    <span>
+        <span class="data">
+            <p class="left">Tags</p>
+            <mat-list role="list" id="list">
+                <mat-list-item *ngFor="let i of file.tags" role="listitem">{{ i }}</mat-list-item>
+              </mat-list>
+              
+        </span>
+    </span>
 </div>
