@@ -55,7 +55,6 @@ package:
 
 functions:
   uploadFile:
-    runtime: python3.8
     handler: uploadFile/upload_file.lambda_handler
     package:
       # Include 'createDogs' directory and all child directories
@@ -74,10 +73,44 @@ functions:
       # REST API endpoint of API Gateway
       - http:
           # Path for this endpoint
-          path: dogs
+          path: upload
           # HTTP method for this endpoint
           method: post
           # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  downloadFile:
+    handler: downloadFile/download_file.lambda_handler
+    package:
+      include: 'downloadFile/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource: "arn:aws:s3:::serverlessfilebucket/*"
+    events:
+      - http:
+          path: download
+          method: get
+          cors: true
+  editFile:
+    handler: editFile/edit_file.lambda_handler
+    package:
+      include: 'editFile/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+          - s3:PutObject
+        Resource: "arn:aws:s3:::serverlessfilebucket/*"
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
+        Resource:
+          - "Fn::GetAtt": [filesTable, Arn]
+    events:
+      - http:
+          path: edit
+          method: post
           cors: true
 
 # you can add CloudFormation resource templates here
