@@ -39,7 +39,7 @@ export class CreateFolderComponent implements OnInit {
       "folderPath": this.path
       }
     }).subscribe((data : any) => {
-      console.log("success!!!");
+      this.openSnackBar("Successfully created!", "Close");
     }, error => {
       console.log("error happened.");
       console.log(error);
