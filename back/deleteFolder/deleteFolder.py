@@ -22,7 +22,14 @@ def lambda_handler(event, context):
     if 'Contents' in response:
         objects = [{'Key': obj['Key']} for obj in response['Contents']]
         s3.delete_objects(Bucket=bucket_name, Delete={'Objects': objects})
-    #todo also delete all data from dynamo
+        #todo test this
+        # also delete all data from dynamo
+        # for obj in objects:
+        #     dynamodb.delete_item(
+        #         TableName=table_name,
+        #         Key=obj['Key']
+        #     )
+
     #todo delete user permisions?
 
     # Delete the folder
