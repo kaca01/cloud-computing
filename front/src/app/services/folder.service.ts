@@ -10,7 +10,7 @@ export class FolderService {
 
   constructor(private http: HttpClient) { }
 
-  private url = 'https://q9nrs674b1.execute-api.eu-central-1.amazonaws.com/dev/';
+  private url = 'https://6j7qu7il3g.execute-api.eu-central-1.amazonaws.com/dev/';
   private methodCreate = 'create-folder';
   private methodGet = 'content';
 

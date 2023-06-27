@@ -5,7 +5,7 @@ from utility.utils import create_response
 
 # bucket_name = os.environ['BUCKET_NAME']
 s3 = boto3.resource('s3')
-source_bucket = 'serverlessfilebucket'
+source_bucket = os.environ['BUCKET_NAME']
 
 
 def create_folder(event, context):
