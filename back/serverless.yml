@@ -64,7 +64,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket/*"
+        Resource: "arn:aws:s3:::serverlessfilebucketkatarina2/*"
       - Effect: Allow
         Action:
           - dynamodb:PutItem
