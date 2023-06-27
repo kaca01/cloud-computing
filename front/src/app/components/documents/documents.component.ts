@@ -15,10 +15,15 @@ export class DocumentsComponent implements OnInit {
 
   response = 'The response will show up here';
 
-  folderNames: string[] = ["Birthday picsss", "Me", "Friends", "Family", "Party", "New Years Eve", "Christmas", 
-  "Algorithms and data structures", "Movies", "Favorite TV Shows", "Cloud Computing"];
+  currentPath : string = '';
 
-  documentsNames: string[] = ['file.pdf', 'picture.png', 'audio.mp3', 'video.mp4', 'word.docx', 'picture2.jpg', 'picture3.jpeg'];
+  folderNames: string[] = [];
+  documentsNames: string[] = [];
+
+  // folderNames: string[] = ["Birthday picsss", "Me", "Friends", "Family", "Party", "New Years Eve", "Christmas", 
+  // "Algorithms and data structures", "Movies", "Favorite TV Shows", "Cloud Computing"];
+
+  // documentsNames: string[] = ['file.pdf', 'picture.png', 'audio.mp3', 'video.mp4', 'word.docx', 'picture2.jpg', 'picture3.jpeg'];
 
   constructor(private router: Router, private cognitoService: CognitoService, private dialog: MatDialog, 
               private folderService: FolderService) { }
@@ -34,6 +39,12 @@ export class DocumentsComponent implements OnInit {
               this.response = JSON.stringify(data, null, '\t')
               console.log("success");
               console.log(data);
+              console.log(typeof data);
+              for (let i of data.data) {
+                i = this.getTextBetweenFirstAndSecondSlash(i); 
+                if (i != '' && this.isFolder(i) && !this.folderNames.includes(i)) this.folderNames.push(i)
+                else if (i != '' && !this.isFolder(i) && !this.documentsNames.includes(i)) this.documentsNames.push(i);
+              }
             }, error => {
               console.log("error");
               console.log(error);
@@ -101,6 +112,10 @@ export class DocumentsComponent implements OnInit {
     this.dialog.open(CreateFolderComponent, dialogConfig);
   }
 
+  isFolder(name: string): boolean { 
+    return !name.includes('.');
+  }
+
   findExtension(name: string): string {
     return name.split('.')[1];
   }
@@ -113,4 +128,14 @@ export class DocumentsComponent implements OnInit {
     else return "../../../assets/images/documents.png";
   }
 
+  getTextBetweenFirstAndSecondSlash(input: string): string {
+    const regex = /\/([^\/]*)\//;
+    const matches = input.match(regex);
+    
+    if (matches && matches.length >= 2) {
+      return matches[1];
+    } else {
+      return '';
+    }
+  }
 }

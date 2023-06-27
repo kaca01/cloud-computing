@@ -11,14 +11,15 @@ def lambda_handler(event, context):
     path = event['pathParameters']['name']
     folder_name = unquote(path)
 
-    # TODO : delete the following line later
-    folder_name = "folderrr/folder2"
     bucket = s3.Bucket(bucket_name)
 
     contents = []
 
     objects = bucket.objects.filter(Prefix=folder_name)
-    for obj in objects:
+
+    sorted_objects = sorted(objects, key=lambda obj: obj.last_modified, reverse=True)
+
+    for obj in sorted_objects:
         contents.append(obj.key)
 
     body = {
