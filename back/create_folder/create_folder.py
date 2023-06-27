@@ -10,8 +10,9 @@ source_bucket = os.environ['BUCKET_NAME']
 
 def create_folder(event, context):
     body = event['body']
-
-    folder_key = body['folderName'] + '/'
+    print(body)
+    data = json.loads(body)
+    folder_key = data['body']['folderName'] + '/'
     s3.Object(source_bucket, folder_key).put()
 
     body = {
