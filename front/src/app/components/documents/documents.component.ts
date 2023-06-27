@@ -15,7 +15,9 @@ export class DocumentsComponent implements OnInit {
 
   response = 'The response will show up here';
 
+  // TODO : here should be root folder
   currentPath : string = 'folderrr';
+  currentFolder: string = this.currentPath;
 
   folderNames: string[] = [];
   documentsNames: string[] = [];
@@ -28,7 +30,7 @@ export class DocumentsComponent implements OnInit {
     this.getContent();
   }
 
-  private updateView() {
+  updateView() {
     this.getContent();
     this.cdr.markForCheck();
   }
@@ -37,6 +39,9 @@ export class DocumentsComponent implements OnInit {
     this.documentsNames = [];
     this.folderNames = [];
     let pathVariable : string = encodeURIComponent(this.currentPath);
+    this.currentFolder = this.getCurrentFolder();
+    console.log(this.currentPath);
+    console.log(this.currentFolder);
     this.folderService.getContent(pathVariable).subscribe((data) => 
             {
               this.response = JSON.stringify(data, null, '\t')
@@ -116,7 +121,7 @@ export class DocumentsComponent implements OnInit {
 
     dialogConfig.disableClose = false;
     dialogConfig.autoFocus = true;
-    dialogConfig.data = this.currentPath;
+    dialogConfig.data = this
     
     this.dialog.open(CreateFolderComponent, dialogConfig);
   }
@@ -141,5 +146,17 @@ export class DocumentsComponent implements OnInit {
     let result: string = input.replace(this.currentPath, "");
     result = result.replace('/', '');
     return result.split("/")[0];
+  }
+
+  private getCurrentFolder(): string {
+    console.log(this.currentPath);
+    if (this.currentPath.includes('/')){ 
+      let pathElements = this.currentPath.split('/');
+      let result = pathElements[pathElements.length - 1];
+      console.log('resulttttt');
+      console.log(result);
+      return result;
+    } 
+    return "Your documents";
   }
 }
