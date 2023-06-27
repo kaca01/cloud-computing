@@ -1,5 +1,9 @@
 <img src="../../assets/images/close.png" id="close-dialog" class="close" (click)="close()"/>
-<p id="title">Upload Your file!</p>
+<p id="title" *ngIf="type=='upload'; else editTitle" >Upload Your file!</p>
+
+<ng-template #editTitle>
+    <p id="title">Edit Your file!</p>
+</ng-template>
 
 <div class="form">
     <div>
@@ -18,5 +22,9 @@
 </div>
 
 <span id="btn-container">
-    <button mat-raised-button color="brown" id="upload" (click)="uploadFile()">UPLOAD</button>
+    <button *ngIf="type=='upload'; else edit" mat-raised-button color="brown" id="upload" (click)="uploadFile()">UPLOAD</button>
+
+    <ng-template #edit>
+        <button mat-raised-button color="brown" id="upload" (click)="editFile()">EDIT</button>
+    </ng-template>
 </span>  
