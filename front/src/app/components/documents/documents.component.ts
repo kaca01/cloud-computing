@@ -5,6 +5,7 @@ import { CognitoService } from 'src/app/services/cognito.service';
 import { UploadFileDialogComponent } from '../dialogs/upload-file-dialog/upload-file-dialog.component';
 import { CreateFolderComponent } from '../dialogs/create-folder/create-folder.component';
 import { FolderService } from 'src/app/services/folder.service';
+import { User } from 'src/app/domain';
 
 @Component({
   selector: 'app-documents',
@@ -13,21 +14,26 @@ import { FolderService } from 'src/app/services/folder.service';
 })
 export class DocumentsComponent implements OnInit {
 
+  private user: User = {} as User;
+
   response = 'The response will show up here';
 
   // TODO : here should be root folder
-  currentPath : string = 'folderrr';
+  currentPath : string = '';
   currentFolder: string = this.currentPath;
 
   folderNames: string[] = [];
   documentsNames: string[] = [];
 
-  constructor(private router: Router, private cognitoService: CognitoService, private dialog: MatDialog, 
-              private folderService: FolderService, private cdr: ChangeDetectorRef) { }
+  constructor(private router: Router, 
+              private cognitoService: CognitoService, 
+              private dialog: MatDialog, 
+              private folderService: FolderService,
+              private cdr: ChangeDetectorRef) { }
 
-  ngOnInit(): void {
-    this.getUserDetails();
-    this.getContent();
+  async ngOnInit() {
+    await this.getUserDetails();
+    await this.getContent();
   }
 
   updateView() {
@@ -35,41 +41,52 @@ export class DocumentsComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  private getContent() {
-    this.documentsNames = [];
-    this.folderNames = [];
-    let pathVariable : string = encodeURIComponent(this.currentPath);
-    this.currentFolder = this.getCurrentFolder();
-    console.log(this.currentPath);
-    console.log(this.currentFolder);
-    this.folderService.getContent(pathVariable).subscribe((data) => 
-            {
-              this.response = JSON.stringify(data, null, '\t')
-              for (let i of data.data) {
-                i = this.getName(i); 
-                if (i != '' && this.isFolder(i) && !this.folderNames.includes(i)) this.folderNames.push(i)
-                else if (i != '' && !this.isFolder(i) && !this.documentsNames.includes(i)) this.documentsNames.push(i);
-              }
+  private getContent() : Promise<void> {
+    return new Promise<void>((resolve) => {
+      this.documentsNames = [];
+      this.folderNames = [];
+      
+      let pathVariable : string = encodeURIComponent(this.currentPath);
+      this.currentFolder = this.getCurrentFolder();
+      this.folderService.getContent(pathVariable).subscribe((data) => 
+              {
+                this.response = JSON.stringify(data, null, '\t')
+                for (let i of data.data) {
+                  i = this.getName(i); 
+                  if (i != '' && this.isFolder(i) && !this.folderNames.includes(i)) this.folderNames.push(i)
+                  else if (i != '' && !this.isFolder(i) && !this.documentsNames.includes(i)) this.documentsNames.push(i);
+                }
+                resolve();
 
-            }, error => {
-              console.log("error");
-              console.log(error);
-            }
-        )
+              }, error => {
+                console.log("error");
+                console.log(error);
+                resolve();
+              }
+          )
+      });
   }
 
-  private getUserDetails(){
+  private getUserDetails(): Promise<void> {
+    return new Promise<void>((resolve) => {
     this.cognitoService.getUser()
     .then((user: any) => {
       if (user){
         // logged in
-        console.log(user);
+        this.currentPath = user.attributes.email;
+        this.currentFolder = this.currentPath;
+        this.user = user;
+        resolve();
+
       }
       else{
         // if not logged in, send user to login
+        resolve();
         this.router.navigate(['/welcome-page']);
       }
     })
+    
+    });
   }
 
   back(): void {
@@ -149,7 +166,6 @@ export class DocumentsComponent implements OnInit {
   }
 
   private getCurrentFolder(): string {
-    console.log(this.currentPath);
     if (this.currentPath.includes('/')){ 
       let pathElements = this.currentPath.split('/');
       let result = pathElements[pathElements.length - 1];

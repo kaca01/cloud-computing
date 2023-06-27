@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { User } from 'src/app/domain';
 import { CognitoService } from 'src/app/services/cognito.service';
+import { FolderService } from 'src/app/services/folder.service';
 
 @Component({
   selector: 'app-registration-page',
@@ -29,7 +30,10 @@ export class RegistrationPageComponent implements OnInit {
   user: User | undefined;
   isConfirm: boolean = false;
 
-  constructor(private router: Router, private cognitoService: CognitoService, private _snackBar: MatSnackBar) {}
+  constructor(private router: Router,
+              private cognitoService: CognitoService, 
+              private folderService: FolderService,
+              private _snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.user = {} as User;
@@ -74,7 +78,19 @@ export class RegistrationPageComponent implements OnInit {
     if (this.user){
       this.cognitoService.confirmSignUp(this.user)
       .then(() => {
-        this.router.navigate(['/login'])
+        this.router.navigate(['/login']);
+        this.folderService.createFolder({
+          "body": {
+          "folderName": this.user?.email,
+          "folderPath": ''
+          }
+        }).subscribe((data : any) => {
+          console.log("success");
+        }, error => {
+          console.log("error happened.");
+          console.log(error);
+        });
+    
         this.openSnackBar("Account has been successfully created! You can login now!");
       })
       .catch((error: any) => {
