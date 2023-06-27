@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: back
+service: backkatarina3
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -64,7 +64,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket/*"
+        Resource: "arn:aws:s3:::serverlessfilebucketkatarina3/*"
       - Effect: Allow
         Action:
           - dynamodb:PutItem
@@ -89,7 +89,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket/*"
+        Resource: "arn:aws:s3:::serverlessfilebucketkatarina3/*"
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -107,11 +107,11 @@ functions:
       - Effect: Allow
         Action:
           - s3:ListBucket
-        Resource: "arn:aws:s3:::serverlessfilebucket"
+        Resource: "arn:aws:s3:::serverlessfilebucketkatarina3"
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: "arn:aws:s3:::serverlessfilebucket"
+        Resource: "arn:aws:s3:::serverlessfilebucketkatarina3"
     events:
       - http:
           path: content/{name}
@@ -121,6 +121,25 @@ functions:
             parameters:
               paths:
                 name: true
+  fileDetails:
+    runtime: python3.8
+    handler: fileDetails/file_details.lambda_handler
+    package:
+      include: 'fileDetails/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletablekatarina3
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: file-details
+          # HTTP method for this endpoint
+          method: get
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
 
 # you can add CloudFormation resource templates here
 resources:
@@ -128,11 +147,11 @@ resources:
     filesBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: serverlessfilebucket
+        BucketName: serverlessfilebucketkatarina3
     filesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: serverlessfiletable
+        TableName: serverlessfiletablekatarina3
         AttributeDefinitions:
           - AttributeName: fileName
             AttributeType: S

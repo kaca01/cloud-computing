@@ -6,6 +6,7 @@ import { UploadFileDialogComponent } from '../dialogs/upload-file-dialog/upload-
 import { CreateFolderComponent } from '../dialogs/create-folder/create-folder.component';
 import { FolderService } from 'src/app/services/folder.service';
 import { User } from 'src/app/domain';
+import { FileService } from 'src/app/services/file.service';
 
 @Component({
   selector: 'app-documents',
@@ -29,6 +30,7 @@ export class DocumentsComponent implements OnInit {
               private cognitoService: CognitoService, 
               private dialog: MatDialog, 
               private folderService: FolderService,
+              private fileService: FileService,
               private cdr: ChangeDetectorRef) { }
 
   async ngOnInit() {
@@ -49,21 +51,20 @@ export class DocumentsComponent implements OnInit {
       let pathVariable : string = encodeURIComponent(this.currentPath);
       this.currentFolder = this.getCurrentFolder();
       this.folderService.getContent(pathVariable).subscribe((data) => 
-              {
-                this.response = JSON.stringify(data, null, '\t')
-                for (let i of data.data) {
-                  i = this.getName(i); 
-                  if (i != '' && this.isFolder(i) && !this.folderNames.includes(i)) this.folderNames.push(i)
-                  else if (i != '' && !this.isFolder(i) && !this.documentsNames.includes(i)) this.documentsNames.push(i);
-                }
-                resolve();
+        {
+          this.response = JSON.stringify(data, null, '\t')
+          for (let i of data.data) {
+            i = this.getName(i); 
+            if (i != '' && this.isFolder(i) && !this.folderNames.includes(i)) this.folderNames.push(i)
+            else if (i != '' && !this.isFolder(i) && !this.documentsNames.includes(i)) this.documentsNames.push(i);
+          }
+          resolve();
 
-              }, error => {
-                console.log("error");
-                console.log(error);
-                resolve();
-              }
-          )
+        }, error => {
+          console.log("error");
+          console.log(error);
+          resolve();
+        });
       });
   }
 
@@ -112,8 +113,17 @@ export class DocumentsComponent implements OnInit {
 
   }
 
-  openInfo() {
+  openInfo(name: string): void {
+    let path: string = this.currentPath + "/" + name;
+    console.log(path);
 
+    this.fileService.getDetails().subscribe((data: any) => 
+    {
+      console.log(data);
+    }, (error: any) => {
+      console.log("error");
+      console.log(error);
+    });
   }
 
   addPeople() {
