@@ -135,11 +135,15 @@ functions:
       # REST API endpoint of API Gateway
       - http:
           # Path for this endpoint
-          path: file-details
+          path: file-details/{name}
           # HTTP method for this endpoint
           method: get
           # Enable CORS. Don't forget to return the right header in your response
           cors: true
+          request:
+            parameters:
+              paths:
+                name: true
 
 # you can add CloudFormation resource templates here
 resources:

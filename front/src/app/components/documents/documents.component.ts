@@ -7,6 +7,7 @@ import { CreateFolderComponent } from '../dialogs/create-folder/create-folder.co
 import { FolderService } from 'src/app/services/folder.service';
 import { User } from 'src/app/domain';
 import { FileService } from 'src/app/services/file.service';
+import { FileDetailsComponent } from '../dialogs/file-details/file-details.component';
 
 @Component({
   selector: 'app-documents',
@@ -116,10 +117,20 @@ export class DocumentsComponent implements OnInit {
   openInfo(name: string): void {
     let path: string = this.currentPath + "/" + name;
     console.log(path);
+    let pathVariable : string = encodeURIComponent(path);
 
-    this.fileService.getDetails().subscribe((data: any) => 
+    this.fileService.getDetails(pathVariable).subscribe((data: any) => 
     {
       console.log(data);
+
+      const dialogConfig = new MatDialogConfig();
+
+      dialogConfig.disableClose = false;
+      dialogConfig.autoFocus = true;
+      dialogConfig.data = data;
+      
+      this.dialog.open(FileDetailsComponent, dialogConfig);
+
     }, (error: any) => {
       console.log("error");
       console.log(error);

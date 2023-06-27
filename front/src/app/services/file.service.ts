@@ -20,8 +20,8 @@ export class FileService {
       return this.http.post<UploadFile>(this.url, file)
   }
 
-  getDetails(): Observable<any> {
-    console.log(this.apiUrl + "/dev/file-details");
-    return this.http.get<any>(this.apiUrl + "/dev/file-details");
+  getDetails(file: string): Observable<any> {
+    console.log(this.apiUrl + "/dev/file-details/" + file);
+    return this.http.get<any>(this.apiUrl + "/dev/file-details/" + file);
   }
 }
