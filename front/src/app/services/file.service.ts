@@ -10,7 +10,7 @@ export class FileService {
 
   constructor(private http: HttpClient) { }
 
-  private apiUrl = 'https://6j7qu7il3g.execute-api.eu-central-1.amazonaws.com';
+  private apiUrl = 'https://3z9beer3v0.execute-api.eu-central-1.amazonaws.com';
   private stagePath = '/dev';
   private resourcePath = '/dogs';
 
