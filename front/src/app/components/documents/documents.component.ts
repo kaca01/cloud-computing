@@ -114,8 +114,9 @@ export class DocumentsComponent implements OnInit {
   openCreateFolderDialog() {
     const dialogConfig = new MatDialogConfig();
 
-    dialogConfig.disableClose = true;
+    dialogConfig.disableClose = false;
     dialogConfig.autoFocus = true;
+    dialogConfig.data = this.currentPath;
     
     this.dialog.open(CreateFolderComponent, dialogConfig);
   }

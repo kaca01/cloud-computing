@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Folder } from 'src/app/domain';
 import { FolderService } from 'src/app/services/folder.service';
 
@@ -9,18 +10,28 @@ import { FolderService } from 'src/app/services/folder.service';
 })
 export class CreateFolderComponent implements OnInit {
 
-  constructor(private service: FolderService) { }
+  private name: string = '';
+  private path: string = '';
+
+  constructor(private dialogRef: MatDialogRef<CreateFolderComponent>,
+              private service: FolderService,
+              @Inject(MAT_DIALOG_DATA) data: string) {
+                console.log(data);
+                this.path = data;  
+              }
 
   ngOnInit(): void {
   }
 
   create(): void {
-    let folder: Folder = {} as Folder;
-    folder.name = "bajndovanje";
+    this.name = "proba proba 123";
+    if (this.name == '') {
+      return;
+    }
     this.service.createFolder({
       "body": {
-      "folderName": folder.name,
-      "folderPath": "folderrr/folder2/neki-novi-folder"
+      "folderName": this.name,
+      "folderPath": this.path
       }
     }).subscribe((data : any) => {
       console.log("success!!!");
@@ -28,7 +39,7 @@ export class CreateFolderComponent implements OnInit {
       console.log("error happened.");
       console.log(error);
     });
-    
-    
+
+    this.dialogRef.close();
   }
 }

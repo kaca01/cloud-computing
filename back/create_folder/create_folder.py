@@ -10,7 +10,6 @@ source_bucket = os.environ['BUCKET_NAME']
 
 def create_folder(event, context):
     body = event['body']
-    print(body)
     data = json.loads(body)
 
     folder_name = data['body']['folderName']
