@@ -2,6 +2,7 @@ import boto3
 import json
 import os
 import base64
+import time
 
 from utility.utils import create_response
 
@@ -10,6 +11,7 @@ dynamodb = boto3.resource('dynamodb')
 
 bucket_name = os.environ['BUCKET_NAME']
 s3 = boto3.resource('s3')
+
 
 def lambda_handler(event, context):
     # treba dodati owner-a (da li moze da se preuzme preko tokena?)
@@ -22,14 +24,40 @@ def lambda_handler(event, context):
     table = dynamodb.Table(table_name)
     bucket = s3.Bucket(bucket_name)
 
-    # Put item into table
-    table.put_item(Item={'fileName':body["fileName"], 'fileType':body["fileType"], 'fileSize':body["fileSize"], 'fileCreated':body["fileCreated"], 'fileModified':body["fileModified"], 'description':body["description"], 'tags':body["tags"]})
-    # Upload file to s3
-    decoded_data = base64.b64decode(body["fileContent"].split(',')[1].strip())
-    bucket.put_object(Bucket=bucket_name, Key=body["fileName"], Body=decoded_data)
+    max_retries = 3
+    retries = 0
+    is_added_to_bucket = False
+    while retries < max_retries:
+        try:
+            # Put item into table
+            table.put_item(Item={'fileName': body["fileName"],
+                                 'fileType': body["fileType"],
+                                 'fileSize': body["fileSize"],
+                                 'fileCreated': body["fileCreated"],
+                                 'fileModified': body["fileModified"],
+                                 'description': body["description"],
+                                 'tags': body["tags"]})
+            # this means that
+            is_added_to_bucket = True
+            # Upload file to s3
+            decoded_data = base64.b64decode(body["fileContent"].split(',')[1].strip())
+            bucket.put_object(Bucket=bucket_name, Key=body["fileName"], Body=decoded_data)
+        except Exception as e:
+            print(f"Error adding item to DynamoDB: {e}")
+            retries += 1
+            if retries < max_retries:
+                backoff_time = 2 ** retries
+                print(f"Retrying after {backoff_time} seconds...")
+                time.sleep(backoff_time)
+            else:
+                if is_added_to_bucket:
+                    bucket.delete_objects(Delete={'Objects': [{'Key': body["fileName"]}]})
+                body = {
+                    'message': 'Error occurred during file upload'
+                }
+                return create_response(500, body)
 
-    # Create response
     body = {
-        'message': 'Successfully upload file'
+        'message': 'Successful file upload'
     }
     return create_response(200, body)

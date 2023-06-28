@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: back
+service: backkatarina4
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -64,7 +64,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket/*"
+        Resource: "arn:aws:s3:::serverlessfilebucketkatarina4/*"
       - Effect: Allow
         Action:
           - dynamodb:PutItem
@@ -89,7 +89,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket/*"
+        Resource: "arn:aws:s3:::serverlessfilebucketkatarina4/*"
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -107,11 +107,11 @@ functions:
       - Effect: Allow
         Action:
           - s3:ListBucket
-        Resource: "arn:aws:s3:::serverlessfilebucket"
+        Resource: "arn:aws:s3:::serverlessfilebucketkatarina4/*"
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: "arn:aws:s3:::serverlessfilebucket"
+        Resource: "arn:aws:s3:::serverlessfilebucketkatarina4/*"
     events:
       - http:
           path: content/{name}
@@ -128,11 +128,11 @@ resources:
     filesBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: serverlessfilebucket
+        BucketName: serverlessfilebucketkatarina4
     filesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: serverlessfiletable
+        TableName: serverlessfiletablekatarina4
         AttributeDefinitions:
           - AttributeName: fileName
             AttributeType: S
