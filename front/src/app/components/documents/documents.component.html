@@ -19,7 +19,7 @@
     <p id="line"></p>
 
     <div id="container">
-        <span class="item" (click)="openCreateFolderDialog()">
+        <span class="item" (click)="openCreateFolderDialog()" *ngIf="sharedBack == ''">
             <img class="item-image" src="../../../assets/images/plus.png"/>
             <p class="folder-name">New folder</p>
         </span>
@@ -50,7 +50,7 @@
             </div>
         </span>
     </div>
-    <p id="line"></p>
+    <p id="line" *ngIf="sharedBack == ''"></p>
 
     <div id="container">
         <span class="item" *ngFor="let i of sharedFolderNames;" (dblclick)="openSharedFolder(i)">

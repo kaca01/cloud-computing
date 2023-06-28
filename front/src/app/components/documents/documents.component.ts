@@ -8,6 +8,7 @@ import { FolderService } from 'src/app/services/folder.service';
 import { User } from 'src/app/domain';
 import { AddPermissionDialogComponent } from '../dialogs/add-permission-dialog/add-permission-dialog.component';
 import axios from 'axios';
+import { L } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-documents',
@@ -21,9 +22,11 @@ export class DocumentsComponent implements OnInit {
 
   response = 'The response will show up here';
 
-  // TODO : here should be root folder
   currentPath : string = '';
   currentFolder: string = this.currentPath;
+
+  sharedPath: string = '';
+  sharedBack: string = '';
 
   folderNames: string[] = [];
   documentsNames: string[] = [];
@@ -44,6 +47,13 @@ export class DocumentsComponent implements OnInit {
 
   updateView() {
     this.getContent();
+    this.getSharedContent();
+    this.cdr.markForCheck();
+  }
+
+  updateSharedView() {
+    this.folderNames = [];
+    this.documentsNames = [];
     this.getSharedContent();
     this.cdr.markForCheck();
   }
@@ -77,16 +87,30 @@ export class DocumentsComponent implements OnInit {
     return new Promise<void>((resolve) => {
       this.documentsNames = [];
       this.folderNames = [];
-
-      let pathVariable : string = encodeURIComponent(this.currentPath);
+      // this.sharedDocumentsNames = [];
+      // this.sharedFolderNames = [];
+      let pathVariable: string = '';
+      if (this.sharedPath == '') pathVariable = encodeURIComponent(this.currentPath);
+      else pathVariable = encodeURIComponent(this.sharedPath);
       this.currentFolder = this.getCurrentFolder();
       this.folderService.getContent(pathVariable).subscribe((data) => 
               {
                 this.response = JSON.stringify(data, null, '\t')
                 for (let i of data.data) {
+                  let path = i;
                   i = this.getName(i); 
-                  if (i != '' && this.isFolder(i) && !this.folderNames.includes(i)) this.folderNames.push(i)
-                  else if (i != '' && !this.isFolder(i) && !this.documentsNames.includes(i)) this.documentsNames.push(i);
+                  let j: string = this.getSharedDocumentName(path);
+                  console.log('-----------------');
+                  console.log(path);
+                  console.log(i);
+                  console.log(j);
+                  if (this.sharedBack == '') {
+                    if (i != '' && this.isFolder(i) && !this.folderNames.includes(i)) this.folderNames.push(i);
+                    else if (i != '' && !this.isFolder(i) && !this.documentsNames.includes(i)) this.documentsNames.push(i);
+                  } else {
+                    if (j != '' && this.isFolder(j) && !this.sharedFolderNames.includes(path)) this.sharedFolderNames.push(path); 
+                    else if (j != '' && !this.isFolder(j) && !this.sharedDocumentsNames.includes(path)) this.sharedDocumentsNames.push(path);
+                  }
                 }
                 resolve();
 
@@ -123,9 +147,33 @@ export class DocumentsComponent implements OnInit {
   }
 
   back(): void {
-    const lastIndex = this.currentPath.lastIndexOf("/");
-    this.currentPath = this.currentPath.substring(0, lastIndex);
-    this.updateView();
+    console.log('pocetak');
+    console.log(this.sharedBack);
+    console.log(this.sharedPath);
+    if (this.sharedBack.includes('/')) {
+      const lastIndex = this.sharedPath.lastIndexOf("/");
+      this.sharedPath = this.sharedPath.substring(0, lastIndex);
+      const lastIndex2 = this.sharedBack.lastIndexOf("/");
+      this.sharedBack = this.sharedPath.substring(0, lastIndex2);
+    }
+
+    if (!this.sharedBack.includes("/")) {
+      this.sharedPath = '';
+      this.sharedBack = '';
+      console.log(this.currentPath);
+      if (this.currentPath.includes("/")) {
+        const lastIndex = this.currentPath.lastIndexOf("/");
+        this.currentPath = this.currentPath.substring(0, lastIndex);
+      }
+      console.log('currrr');
+      console.log(this.currentPath);
+      console.log('kraj');
+      this.updateView();
+    } else {
+      console.log(this.sharedPath);
+      console.log(this.sharedBack);
+      this.updateSharedView();
+    }
   }
 
   createNewFolder() {
@@ -138,7 +186,12 @@ export class DocumentsComponent implements OnInit {
   }
 
   openSharedFolder(path: string) {
-    this.currentPath = path;
+    this.sharedPath = path;
+    this.sharedBack += '/' + this.getSharedDocumentName(this.sharedPath);
+    console.log("----------------");
+    console.log(this.sharedPath);
+    console.log(this.sharedBack);
+    this.getContent();
     this.updateView();
   }
 
@@ -213,16 +266,50 @@ export class DocumentsComponent implements OnInit {
       let pathElements = this.currentPath.split('/');
       let result = pathElements[pathElements.length - 1];
       return result;
-    } 
+    } else if (this.sharedPath != '') {
+      if (this.sharedBack.includes('/')) {
+        let pathElements = this.sharedBack.split('/');
+        let result = pathElements[pathElements.length - 1];
+        return result;
+      }
+      else return this.sharedBack;
+    
+    }
     return "Your documents";
   }
 
   getSharedDocumentName(path: string): string {
-    if (path.includes('/')){
-      const lastSlashIndex = path.lastIndexOf('/');
-      const substringAfterLastSlash = path.substring(lastSlashIndex + 1);
-      return substringAfterLastSlash;
+    console.log('shareddddddddddddddd');
+    console.log(this.sharedBack);
+    console.log(path);
+    path = path.trim();
+    // if (path.endsWith('/')) return '';
+    if (this.sharedBack == '')
+    {
+      if (path.includes('/')){
+        const lastSlashIndex = path.lastIndexOf('/');
+        const substringAfterLastSlash = path.substring(lastSlashIndex + 1);
+        // console.log(substringAfterLastSlash);
+        return substringAfterLastSlash;
+      }
+      return path;
     }
-    return path;
+    else {
+      if (path.includes('/')){
+        console.log('sssss');
+        if (path.endsWith('/')) {
+          console.log(true);
+          path = path.slice(0, -1);
+          console.log(path)
+        }
+        console.log("ppp  " + path);
+        if (path.endsWith(this.sharedBack) || path.endsWith(this.sharedBack + "/")) return '';
+        const lastSlashIndex = path.lastIndexOf('/');
+        const substringAfterLastSlash = path.substring(lastSlashIndex + 1);
+        console.log(substringAfterLastSlash);
+        return substringAfterLastSlash;
+      }
+      return path;
+    }
   }
 }
