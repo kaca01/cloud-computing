@@ -140,6 +140,41 @@ functions:
           method: put
           # Enable CORS. Don't forget to return the right header in your response
           cors: true
+  seePermission:
+    handler: seePermission/see_permission.lambda_handler
+    package:
+      include: 'seePermission/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content
+    events:
+      - http:
+          # Path for this endpoint
+          path: seePermission
+          # HTTP method for this endpoint
+          method: get
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  getSharedContent:
+    handler: getSharedContent/get_shared_content.lambda_handler
+    package:
+      include: 'getSharedContent/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:Scan
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content
+    events:
+      - http:
+          # Path for this endpoint
+          path: getSharedContent
+          # HTTP method for this endpoint
+          method: get
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
 
 # you can add CloudFormation resource templates here
 resources:

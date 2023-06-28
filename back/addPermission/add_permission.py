@@ -14,7 +14,6 @@ def lambda_handler(event, context):
     body = json.loads(event['body'])
     table = dynamodb.Table(table_name)
     #todo check if all users exist
-    #todo check if user already has permission for this document (not to add him twice)
     # Put item into table
     table.put_item(Item={'documentName':body["document_path"], 'grantedUsers':body["granted_users"]})
     body = {
