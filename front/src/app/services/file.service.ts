@@ -21,6 +21,6 @@ export class FileService {
   }
 
   addPeople(body: any): Observable<any> {
-    return this.http.put<any>(this.url, body)
+    return this.http.put<any>("https://3z9beer3v0.execute-api.eu-central-1.amazonaws.com/dev/addPermission", body)
   }
 }

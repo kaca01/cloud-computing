@@ -117,11 +117,12 @@ export class DocumentsComponent implements OnInit {
 
   }
 
-  addPeople() {
+  addPeople(i : string) {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
+    dialogConfig.data = this.currentPath+"/"+i;
     
     this.dialog.open(AddPermissionDialogComponent, dialogConfig);
   }

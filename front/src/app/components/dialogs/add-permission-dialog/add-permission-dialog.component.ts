@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { FileService } from 'src/app/services/file.service';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER, T } from '@angular/cdk/keycodes';
+import { DocumentsComponent } from '../../documents/documents.component';
 
 export interface Email {
   email: string;
@@ -15,6 +16,7 @@ export interface Email {
   styleUrls: ['./add-permission-dialog.component.css']
 })
 export class AddPermissionDialogComponent implements OnInit {
+  private document : string = {} as string;
 
   addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
@@ -22,7 +24,10 @@ export class AddPermissionDialogComponent implements OnInit {
 
   constructor(private dialogRef: MatDialogRef<AddPermissionDialogComponent>,
     private fileService: FileService,
-    private snackBar: MatSnackBar,) { }
+    private snackBar: MatSnackBar,
+    @Inject(MAT_DIALOG_DATA) data: string) { 
+      this.document = data;
+    }
 
   ngOnInit(): void {
     //todo prikazi one sa kojima se vec dijeli (kod remove)
@@ -53,11 +58,11 @@ export class AddPermissionDialogComponent implements OnInit {
 
 
   addPeople() {
-    //todo change null with the file that has been clicked
     this.fileService.addPeople({     
       "granted_users": this.emails,
-      "document_path": null,
+      "document_path": this.document,
     }).subscribe((data : any) => {
+      console.log(data['message']);
       this.openSnackBar(data['message'], 'Close');
     })
     this.close();

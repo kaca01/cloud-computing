@@ -41,6 +41,8 @@ provider:
       Ref: filesTable
     BUCKET_NAME:
       Ref: filesBucket
+    SHARED_TABLE_NAME:
+      Ref: sharedContentTable
 
 # you can add packaging information here
 package:
@@ -128,12 +130,8 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action:
-          - dynamodb:GetItem
           - dynamodb:PutItem
-          - dynamodb:UpdateItem
-          - dynamodb:DeleteItem
-        Resource:
-          - "Fn::GetAtt": [filesTable, Arn]
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content
     events:
       - http:
           # Path for this endpoint
@@ -159,6 +157,19 @@ resources:
             AttributeType: S
         KeySchema:
           - AttributeName: fileName
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    sharedContentTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: shared_content
+        AttributeDefinitions:
+          - AttributeName: documentName
+            AttributeType: S
+        KeySchema:
+          - AttributeName: documentName
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
