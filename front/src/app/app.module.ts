@@ -15,6 +15,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { UploadFileDialogComponent } from './components/dialogs/upload-file-dialog/upload-file-dialog.component';
 import { CreateFolderComponent } from './components/dialogs/create-folder/create-folder.component';
 import { InviteMemberDialogComponent } from './components/dialogs/invite-member-dialog/invite-member-dialog.component';
+import { FamilyRegistrationComponent } from './components/family-registration/family-registration.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { InviteMemberDialogComponent } from './components/dialogs/invite-member-
     UploadFileDialogComponent,
     CreateFolderComponent,
     InviteMemberDialogComponent,
+    FamilyRegistrationComponent,
   ],
   imports: [
     BrowserModule,

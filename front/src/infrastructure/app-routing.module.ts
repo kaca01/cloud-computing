@@ -6,6 +6,7 @@ import { LoginComponent } from 'src/app/components/login/login.component';
 import { WelcomePageComponent } from 'src/app/components/welcome-page/welcome-page.component';
 import { FoldersComponent } from 'src/app/components/folders/folders.component';
 import { DocumentsComponent } from 'src/app/components/documents/documents.component';
+import { FamilyRegistrationComponent } from 'src/app/components/family-registration/family-registration.component';
 
 const routes: Routes = [
   { path: 'welcome-page', component: WelcomePageComponent},
@@ -13,6 +14,7 @@ const routes: Routes = [
   { path: 'registration', component: RegistrationPageComponent},
   { path: 'folders', component: FoldersComponent},
   { path: 'documents', component: DocumentsComponent},
+  { path: 'family-registration', component: FamilyRegistrationComponent},
   { path: '**', component: WelcomePageComponent },
   { path: '', redirectTo: '/welcome-page', pathMatch: 'full' },
 ];
