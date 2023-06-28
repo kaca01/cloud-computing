@@ -3,6 +3,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { FileService } from 'src/app/services/file.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
+import { CognitoService } from 'src/app/services/cognito.service';
 
 @Component({
   selector: 'app-upload-file-dialog',
@@ -19,10 +20,19 @@ export class UploadFileDialogComponent implements OnInit {
   fileContent: string = '';
   file: any;
 
+  user: any;
   constructor(private dialogRef: MatDialogRef<UploadFileDialogComponent>,
               private fileService: FileService,
               private snackBar: MatSnackBar,
-              private datePipe: DatePipe) { }
+              private datePipe: DatePipe,
+              private cognitoService: CognitoService) {
+                this.cognitoService.getUser()
+                  .then((user: any) => {
+                    if (user){
+                      // loged in
+                      this.user = user
+                    }})
+              }
 
   ngOnInit(): void { }
 
@@ -43,6 +53,8 @@ export class UploadFileDialogComponent implements OnInit {
   }
 
   uploadFile() {
+    console.log(this.user)
+    console.log(this.user['attributes']['email'])
     if(this.file == undefined) {
       this.openSnackBar('Choose file', 'Close');
     }
@@ -55,7 +67,8 @@ export class UploadFileDialogComponent implements OnInit {
         "fileCreated": this.datePipe.transform(Date(), 'dd.MM.yy hh:mm:ss')!,
         "fileModified": this.datePipe.transform(this.file['lastModifiedDate'], 'dd.MM.yy hh:mm:ss')!,
         "description": this.description,
-        "tags": this.exportTags()
+        "tags": this.exportTags(),
+        "user": this.user['attributes']['email']
       }).subscribe((data : any) => {
         this.openSnackBar(data['message'], 'Close');
       })

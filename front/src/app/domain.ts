@@ -16,5 +16,6 @@ export interface UploadFile {
     fileCreated: string,
     fileModified: string,
     description:  string,
-    tags: Array<any>
+    tags: Array<any>,
+    user: string
 }

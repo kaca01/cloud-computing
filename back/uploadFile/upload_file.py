@@ -48,9 +48,9 @@ def storage_file(event, context):
             TopicArn=topic,
             Message=json.dumps(
                 {
-                    "subject": "Upload file",
+                    "subject": 'Upload file',
                     "content": f"File '{ body['fileName'] }' uploaded successfully.",
-                    "recipient": "anastasijas557@gmail.com",
+                    "recipient": body['user'],
                 }
             ),
         )
