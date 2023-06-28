@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: back123
+service: back555
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -66,7 +66,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucketradi/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket456/*"
       - Effect: Allow
         Action:
           - sqs:SendMessage
@@ -160,7 +160,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket123/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket456/*"
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -178,11 +178,11 @@ functions:
       - Effect: Allow
         Action:
           - s3:ListBucket
-        Resource: "arn:aws:s3:::serverlessfilebucket123"
+        Resource: "arn:aws:s3:::serverlessfilebucket456"
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: "arn:aws:s3:::serverlessfilebucket123"
+        Resource: "arn:aws:s3:::serverlessfilebucket456"
     events:
       - http:
           path: content/{name}
@@ -200,7 +200,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: "arn:aws:s3:::serverlessfilebucket123/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket456/*"
     events:
       - http:
           path: download
@@ -241,8 +241,8 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
-          - "arn:aws:s3:::serverlessfilebucket123/*"
-          - "arn:aws:s3:::serverlessfilebucket123"
+          - "arn:aws:s3:::serverlessfilebucket456/*"
+          - "arn:aws:s3:::serverlessfilebucket456"
 
       - Effect: Allow
         Action:
@@ -273,8 +273,8 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
-          - "arn:aws:s3:::serverlessfilebucket123/*"
-          - "arn:aws:s3:::serverlessfilebucket123"
+          - "arn:aws:s3:::serverlessfilebucket456/*"
+          - "arn:aws:s3:::serverlessfilebucket456"
 
       - Effect: Allow
         Action:
@@ -301,11 +301,11 @@ resources:
     filesBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: serverlessfilebucket123
+        BucketName: serverlessfilebucket456
     filesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: serverlessfiletable123
+        TableName: serverlessfiletable456
         AttributeDefinitions:
           - AttributeName: fileName
             AttributeType: S
@@ -318,19 +318,19 @@ resources:
     filesSQSQueue:
       Type: "AWS::SQS::Queue"
       Properties:
-        QueueName: queueradi
+        QueueName: queue456
 
     UploadFileTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: upload-file
+        TopicName: upload-file1
 
     EditFileTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: edit-file
+        TopicName: edit-file1
 
     DeleteFileTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: delete-file
+        TopicName: delete-file1
