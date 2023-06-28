@@ -2,6 +2,7 @@ import boto3
 import json
 import os
 import base64
+from botocore.exceptions import ClientError
 
 from utility.utils import create_response
 
@@ -17,7 +18,14 @@ def lambda_handler(event, context):
     # get item from table
     response = table.get_item(Key={'documentName':document_path})
 
-    body = {
-        'data': response['Item']
-    }
-    return create_response(200, body)
+    if 'Item' in response:
+        # Item found
+        body = {
+            'data': response['Item']
+        }
+        return create_response(200, body)
+    else:
+        body = {
+            'data': []
+        }
+        return create_response(200, body)
