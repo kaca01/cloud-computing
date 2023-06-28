@@ -11,6 +11,11 @@ dynamodb = boto3.resource('dynamodb')
 bucket_name = os.environ['BUCKET_NAME']
 s3 = boto3.client('s3')
 
+topic = os.environ.get('EDIT_TOPIC')
+sns = boto3.client('sns')
+
+ses = boto3.client("ses")
+
 def lambda_handler(event, contex):
     body = json.loads(event['body']) 
     file_name = body['fileName']
@@ -35,17 +40,35 @@ def lambda_handler(event, contex):
 
     # Update content
     if file_content != '':
-        base64.b64encode(
-            s3.get_object(
-                Bucket=bucket_name,
-                Key=file_name,).get("Body")
-                            .read()).decode("utf-8")
+        base64.b64encode(s3.get_object(Bucket=bucket_name, Key=file_name,).get("Body").read()).decode("utf-8")
 
         decoded_data = base64.b64decode(file_content.split(',')[1].strip())
         s3.put_object(Bucket=bucket_name, Key=file_name, Body=decoded_data)
 
-    # Create response
-    body = {
-        'message': 'Successfully edited file'
-    }
-    return create_response(200, body)
+    # Check verification email
+    try:
+        verification_attributes = ses.get_identity_verification_attributes(Identities=[body['user']])['VerificationAttributes']
+        is_verified = verification_attributes[body['user']]['VerificationStatus'] == 'Success'
+
+        if is_verified:
+            sns.publish(
+                    TopicArn=topic,
+                    Message=json.dumps(
+                        {
+                            "subject": 'Upload file',
+                            "content": f"File '{ body['fileName'] }' uploaded successfully.",
+                            "recipient": body['user'],
+                        }
+                    ),
+                )
+            # Create response
+            body = {
+                'message': 'Successfully edited file. \nCheck email'
+            }
+            return create_response(200, body)
+    except:
+        # Create response
+        body = {
+            'message': 'Successfully edited file but you have not verified email'
+        }
+        return create_response(200, body)
