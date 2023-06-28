@@ -217,7 +217,7 @@ functions:
         Action:
           - s3:GetObject
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket123/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket456/*"
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
@@ -253,9 +253,7 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
-          - "arn:aws:s3:::serverlessfilebucket456/*"
           - "arn:aws:s3:::serverlessfilebucket456"
-
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
@@ -286,7 +284,6 @@ functions:
           - s3:ListBucketVersions
         Resource: 
           - "arn:aws:s3:::serverlessfilebucket456/*"
-          - "arn:aws:s3:::serverlessfilebucket456"
 
       - Effect: Allow
         Action:
@@ -302,6 +299,30 @@ functions:
           method: delete
           # Enable CORS. Don't forget to return the right header in your response
           cors: true
+
+  fileDetails:
+    runtime: python3.8
+    handler: fileDetails/file_details.lambda_handler
+    package:
+      include: 'fileDetails/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable456
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: file-details/{name}
+          # HTTP method for this endpoint
+          method: get
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+          request:
+            parameters:
+              paths:
+                name: true
 # you can add CloudFormation resource templates here
 resources:
   Parameters:
