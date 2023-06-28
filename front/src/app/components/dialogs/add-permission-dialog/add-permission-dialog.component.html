@@ -1,0 +1,29 @@
+<img src="../../assets/images/close.png" id="close-dialog" class="close" (click)="close()"/>
+<p id="title">Share with others!</p>
+
+<div class="form">
+  <form>
+    <mat-form-field class="example-chip-list" appearance="fill">
+        <mat-label>Granted users</mat-label>
+        <mat-chip-list #chipGrid aria-label="Enter emails">
+          <mat-chip *ngFor="let email of emails"
+                        (removed)="remove(email)">
+            {{email}}
+            <a matChipRemove [attr.aria-label]="'remove ' + email">
+              <mat-icon>cancel</mat-icon>
+            </a>
+          </mat-chip>
+          <input placeholder="Add user by email..."
+                  [matChipInputFor]="chipGrid"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  [matChipInputAddOnBlur]="addOnBlur"
+                  (matChipInputTokenEnd)="add($event)"
+                  formControlName="email"/>
+      </mat-chip-list>
+    </mat-form-field>
+  </form>
+</div>
+
+<span id="btn-container">
+    <button mat-raised-button color="brown" id="save" (click)="addPeople()">SAVE</button>
+</span>  
