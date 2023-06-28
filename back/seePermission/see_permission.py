@@ -15,8 +15,8 @@ def lambda_handler(event, context):
     table = dynamodb.Table(table_name)
 
     # get item from table
-    response = table.get_item(Item={'documentName':document_path})
-    
+    response = table.get_item(Key={'documentName':document_path})
+
     body = {
         'data': response['Item']
     }

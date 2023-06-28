@@ -34,7 +34,8 @@ export class AddPermissionDialogComponent implements OnInit {
     axios
     .get(this.fileService.permissionUrl + "/seePermission", { params: { "document_path": this.document } })
     .then((response) => {
-      console.log("success");
+      console.log(response);
+      this.emails = response.data.data.grantedUsers;
     })
     .catch((error) => {
       this.openSnackBar('Get granted users error', 'Close');
