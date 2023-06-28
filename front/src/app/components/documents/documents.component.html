@@ -50,4 +50,27 @@
             </div>
         </span>
     </div>
+    <p id="line"></p>
+
+    <div id="container">
+        <span class="item" *ngFor="let i of sharedFolderNames;" (dblclick)="openFolder(i)">
+            <img class="item-image" src="../../../assets/images/folder.png"/>
+
+            <div class="tooltip">
+                <p class="folder-name">{{ i }}</p>
+                <p class="tooltiptext">{{ i }}</p>
+            </div>
+        </span>
+        <span class="item" *ngFor="let i of sharedDocumentsNames;" (dblclick)="openFile(i)">
+            <img class="item-image" [src]="choosePicture(i)"/>
+            <div class="hover-element">
+                <span><img class="option" src="../../../assets/images/information.png" (click)="openInfo()"/></span>
+                <span><img class="option" src="../../../assets/images/download.png" (click)="download()"/></span>
+            </div>
+            <div class="tooltip">
+                <p class="folder-name">{{ getSharedDocumentName(i) }}</p>
+                <p class="tooltiptext">{{ getSharedDocumentName(i) }}</p>
+            </div>
+        </span>
+    </div>
 </div>

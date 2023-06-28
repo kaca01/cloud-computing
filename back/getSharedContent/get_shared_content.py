@@ -9,6 +9,7 @@ from utility.utils import create_response
 dynamodb = boto3.resource('dynamodb')
 table_name = os.environ['SHARED_TABLE_NAME']
 
+
 def lambda_handler(event, context):
 
     # Extract the file/folder path from the event

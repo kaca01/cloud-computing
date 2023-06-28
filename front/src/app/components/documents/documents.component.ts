@@ -203,4 +203,13 @@ export class DocumentsComponent implements OnInit {
     } 
     return "Your documents";
   }
+
+  getSharedDocumentName(path: string): string {
+    if (path.includes('/')){
+      const lastSlashIndex = path.lastIndexOf('/');
+      const substringAfterLastSlash = path.substring(lastSlashIndex + 1);
+      return substringAfterLastSlash;
+    }
+    return path;
+  }
 }
