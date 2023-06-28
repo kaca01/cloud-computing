@@ -113,7 +113,7 @@ export class RegistrationPageComponent implements OnInit {
   
   private openSnackBar(snackMsg : string) : void {
     this._snackBar.open(snackMsg, "Dismiss", {
-      duration: 2000
+      duration: 3000
     });
   }      
 

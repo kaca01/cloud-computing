@@ -13,6 +13,6 @@ def lambda_handler(event, context):
     )
 
     body = {
-        'message': 'Sent verification email for notification'
+        'message': 'Successfuly registered! To receive notifications, check your email'
     }
     return create_response(200, body)
