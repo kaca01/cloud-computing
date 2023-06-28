@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { CognitoService } from 'src/app/services/cognito.service';
+import { InviteMemberDialogComponent } from '../dialogs/invite-member-dialog/invite-member-dialog.component';
 
 @Component({
   selector: 'app-navigation',
@@ -9,13 +11,18 @@ import { CognitoService } from 'src/app/services/cognito.service';
 })
 export class NavigationComponent implements OnInit {
 
-  constructor(private router: Router, private cognitoService: CognitoService) { }
+  constructor(private router: Router, private cognitoService: CognitoService, private dialog: MatDialog, ) { }
 
   ngOnInit(): void {
   }
 
   inviteMember(){
+    const dialogConfig = new MatDialogConfig();
 
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    
+    this.dialog.open(InviteMemberDialogComponent, dialogConfig);
   }
 
   controlAccess(){
