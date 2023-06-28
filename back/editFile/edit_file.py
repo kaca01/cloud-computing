@@ -45,30 +45,8 @@ def lambda_handler(event, contex):
         decoded_data = base64.b64decode(file_content.split(',')[1].strip())
         s3.put_object(Bucket=bucket_name, Key=file_name, Body=decoded_data)
 
-    # Check verification email
-    try:
-        verification_attributes = ses.get_identity_verification_attributes(Identities=[body['user']])['VerificationAttributes']
-        is_verified = verification_attributes[body['user']]['VerificationStatus'] == 'Success'
-
-        if is_verified:
-            sns.publish(
-                    TopicArn=topic,
-                    Message=json.dumps(
-                        {
-                            "subject": 'Upload file',
-                            "content": f"File '{ body['fileName'] }' uploaded successfully.",
-                            "recipient": body['user'],
-                        }
-                    ),
-                )
-            # Create response
-            body = {
-                'message': 'Successfully edited file. \nCheck email'
-            }
-            return create_response(200, body)
-    except:
-        # Create response
-        body = {
-            'message': 'Successfully edited file but you have not verified email'
-        }
-        return create_response(200, body)
+    # Create response
+    body = {
+        'message': 'Successfully edited file'
+    }
+    return create_response(200, body)

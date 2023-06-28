@@ -253,6 +253,7 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
+          - "arn:aws:s3:::serverlessfilebucket456/*"
           - "arn:aws:s3:::serverlessfilebucket456"
       - Effect: Allow
         Action:

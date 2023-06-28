@@ -44,6 +44,7 @@ def storage_file(event, context):
 
     # Check verification email
     try:
+        print(ses.get_identity_verification_attributes(Identities=[body['user']]))
         verification_attributes = ses.get_identity_verification_attributes(Identities=[body['user']])['VerificationAttributes']
         is_verified = verification_attributes[body['user']]['VerificationStatus'] == 'Success'
 
