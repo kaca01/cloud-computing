@@ -36,10 +36,21 @@ export class UploadFileDialogComponent implements OnInit {
               private datePipe: DatePipe,
               private cognitoService: CognitoService,
               @Inject(MAT_DIALOG_DATA) public data: any) {
+                console.log(data);
                 this.type = data.type;
                 this.documentComponent = data.component;
                 this.currentPath = this.documentComponent.currentPath;
                 this.selectedFile = this.documentComponent.selectedFile;
+                if (this.type == 'edit') {
+                  this.description = this.selectedFile.description;
+                  for (let i of this.selectedFile.tags) {
+                    this.tagsFromForm += i + ",";
+                  }
+                } else {
+                  this.description = '';
+                  this.tagsFromForm = '';
+                }
+                console.log(this.selectedFile);
                 this.currentFile = this.data.file;
                 this.cognitoService.getUser()
                   .then((user: any) => {

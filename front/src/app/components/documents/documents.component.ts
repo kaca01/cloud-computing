@@ -182,10 +182,13 @@ export class DocumentsComponent implements OnInit {
   }
 
   edit(fileName: string) {
-    // console.log(this.currentPath+"/"+fileName)
-    // this.fileService.getDetails(this.currentPath+"/"+fileName).subscribe((data: any) => 
-    // {
-      // this.selectedFile = data
+    let path: string = this.currentPath+"/"+fileName;
+    console.log(path);
+    let pathVariable : string = encodeURIComponent(path);
+    this.fileService.getDetails(pathVariable).subscribe((data: any) => 
+    {
+      console.log("success!!!");
+      this.selectedFile = data
       console.log(this.selectedFile)
       console.log(fileName)
       const dialogConfig = new MatDialogConfig();
@@ -196,10 +199,10 @@ export class DocumentsComponent implements OnInit {
       
       this.dialog.open(UploadFileDialogComponent, dialogConfig);
 
-    // }, (error: any) => {
-    //   console.log("error");
-    //   console.log(error);
-    // });
+    }, (error: any) => {
+      console.log("error");
+      console.log(error);
+    });
   }
 
   openInfo(name: string): void {
