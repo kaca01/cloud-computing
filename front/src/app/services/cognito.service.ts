@@ -36,6 +36,20 @@ export class CognitoService {
     return Auth.currentUserInfo();
   }
 
+  public getToken(): any{ 
+    Auth.currentSession()
+    .then((session) => {
+      // Access the user token
+      const idToken = session.getIdToken().getJwtToken();
+      console.log('User token:', idToken);
+      return idToken;
+    })
+    .catch((error) => {
+      console.log('Error:', error);
+      return null;
+    });
+  }
+
   public signIn(user:User): Promise<any>{
     return Auth.signIn(user.email, user.password);
   }

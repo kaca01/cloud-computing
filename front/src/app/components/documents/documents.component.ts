@@ -6,6 +6,10 @@ import { UploadFileDialogComponent } from '../dialogs/upload-file-dialog/upload-
 import { CreateFolderComponent } from '../dialogs/create-folder/create-folder.component';
 import { FolderService } from 'src/app/services/folder.service';
 import { User } from 'src/app/domain';
+import { FileService } from 'src/app/services/file.service';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import axios from 'axios';
+import { HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-documents',
@@ -29,7 +33,9 @@ export class DocumentsComponent implements OnInit {
               private cognitoService: CognitoService, 
               private dialog: MatDialog, 
               private folderService: FolderService,
-              private cdr: ChangeDetectorRef) { }
+              private fileService: FileService,
+              private cdr: ChangeDetectorRef,
+              private snackBar: MatSnackBar) { }
 
   async ngOnInit() {
     await this.getUserDetails();
@@ -109,7 +115,13 @@ export class DocumentsComponent implements OnInit {
   }
 
   edit() {
+    const dialogConfig = new MatDialogConfig();
 
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = { type: "edit" } 
+    
+    this.dialog.open(UploadFileDialogComponent, dialogConfig);
   }
 
   openInfo() {
@@ -121,7 +133,45 @@ export class DocumentsComponent implements OnInit {
   }
 
   download() {
-    
+    axios
+    .get(this.fileService.apiUrl + "/download", { params: { "path": "stat_usmeni_okt1_2020.pdf" } }) // TODO izmeni ovo kasnije
+    .then((response) => {
+      const base64Data: string = response.data.body;
+      const byteCharacters: string = atob(base64Data);
+      const byteNumbers: number[] = Array.from(byteCharacters).map((char) => char.charCodeAt(0));
+      const byteArray: Uint8Array = new Uint8Array(byteNumbers);
+      const blob: Blob = new Blob([byteArray], { type: "pdf" });
+
+      // Create URL object for blob
+      const downloadUrl = window.URL.createObjectURL(blob);
+
+      // Create link element
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = "stat_usmeni_okt1_2020.pdf"; // TODO izmeni ovo kasnije
+
+      // Simulation of clicking on the link element to download the file
+      link.click();
+
+      // Releasing URL object resources
+      window.URL.revokeObjectURL(downloadUrl);
+
+      this.openSnackBar('Successfully download file', 'Close');
+    })
+    .catch((error) => {
+      this.openSnackBar('Download error', 'Close');
+    });
+  }
+
+  deleteFolder(){
+    axios
+    .delete(this.fileService.apiUrl + "/deleteFolder", { params: { "folder_path": "test_folder" } }) // TODO izmeni ovo kasnije
+    .then((response) => {
+      this.openSnackBar('Successfully deleted folder', 'Close');
+    })
+    .catch((error) => {
+      this.openSnackBar('Delete error', 'Close');
+    });
   }
 
   openDialog() {
@@ -129,6 +179,7 @@ export class DocumentsComponent implements OnInit {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
+    dialogConfig.data = { type: "upload" } 
     
     this.dialog.open(UploadFileDialogComponent, dialogConfig);
   }
@@ -172,5 +223,15 @@ export class DocumentsComponent implements OnInit {
       return result;
     } 
     return "Your documents";
+  }
+
+  openSnackBar(message: string, action: string) {
+    const config: MatSnackBarConfig = {
+      duration: 2000, 
+      panelClass: ['custom-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom'
+    };
+    this.snackBar.open(message, action, config);
   }
 }
