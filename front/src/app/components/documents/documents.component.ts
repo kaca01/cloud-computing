@@ -52,7 +52,6 @@ export class DocumentsComponent implements OnInit {
   }
 
   updateView() {
-    console.log('uslooo')
     this.getContent();
     this.getSharedContent();
     this.cdr.markForCheck();
@@ -182,12 +181,11 @@ export class DocumentsComponent implements OnInit {
   }
 
   edit(fileName: string) {
-    // console.log(this.currentPath+"/"+fileName)
-    // this.fileService.getDetails(this.currentPath+"/"+fileName).subscribe((data: any) => 
-    // {
-      // this.selectedFile = data
-      console.log(this.selectedFile)
-      console.log(fileName)
+    let path: string = this.currentPath+"/"+fileName;
+    let pathVariable : string = encodeURIComponent(path);
+    this.fileService.getDetails(pathVariable).subscribe((data: any) => 
+    {
+      this.selectedFile = data
       const dialogConfig = new MatDialogConfig();
 
       dialogConfig.disableClose = true;
@@ -196,20 +194,18 @@ export class DocumentsComponent implements OnInit {
       
       this.dialog.open(UploadFileDialogComponent, dialogConfig);
 
-    // }, (error: any) => {
-    //   console.log("error");
-    //   console.log(error);
-    // });
+    }, (error: any) => {
+      console.log("error");
+      console.log(error);
+    });
   }
 
   openInfo(name: string): void {
     let path: string = this.currentPath + "/" + name;
-    console.log(path);
     let pathVariable : string = encodeURIComponent(path);
 
     this.fileService.getDetails(pathVariable).subscribe((data: any) => 
     {
-      console.log(data);
 
       const dialogConfig = new MatDialogConfig();
 
