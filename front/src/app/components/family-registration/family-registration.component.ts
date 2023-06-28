@@ -51,7 +51,15 @@ export class FamilyRegistrationComponent implements OnInit {
     console.log(this.user);
 
     if (this.user && this.user.email && this.user.password){
-      //todo write code
+      this.folderService.familyMemberSignup({
+        "body": this.user
+      }).subscribe((data : any) => {
+        console.log(data);
+        this.openSnackBar("Verification email successfully sent to your family member!");
+      }, error => {
+        console.log("error happened.");
+        console.log(error);
+      });
     }
     else{
       this.openSnackBar("Missing data!");
