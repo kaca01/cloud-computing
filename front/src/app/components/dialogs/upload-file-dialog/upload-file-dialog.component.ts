@@ -56,9 +56,9 @@ export class UploadFileDialogComponent implements OnInit {
 
   deleteFile(){
     axios
-    .delete(this.fileService.apiUrl + "/deleteFile", { params: { "file_path": this.currentPath+"/"+this.currentFile } })
+    .delete(this.fileService.apiUrl + "/deleteFile", { params: { "file_path": this.currentPath+"/"+this.currentFile, "user": this.user['attributes']['email'] } })
     .then((response) => {
-      this.openSnackBar('Successfully deleted file', 'Close');
+      this.openSnackBar(response.data.message, 'Close');
       this.documentComponent.updateView();
     })
     .catch((error) => {
@@ -139,7 +139,8 @@ export class UploadFileDialogComponent implements OnInit {
       "fileContent": this.fileContent,
       "fileName": this.currentPath+"/"+this.currentFile, 
       "description": this.description,
-      "tags": this.exportTags()
+      "tags": this.exportTags(),
+      "user": this.user['attributes']['email']
     }).subscribe((data : any) => {
       console.log(data)
       this.openSnackBar(data['message'], 'Close');
