@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: back
+service: back123
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -63,7 +63,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket123/*"
       - Effect: Allow
         Action:
           - dynamodb:PutItem
@@ -88,7 +88,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket123/*"
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -106,11 +106,11 @@ functions:
       - Effect: Allow
         Action:
           - s3:ListBucket
-        Resource: "arn:aws:s3:::serverlessfilebucket"
+        Resource: "arn:aws:s3:::serverlessfilebucket123"
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: "arn:aws:s3:::serverlessfilebucket"
+        Resource: "arn:aws:s3:::serverlessfilebucket123"
     events:
       - http:
           path: content/{name}
@@ -128,7 +128,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: "arn:aws:s3:::serverlessfilebucket/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket123/*"
     events:
       - http:
           path: download
@@ -143,7 +143,7 @@ functions:
         Action:
           - s3:GetObject
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket123/*"
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
@@ -169,8 +169,8 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
-          - "arn:aws:s3:::serverlessfilebucket/*"
-          - "arn:aws:s3:::serverlessfilebucket"
+          - "arn:aws:s3:::serverlessfilebucket123/*"
+          - "arn:aws:s3:::serverlessfilebucket123"
 
       - Effect: Allow
         Action:
@@ -201,8 +201,8 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
-          - "arn:aws:s3:::serverlessfilebucket/*"
-          - "arn:aws:s3:::serverlessfilebucket"
+          - "arn:aws:s3:::serverlessfilebucket123/*"
+          - "arn:aws:s3:::serverlessfilebucket123"
 
       - Effect: Allow
         Action:
@@ -224,11 +224,11 @@ resources:
     filesBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: serverlessfilebucket
+        BucketName: serverlessfilebucket123
     filesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: serverlessfiletable
+        TableName: serverlessfiletable123
         AttributeDefinitions:
           - AttributeName: fileName
             AttributeType: S
