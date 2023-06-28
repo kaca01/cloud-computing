@@ -39,19 +39,30 @@ export class DocumentsComponent implements OnInit {
   async ngOnInit() {
     await this.getUserDetails();
     await this.getContent();
-    axios
-    .get(this.folderService.url + "getSharedContent", { params: { "email": this.email } })
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+    this.getSharedContent();
   }
 
   updateView() {
     this.getContent();
     this.cdr.markForCheck();
+  }
+
+  private getSharedContent(){
+    this.sharedDocumentsNames = [];
+    this.sharedFolderNames = [];
+    axios
+    .get(this.folderService.url + "getSharedContent", { params: { "email": this.email } })
+    .then((response) => {
+      console.log(response.data.data);
+      for (let i of response.data.data) {
+        i = i.documentName; 
+        if (i != '' && this.isFolder(i.substring(i.indexOf("/") + 1)) && !this.sharedFolderNames.includes(i)) this.sharedFolderNames.push(i)
+        else if (i != '' && !this.isFolder(i) && !this.sharedDocumentsNames.includes(i)) this.sharedDocumentsNames.push(i);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }
 
   private getContent() : Promise<void> {
@@ -132,9 +143,6 @@ export class DocumentsComponent implements OnInit {
 
   addPeople(i : string) {
     const dialogConfig = new MatDialogConfig();
-    console.log(this.sharedDocumentsNames);
-    console.log(this.sharedFolderNames);
-
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = this.currentPath+"/"+i;
