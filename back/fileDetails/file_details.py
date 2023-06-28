@@ -5,12 +5,14 @@ from urllib.parse import unquote
 
 dynamodb = boto3.resource('dynamodb', region_name='eu-central-1')
 # TODO : change this before merge
-table = dynamodb.Table('serverlessfiletablekatarina3')
+table = dynamodb.Table('serverlessfiletable')
 
 
 def lambda_handler(event, context):
     path = event['pathParameters']['name']
+    print(path)
     file_name = unquote(path)
+    print(file_name)
     response = table.get_item(
         Key={
             'fileName': file_name
