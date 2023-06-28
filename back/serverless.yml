@@ -121,6 +121,13 @@ functions:
             parameters:
               paths:
                 name: true
+  reconciliationFunction:
+    handler: reconciliation.reconciliation.reconcile_s3_dynamodb
+    events:
+        - schedule: cron(00 3 * * ? *)
+          input:
+            time: 03:00
+            timezone: "Europe/Madrid"
 
 # you can add CloudFormation resource templates here
 resources:
