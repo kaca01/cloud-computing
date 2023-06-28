@@ -17,6 +17,8 @@ sqs = boto3.client('sqs')
 topic = os.environ.get('UPLOAD_TOPIC')
 sns = boto3.client('sns')
 
+ses = boto3.client("ses")
+
 def storage_file(event, context):
     # treba dodati owner-a (da li moze da se preuzme preko tokena?)
     # ownera dodati u tabelu
@@ -44,21 +46,33 @@ def storage_file(event, context):
         MessageBody=json.dumps(message_body)
     )
 
-    sns.publish(
-            TopicArn=topic,
-            Message=json.dumps(
-                {
-                    "subject": 'Upload file',
-                    "content": f"File '{ body['fileName'] }' uploaded successfully.",
-                    "recipient": body['user'],
-                }
-            ),
-        )
-    # Create response
-    body = {
-        'message': 'Successfully upload file'
-    }
-    return create_response(200, body)
+    # Check verification email
+    try:
+        verification_attributes = ses.get_identity_verification_attributes(Identities=[body['user']])['VerificationAttributes']
+        is_verified = verification_attributes[body['user']]['VerificationStatus'] == 'Success'
+
+        if is_verified:
+            sns.publish(
+                    TopicArn=topic,
+                    Message=json.dumps(
+                        {
+                            "subject": 'Upload file',
+                            "content": f"File '{ body['fileName'] }' uploaded successfully.",
+                            "recipient": body['user'],
+                        }
+                    ),
+                )
+            # Create response
+            body = {
+                'message': 'Successfully upload file. \nCheck email'
+            }
+            return create_response(200, body)
+    except:
+        # Create response
+        body = {
+            'message': 'Successfully upload file but you have not verified email'
+        }
+        return create_response(200, body)
 
 
 def storage_metadata(event, context):

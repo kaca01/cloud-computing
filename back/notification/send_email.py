@@ -1,7 +1,7 @@
 import boto3
 import json
 
-ses_client = boto3.client("ses")
+ses = boto3.client("ses")
 
 def lambda_handler(event, context):
     print(event["Records"][0]["Sns"]["Message"])
@@ -9,7 +9,8 @@ def lambda_handler(event, context):
 
     sender = "anastasijas557@gmail.com"
     recipient = body['recipient']
-    ses_client.send_email(
+
+    ses.send_email(
         Source=sender,
         Destination={"ToAddresses": [recipient]},
         Message={

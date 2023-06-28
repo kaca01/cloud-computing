@@ -77,6 +77,11 @@ functions:
           - sns:Publish
         Resource:
           - "*"
+      - Effect: Allow
+        Action:
+          - ses:GetIdentityVerificationAttributes
+        Resource: 
+          - "*"
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -120,6 +125,31 @@ functions:
       - sns:
           arn: !Ref DeleteFileTopic
           topicName: delete-file
+    
+  sendVerificationEmail:
+    handler: verification/verification_email.lambda_handler
+    package:
+      include: 'verification/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - ses:SendEmail
+        Resource: 
+          - "*"
+      - Effect: Allow
+        Action:
+          - ses:VerifyEmailIdentity
+        Resource: 
+          - "*"
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: sendVerificationEmail
+          # HTTP method for this endpoint
+          method: post
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
 
 # you can add CloudFormation resource templates here
 resources:
