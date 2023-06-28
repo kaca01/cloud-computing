@@ -16,7 +16,6 @@ export interface Email {
 })
 export class AddPermissionDialogComponent implements OnInit {
 
-  public users : Email[] = [];
   addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   emails: String[] = [];
@@ -26,6 +25,7 @@ export class AddPermissionDialogComponent implements OnInit {
     private snackBar: MatSnackBar,) { }
 
   ngOnInit(): void {
+    //todo prikazi one sa kojima se vec dijeli (kod remove)
   }
 
   close() : void {
@@ -53,12 +53,13 @@ export class AddPermissionDialogComponent implements OnInit {
 
 
   addPeople() {
-    // this.fileService.addPeople({     
-    //   "granted_users": this.fileContent,
-    //   "document_path": this.file['name'],
-    // }).subscribe((data : any) => {
-    //   this.openSnackBar(data['message'], 'Close');
-    // })
+    //todo change null with the file that has been clicked
+    this.fileService.addPeople({     
+      "granted_users": this.emails,
+      "document_path": null,
+    }).subscribe((data : any) => {
+      this.openSnackBar(data['message'], 'Close');
+    })
     this.close();
   }
 

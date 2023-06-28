@@ -19,4 +19,8 @@ export class FileService {
   uploadFile(file: UploadFile): Observable<UploadFile> {
       return this.http.post<UploadFile>(this.url, file)
   }
+
+  addPeople(body: any): Observable<any> {
+    return this.http.put<any>(this.url, body)
+  }
 }
