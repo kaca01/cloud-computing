@@ -85,6 +85,6 @@ def storage_metadata(event, context):
     
     # Create response
     body = {
-        'message': 'Successfully upload file'
+        'message': 'Successfully uploaded file'
     }
     return create_response(200, body)

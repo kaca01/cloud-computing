@@ -1,0 +1,50 @@
+#close-dialog {
+    float: right;
+    width: 20px;
+    height: 20px;
+    margin-right: 20px;
+    margin-top: 5%;
+}
+
+.close:hover {
+    background-color: rgb(243, 237, 237);
+    cursor: pointer;
+}
+
+p {
+    margin-left: 1em;
+}
+
+#title {
+    width: 17em;
+    margin-right: 5%;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    font-size: x-large;
+    font-weight: bold;
+}
+
+#container {
+    height: 30em;
+    overflow-y: scroll;
+}
+
+.left {
+    margin-left: 1.8em;
+    margin-top: 1.5em;
+    width: 45%;
+    display: inline-block;
+    vertical-align: top;
+    font-weight: bold;
+}
+
+.right {
+    margin-top: 1.5em;
+    width: 45%;
+    display: inline-block;
+    word-wrap: break-word;
+}
+
+#list {
+    margin-left: 2em;
+}

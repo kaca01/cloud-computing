@@ -8,8 +8,10 @@ import { FolderService } from 'src/app/services/folder.service';
 import { User } from 'src/app/domain';
 import { FileService } from 'src/app/services/file.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import axios from 'axios';
 import { HttpHeaders } from '@angular/common/http';
+import { FileDetailsComponent } from '../dialogs/file-details/file-details.component';
+import { AddPermissionDialogComponent } from '../dialogs/add-permission-dialog/add-permission-dialog.component';
+import axios from 'axios';
 
 @Component({
   selector: 'app-documents',
@@ -19,15 +21,20 @@ import { HttpHeaders } from '@angular/common/http';
 export class DocumentsComponent implements OnInit {
 
   private user: User = {} as User;
+  private email: string = {} as string;
 
   response = 'The response will show up here';
 
-  // TODO : here should be root folder
   currentPath : string = '';
   currentFolder: string = this.currentPath;
 
+  sharedPath: string = '';
+  sharedBack: string = '';
+
   folderNames: string[] = [];
   documentsNames: string[] = [];
+  sharedFolderNames: string[] = [];
+  sharedDocumentsNames: string[] = [];
 
   constructor(private router: Router, 
               private cognitoService: CognitoService, 
@@ -40,36 +47,72 @@ export class DocumentsComponent implements OnInit {
   async ngOnInit() {
     await this.getUserDetails();
     await this.getContent();
+    await this.getSharedContent();
   }
 
   updateView() {
     this.getContent();
+    this.getSharedContent();
     this.cdr.markForCheck();
+  }
+
+  private getSharedContent(): Promise<void> {
+    return new Promise<void>((resolve) => {
+    this.sharedDocumentsNames = [];
+    this.sharedFolderNames = [];
+
+    if (this.currentFolder == "Your documents") {
+      axios
+      .get(this.folderService.url + "getSharedContent", { params: { "email": this.email } })
+      .then((response) => {
+        for (let i of response.data.data) {
+          i = i.documentName; 
+          if (i != '' && this.isFolder(i.substring(i.indexOf("/") + 1)) && !this.sharedFolderNames.includes(i)) this.sharedFolderNames.push(i)
+          else if (i != '' && !this.isFolder(i) && !this.sharedDocumentsNames.includes(i)) this.sharedDocumentsNames.push(i);
+        }
+        resolve();
+        })
+        .catch((error) => {
+          console.log(error);
+          resolve();
+        });
+    }
+    
+  });
   }
 
   private getContent() : Promise<void> {
     return new Promise<void>((resolve) => {
       this.documentsNames = [];
       this.folderNames = [];
-      
-      let pathVariable : string = encodeURIComponent(this.currentPath);
+      // this.sharedDocumentsNames = [];
+      // this.sharedFolderNames = [];
+      let pathVariable: string = '';
+      if (this.sharedPath == '') pathVariable = encodeURIComponent(this.currentPath);
+      else pathVariable = encodeURIComponent(this.sharedPath);
       this.currentFolder = this.getCurrentFolder();
       this.folderService.getContent(pathVariable).subscribe((data) => 
               {
                 this.response = JSON.stringify(data, null, '\t')
                 for (let i of data.data) {
+                  let path = i;
                   i = this.getName(i); 
-                  if (i != '' && this.isFolder(i) && !this.folderNames.includes(i)) this.folderNames.push(i)
-                  else if (i != '' && !this.isFolder(i) && !this.documentsNames.includes(i)) this.documentsNames.push(i);
+                  let j: string = this.getSharedDocumentName(path);
+                  if (this.sharedBack == '') {
+                    if (i != '' && this.isFolder(i) && !this.folderNames.includes(i)) this.folderNames.push(i);
+                    else if (i != '' && !this.isFolder(i) && !this.documentsNames.includes(i)) this.documentsNames.push(i);
+                  } else {
+                    if (j != '' && this.isFolder(j) && !this.sharedFolderNames.includes(path)) this.sharedFolderNames.push(path); 
+                    else if (j != '' && !this.isFolder(j) && !this.sharedDocumentsNames.includes(path)) this.sharedDocumentsNames.push(path);
+                  }
                 }
                 resolve();
 
-              }, error => {
-                console.log("error");
-                console.log(error);
-                resolve();
-              }
-          )
+        }, error => {
+          console.log("error");
+          console.log(error);
+          resolve();
+        });
       });
   }
 
@@ -82,6 +125,7 @@ export class DocumentsComponent implements OnInit {
         this.currentPath = user.attributes.email;
         this.currentFolder = this.currentPath;
         this.user = user;
+        this.email = user.attributes.email;
         resolve();
 
       }
@@ -96,8 +140,21 @@ export class DocumentsComponent implements OnInit {
   }
 
   back(): void {
-    const lastIndex = this.currentPath.lastIndexOf("/");
-    this.currentPath = this.currentPath.substring(0, lastIndex);
+    if (this.sharedBack.includes('/')) {
+      const lastIndex = this.sharedPath.lastIndexOf("/");
+      this.sharedPath = this.sharedPath.substring(0, lastIndex);
+      const lastIndex2 = this.sharedBack.lastIndexOf("/");
+      this.sharedBack = this.sharedBack.substring(0, lastIndex2);
+    }
+
+    if (this.sharedBack == '') {
+      this.sharedPath = '';
+      this.sharedBack = '';
+      if (this.currentPath.includes("/")) {
+        const lastIndex = this.currentPath.lastIndexOf("/");
+        this.currentPath = this.currentPath.substring(0, lastIndex);
+      }
+    }
     this.updateView();
   }
 
@@ -107,6 +164,14 @@ export class DocumentsComponent implements OnInit {
 
   openFolder(name: string) {
     this.currentPath += "/" + name;
+    this.updateView();
+  }
+
+  openSharedFolder(path: string) {
+    this.sharedPath = path;
+    if (this.sharedPath.endsWith('/')) this.sharedPath = this.sharedPath.slice(0, -1);
+    this.sharedBack += '/' + this.getSharedDocumentName(this.sharedPath);
+    this.getContent();
     this.updateView();
   }
 
@@ -124,12 +189,36 @@ export class DocumentsComponent implements OnInit {
     this.dialog.open(UploadFileDialogComponent, dialogConfig);
   }
 
-  openInfo() {
+  openInfo(name: string): void {
+    let path: string = this.currentPath + "/" + name;
+    console.log(path);
+    let pathVariable : string = encodeURIComponent(path);
 
+    this.fileService.getDetails(pathVariable).subscribe((data: any) => 
+    {
+      console.log(data);
+
+      const dialogConfig = new MatDialogConfig();
+
+      dialogConfig.disableClose = false;
+      dialogConfig.autoFocus = true;
+      dialogConfig.data = data;
+      
+      this.dialog.open(FileDetailsComponent, dialogConfig);
+
+    }, (error: any) => {
+      console.log("error");
+      console.log(error);
+    });
   }
 
-  addPeople() {
-
+  addPeople(i : string) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = this.currentPath+"/"+i;
+    
+    this.dialog.open(AddPermissionDialogComponent, dialogConfig);
   }
 
   download() {
@@ -221,7 +310,15 @@ export class DocumentsComponent implements OnInit {
       let pathElements = this.currentPath.split('/');
       let result = pathElements[pathElements.length - 1];
       return result;
-    } 
+    } else if (this.sharedPath != '') {
+      if (this.sharedBack.includes('/')) {
+        let pathElements = this.sharedBack.split('/');
+        let result = pathElements[pathElements.length - 1];
+        return result;
+      }
+      else return this.sharedBack;
+    
+    }
     return "Your documents";
   }
 
@@ -233,5 +330,33 @@ export class DocumentsComponent implements OnInit {
       verticalPosition: 'bottom'
     };
     this.snackBar.open(message, action, config);
+  }
+  
+  getSharedDocumentName(path: string): string {
+    path = path.trim();
+    if (this.sharedBack == '')
+    {
+      if (path.includes('/')){
+        const lastSlashIndex = path.lastIndexOf('/');
+        const substringAfterLastSlash = path.substring(lastSlashIndex + 1);
+        return substringAfterLastSlash;
+      }
+      return path;
+    }
+    else {
+      if (path.includes('/')) {
+        if (path.endsWith('/')) path = path.slice(0, -1);
+        if (path.endsWith(this.sharedBack) || path.endsWith(this.sharedBack + "/")) return '';
+        const lastSlashIndex = path.lastIndexOf('/');
+        const substringAfterLastSlash = path.substring(lastSlashIndex + 1);
+
+        const partBeforeSubstring = path.substring(0, lastSlashIndex);
+        if (partBeforeSubstring.trim().endsWith(this.sharedBack.trim()) || partBeforeSubstring.endsWith(this.sharedBack + '/')) {
+          return substringAfterLastSlash;
+        }
+        return '';
+      }
+      return path;
+    }
   }
 }

@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: back555
+service: back444
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -43,6 +43,8 @@ provider:
       Ref: filesBucket
     SQS_NAME:
       Ref: filesSQSQueue
+    SHARED_TABLE_NAME:
+      Ref: sharedContentTable
 
 # you can add packaging information here
 package:
@@ -66,7 +68,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket456/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket444/*"
       - Effect: Allow
         Action:
           - sqs:SendMessage
@@ -160,7 +162,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket456/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket444/*"
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -178,11 +180,11 @@ functions:
       - Effect: Allow
         Action:
           - s3:ListBucket
-        Resource: "arn:aws:s3:::serverlessfilebucket456"
+        Resource: "arn:aws:s3:::serverlessfilebucket444"
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: "arn:aws:s3:::serverlessfilebucket456"
+        Resource: "arn:aws:s3:::serverlessfilebucket444"
     events:
       - http:
           path: content/{name}
@@ -200,7 +202,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: "arn:aws:s3:::serverlessfilebucket456/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket444/*"
     events:
       - http:
           path: download
@@ -215,7 +217,7 @@ functions:
         Action:
           - s3:GetObject
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket123/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket444/*"
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
@@ -241,9 +243,7 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
-          - "arn:aws:s3:::serverlessfilebucket456/*"
-          - "arn:aws:s3:::serverlessfilebucket456"
-
+          - "arn:aws:s3:::serverlessfilebucket444"
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
@@ -273,9 +273,7 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
-          - "arn:aws:s3:::serverlessfilebucket456/*"
-          - "arn:aws:s3:::serverlessfilebucket456"
-
+          - "arn:aws:s3:::serverlessfilebucket444/*"
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
@@ -290,6 +288,81 @@ functions:
           method: delete
           # Enable CORS. Don't forget to return the right header in your response
           cors: true
+  addPermission:
+    handler: addPermission/add_permission.lambda_handler
+    package:
+      include: 'addPermission/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content444
+    events:
+      - http:
+          # Path for this endpoint
+          path: addPermission
+          # HTTP method for this endpoint
+          method: put
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  seePermission:
+    handler: seePermission/see_permission.lambda_handler
+    package:
+      include: 'seePermission/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content444
+    events:
+      - http:
+          # Path for this endpoint
+          path: seePermission
+          # HTTP method for this endpoint
+          method: get
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  getSharedContent:
+    handler: getSharedContent/get_shared_content.lambda_handler
+    package:
+      include: 'getSharedContent/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:Scan
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content444
+    events:
+      - http:
+          # Path for this endpoint
+          path: getSharedContent
+          # HTTP method for this endpoint
+          method: get
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  fileDetails:
+    runtime: python3.8
+    handler: fileDetails/file_details.lambda_handler
+    package:
+      include: 'fileDetails/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable444
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: file-details/{name}
+          # HTTP method for this endpoint
+          method: get
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+          request:
+            parameters:
+              paths:
+                name: true
 # you can add CloudFormation resource templates here
 resources:
   Parameters:
@@ -301,11 +374,11 @@ resources:
     filesBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: serverlessfilebucket456
+        BucketName: serverlessfilebucket444
     filesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: serverlessfiletable456
+        TableName: serverlessfiletable444
         AttributeDefinitions:
           - AttributeName: fileName
             AttributeType: S
@@ -318,19 +391,32 @@ resources:
     filesSQSQueue:
       Type: "AWS::SQS::Queue"
       Properties:
-        QueueName: queue456
+        QueueName: queue444
 
     UploadFileTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: upload-file1
+        TopicName: upload-file444
 
     EditFileTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: edit-file1
+        TopicName: edit-file444
 
     DeleteFileTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: delete-file1
+        TopicName: delete-file444
+    sharedContentTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: shared_content444
+        AttributeDefinitions:
+          - AttributeName: documentName
+            AttributeType: S
+        KeySchema:
+          - AttributeName: documentName
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
