@@ -5,7 +5,7 @@ from urllib.parse import unquote
 
 dynamodb = boto3.resource('dynamodb', region_name='eu-central-1')
 # TODO : change this before merge
-table = dynamodb.Table('serverlessfiletable')
+table = dynamodb.Table('serverlessfiletable456')
 
 
 def lambda_handler(event, context):

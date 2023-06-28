@@ -25,7 +25,7 @@ export class FileService {
   }
 
   getDetails(file: string): Observable<any> {
-    console.log(this.apiUrl + "/dev/file-details/" + file);
-    return this.http.get<any>(this.apiUrl + "/dev/file-details/" + file);
+    console.log(this.apiUrl + "/file-details/" + file);
+    return this.http.get<any>(this.apiUrl + "/file-details/" + file);
   }
 }
