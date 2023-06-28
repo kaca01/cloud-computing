@@ -7,6 +7,7 @@ import { CreateFolderComponent } from '../dialogs/create-folder/create-folder.co
 import { FolderService } from 'src/app/services/folder.service';
 import { User } from 'src/app/domain';
 import { AddPermissionDialogComponent } from '../dialogs/add-permission-dialog/add-permission-dialog.component';
+import axios from 'axios';
 
 @Component({
   selector: 'app-documents',
@@ -16,6 +17,7 @@ import { AddPermissionDialogComponent } from '../dialogs/add-permission-dialog/a
 export class DocumentsComponent implements OnInit {
 
   private user: User = {} as User;
+  private email: string = {} as string;
 
   response = 'The response will show up here';
 
@@ -25,6 +27,8 @@ export class DocumentsComponent implements OnInit {
 
   folderNames: string[] = [];
   documentsNames: string[] = [];
+  sharedFolderNames: string[] = [];
+  sharedDocumentsNames: string[] = [];
 
   constructor(private router: Router, 
               private cognitoService: CognitoService, 
@@ -35,6 +39,14 @@ export class DocumentsComponent implements OnInit {
   async ngOnInit() {
     await this.getUserDetails();
     await this.getContent();
+    axios
+    .get(this.folderService.url + "getSharedContent", { params: { "email": this.email } })
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }
 
   updateView() {
@@ -77,6 +89,7 @@ export class DocumentsComponent implements OnInit {
         this.currentPath = user.attributes.email;
         this.currentFolder = this.currentPath;
         this.user = user;
+        this.email = user.attributes.email;
         resolve();
 
       }
@@ -119,6 +132,8 @@ export class DocumentsComponent implements OnInit {
 
   addPeople(i : string) {
     const dialogConfig = new MatDialogConfig();
+    console.log(this.sharedDocumentsNames);
+    console.log(this.sharedFolderNames);
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;

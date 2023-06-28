@@ -35,10 +35,14 @@ export class AddPermissionDialogComponent implements OnInit {
     .get(this.fileService.permissionUrl + "/seePermission", { params: { "document_path": this.document } })
     .then((response) => {
       console.log(response);
-      this.emails = response.data.data.grantedUsers;
+      if(response.data.data.grantedUsers != undefined && response.data.data.grantedUsers.length != 0){
+        for (const el in response.data.data.grantedUsers)
+        this.emails.push(response.data.data.grantedUsers[el]);
+      }
     })
     .catch((error) => {
       this.openSnackBar('Get granted users error', 'Close');
+      console.log(error);
     });
   }
 

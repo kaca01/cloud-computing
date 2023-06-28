@@ -10,12 +10,10 @@ export class FileService {
 
   constructor(private http: HttpClient) { }
 
-  private apiUrl = 'https://3z9beer3v0.execute-api.eu-central-1.amazonaws.com';
   public permissionUrl = "https://3z9beer3v0.execute-api.eu-central-1.amazonaws.com/dev";
-  private stagePath = '/dev';
   private resourcePath = '/dogs';
 
-  private url = this.apiUrl + this.stagePath + this.resourcePath;
+  private url = this.permissionUrl + this.resourcePath;
 
   uploadFile(file: UploadFile): Observable<UploadFile> {
       return this.http.post<UploadFile>(this.url, file)
