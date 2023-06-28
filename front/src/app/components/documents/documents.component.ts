@@ -52,7 +52,6 @@ export class DocumentsComponent implements OnInit {
   }
 
   updateView() {
-    console.log('uslooo')
     this.getContent();
     this.getSharedContent();
     this.cdr.markForCheck();
@@ -183,14 +182,10 @@ export class DocumentsComponent implements OnInit {
 
   edit(fileName: string) {
     let path: string = this.currentPath+"/"+fileName;
-    console.log(path);
     let pathVariable : string = encodeURIComponent(path);
     this.fileService.getDetails(pathVariable).subscribe((data: any) => 
     {
-      console.log("success!!!");
       this.selectedFile = data
-      console.log(this.selectedFile)
-      console.log(fileName)
       const dialogConfig = new MatDialogConfig();
 
       dialogConfig.disableClose = true;
@@ -207,12 +202,10 @@ export class DocumentsComponent implements OnInit {
 
   openInfo(name: string): void {
     let path: string = this.currentPath + "/" + name;
-    console.log(path);
     let pathVariable : string = encodeURIComponent(path);
 
     this.fileService.getDetails(pathVariable).subscribe((data: any) => 
     {
-      console.log(data);
 
       const dialogConfig = new MatDialogConfig();
 

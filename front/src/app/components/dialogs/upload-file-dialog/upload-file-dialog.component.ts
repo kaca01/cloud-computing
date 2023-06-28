@@ -108,9 +108,14 @@ export class UploadFileDialogComponent implements OnInit {
       }).subscribe((data : any) => {
         this.openSnackBar(data['message'], 'Close');
         this.documentComponent.updateView();
+      }, (error: any) => {
+        console.log("error");
+        console.log(error);
+        this.documentComponent.updateView();
       })
       this.close();
       this.tags = [];
+
     }
   }
 
