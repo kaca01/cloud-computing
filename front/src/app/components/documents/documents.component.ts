@@ -39,37 +39,50 @@ export class DocumentsComponent implements OnInit {
   async ngOnInit() {
     await this.getUserDetails();
     await this.getContent();
-    this.getSharedContent();
+    await this.getSharedContent();
   }
 
   updateView() {
     this.getContent();
+    this.getSharedContent();
     this.cdr.markForCheck();
   }
 
-  private getSharedContent(){
+  private getSharedContent(): Promise<void> {
+    return new Promise<void>((resolve) => {
     this.sharedDocumentsNames = [];
     this.sharedFolderNames = [];
-    axios
-    .get(this.folderService.url + "getSharedContent", { params: { "email": this.email } })
-    .then((response) => {
-      console.log(response.data.data);
-      for (let i of response.data.data) {
-        i = i.documentName; 
-        if (i != '' && this.isFolder(i.substring(i.indexOf("/") + 1)) && !this.sharedFolderNames.includes(i)) this.sharedFolderNames.push(i)
-        else if (i != '' && !this.isFolder(i) && !this.sharedDocumentsNames.includes(i)) this.sharedDocumentsNames.push(i);
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+    console.log("ispraznio2");
+    console.log(this.sharedFolderNames);
+
+    console.log(this.currentFolder);
+    if (this.currentFolder == "Your documents") {
+      axios
+      .get(this.folderService.url + "getSharedContent", { params: { "email": this.email } })
+      .then((response) => {
+        console.log(response.data.data);
+        for (let i of response.data.data) {
+          i = i.documentName; 
+          if (i != '' && this.isFolder(i.substring(i.indexOf("/") + 1)) && !this.sharedFolderNames.includes(i)) this.sharedFolderNames.push(i)
+          else if (i != '' && !this.isFolder(i) && !this.sharedDocumentsNames.includes(i)) this.sharedDocumentsNames.push(i);
+        }
+        resolve();
+        })
+        .catch((error) => {
+          console.log(error);
+          resolve();
+        });
+    }
+    
+  });
   }
 
   private getContent() : Promise<void> {
     return new Promise<void>((resolve) => {
       this.documentsNames = [];
       this.folderNames = [];
-      
+      console.log("ispraznio1");
+
       let pathVariable : string = encodeURIComponent(this.currentPath);
       this.currentFolder = this.getCurrentFolder();
       this.folderService.getContent(pathVariable).subscribe((data) => 
@@ -126,6 +139,11 @@ export class DocumentsComponent implements OnInit {
 
   openFolder(name: string) {
     this.currentPath += "/" + name;
+    this.updateView();
+  }
+
+  openSharedFolder(path: string) {
+    this.currentPath = path;
     this.updateView();
   }
 
