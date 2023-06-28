@@ -50,14 +50,7 @@ export class DocumentsComponent implements OnInit {
     this.getSharedContent();
     this.cdr.markForCheck();
   }
-
-  // updateSharedView() {
-  //   this.folderNames = [];
-  //   this.documentsNames = [];
-  //   this.getSharedContent();
-  //   this.cdr.markForCheck();
-  // }
-
+  
   private getSharedContent(): Promise<void> {
     return new Promise<void>((resolve) => {
     this.sharedDocumentsNames = [];
