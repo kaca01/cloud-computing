@@ -20,10 +20,6 @@ sns = boto3.client('sns')
 ses = boto3.client("ses")
 
 def storage_file(event, context):
-    # treba dodati owner-a (da li moze da se preuzme preko tokena?)
-    # ownera dodati u tabelu
-    # ownera treba dodati i u okviru naziva fajla, kao naziv foldera, kako bismo znali ciji je ciji resurs
-    # i da bi razliciti korisnici mogli da imaju iste foldere
     body = json.loads(event['body'])
 
     bucket = s3.Bucket(bucket_name)
@@ -48,6 +44,7 @@ def storage_file(event, context):
 
     # Check verification email
     try:
+        print(ses.get_identity_verification_attributes(Identities=[body['user']]))
         verification_attributes = ses.get_identity_verification_attributes(Identities=[body['user']])['VerificationAttributes']
         is_verified = verification_attributes[body['user']]['VerificationStatus'] == 'Success'
 

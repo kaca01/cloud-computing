@@ -5,10 +5,9 @@ import { CognitoService } from 'src/app/services/cognito.service';
 import { UploadFileDialogComponent } from '../dialogs/upload-file-dialog/upload-file-dialog.component';
 import { CreateFolderComponent } from '../dialogs/create-folder/create-folder.component';
 import { FolderService } from 'src/app/services/folder.service';
-import { User } from 'src/app/domain';
+import { UploadFile, User } from 'src/app/domain';
 import { FileService } from 'src/app/services/file.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { HttpHeaders } from '@angular/common/http';
 import { FileDetailsComponent } from '../dialogs/file-details/file-details.component';
 import { AddPermissionDialogComponent } from '../dialogs/add-permission-dialog/add-permission-dialog.component';
 import axios from 'axios';
@@ -22,6 +21,8 @@ export class DocumentsComponent implements OnInit {
 
   private user: User = {} as User;
   private email: string = {} as string;
+
+  public selectedFile: UploadFile = {} as UploadFile;
 
   response = 'The response will show up here';
 
@@ -51,6 +52,7 @@ export class DocumentsComponent implements OnInit {
   }
 
   updateView() {
+    console.log('uslooo')
     this.getContent();
     this.getSharedContent();
     this.cdr.markForCheck();
@@ -179,14 +181,25 @@ export class DocumentsComponent implements OnInit {
 
   }
 
-  edit() {
-    const dialogConfig = new MatDialogConfig();
+  edit(fileName: string) {
+    // console.log(this.currentPath+"/"+fileName)
+    // this.fileService.getDetails(this.currentPath+"/"+fileName).subscribe((data: any) => 
+    // {
+      // this.selectedFile = data
+      console.log(this.selectedFile)
+      console.log(fileName)
+      const dialogConfig = new MatDialogConfig();
 
-    dialogConfig.disableClose = true;
-    dialogConfig.autoFocus = true;
-    dialogConfig.data = { type: "edit" } 
-    
-    this.dialog.open(UploadFileDialogComponent, dialogConfig);
+      dialogConfig.disableClose = true;
+      dialogConfig.autoFocus = true;
+      dialogConfig.data = { type: "edit", component: this, file: fileName } 
+      
+      this.dialog.open(UploadFileDialogComponent, dialogConfig);
+
+    // }, (error: any) => {
+    //   console.log("error");
+    //   console.log(error);
+    // });
   }
 
   openInfo(name: string): void {
@@ -221,15 +234,15 @@ export class DocumentsComponent implements OnInit {
     this.dialog.open(AddPermissionDialogComponent, dialogConfig);
   }
 
-  download() {
+  download(name: string) {
     axios
-    .get(this.fileService.apiUrl + "/download", { params: { "path": "stat_usmeni_okt1_2020.pdf" } }) // TODO izmeni ovo kasnije
+    .get(this.fileService.apiUrl + "/download", { params: { "path": this.currentPath+"/"+name } }) 
     .then((response) => {
       const base64Data: string = response.data.body;
       const byteCharacters: string = atob(base64Data);
       const byteNumbers: number[] = Array.from(byteCharacters).map((char) => char.charCodeAt(0));
       const byteArray: Uint8Array = new Uint8Array(byteNumbers);
-      const blob: Blob = new Blob([byteArray], { type: "pdf" });
+      const blob: Blob = new Blob([byteArray], { type: "pdf" }); 
 
       // Create URL object for blob
       const downloadUrl = window.URL.createObjectURL(blob);
@@ -237,7 +250,7 @@ export class DocumentsComponent implements OnInit {
       // Create link element
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.download = "stat_usmeni_okt1_2020.pdf"; // TODO izmeni ovo kasnije
+      link.download = name; 
 
       // Simulation of clicking on the link element to download the file
       link.click();
@@ -252,11 +265,12 @@ export class DocumentsComponent implements OnInit {
     });
   }
 
-  deleteFolder(){
+  deleteFolder(folderName: string){
     axios
-    .delete(this.fileService.apiUrl + "/deleteFolder", { params: { "folder_path": "test_folder" } }) // TODO izmeni ovo kasnije
+    .delete(this.fileService.apiUrl + "/deleteFolder", { params: { "folder_path": this.currentPath+"/"+folderName } }) 
     .then((response) => {
       this.openSnackBar('Successfully deleted folder', 'Close');
+      this.updateView();
     })
     .catch((error) => {
       this.openSnackBar('Delete error', 'Close');
@@ -268,7 +282,7 @@ export class DocumentsComponent implements OnInit {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    dialogConfig.data = { type: "upload" } 
+    dialogConfig.data = { type: "upload", component: this, file: "" } 
     
     this.dialog.open(UploadFileDialogComponent, dialogConfig);
   }

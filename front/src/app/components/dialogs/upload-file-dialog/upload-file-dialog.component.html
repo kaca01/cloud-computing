@@ -12,7 +12,7 @@
     </div>
     <mat-form-field id="textarea">
         <mat-label>Description</mat-label>
-        <textarea matInput [(ngModel)]="description"></textarea>
+        <textarea matInput [(ngModel)]="description">{{ selectedFile.description }}</textarea>
     </mat-form-field>
     <mat-form-field id="tags">
         <mat-label>Tags</mat-label>

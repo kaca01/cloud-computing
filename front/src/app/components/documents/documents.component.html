@@ -29,7 +29,7 @@
             <div class="hover-element">
                 <!-- <span><img class="option" src="../../../assets/images/open_folder.png" (click)="openFolder(i)"/></span> -->
                 <span><img class="option" src="../../../assets/images/add-group.png" (click)="addPeople(i)"/></span>
-                <span><img class="option" src="../../../assets/images/trash.png" (click)="deleteFolder()"/></span>
+                <span><img class="option" src="../../../assets/images/trash.png" (click)="deleteFolder(i)"/></span>
             </div>
             <div class="tooltip">
                 <p class="folder-name">{{ i }}</p>
@@ -39,10 +39,10 @@
         <span class="item" *ngFor="let i of documentsNames;" (dblclick)="openFile(i)">
             <img class="item-image" [src]="choosePicture(i)"/>
             <div class="hover-element">
-                <span><img class="option" src="../../../assets/images/edit-text.png" (click)="edit()"/></span>
+                <span><img class="option" src="../../../assets/images/edit-text.png" (click)="edit(i)"/></span>
                 <span><img class="option" src="../../../assets/images/information.png" (click)="openInfo(i)"/></span>
                 <span><img class="option" src="../../../assets/images/add-group.png" (click)="addPeople(i)"/></span>
-                <span><img class="option" src="../../../assets/images/download.png" (click)="download()"/></span>
+                <span><img class="option" src="../../../assets/images/download.png" (click)="download(i)"/></span>
             </div>
             <div class="tooltip">
                 <p class="folder-name">{{ i }}</p>
@@ -65,7 +65,7 @@
             <img class="item-image" [src]="choosePicture(i)"/>
             <div class="hover-element">
                 <span><img class="option" src="../../../assets/images/information.png" (click)="openInfo(i)"/></span>
-                <span><img class="option" src="../../../assets/images/download.png" (click)="download()"/></span>
+                <span><img class="option" src="../../../assets/images/download.png" (click)="download(i)"/></span>
             </div>
             <div class="tooltip">
                 <p class="folder-name">{{ getSharedDocumentName(i) }}</p>

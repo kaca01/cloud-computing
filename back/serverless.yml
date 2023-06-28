@@ -212,6 +212,8 @@ functions:
     handler: editFile/edit_file.lambda_handler
     package:
       include: 'editFile/**'
+    environment:
+      EDIT_TOPIC: !Ref EditFileTopic
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -223,6 +225,16 @@ functions:
           - dynamodb:UpdateItem
         Resource:
           - "Fn::GetAtt": [filesTable, Arn]
+      - Effect: Allow
+        Action:
+          - sns:Publish
+        Resource:
+          - "*"
+      - Effect: Allow
+        Action:
+          - ses:GetIdentityVerificationAttributes
+        Resource: 
+          - "*"
     events:
       - http:
           path: edit
@@ -243,6 +255,7 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
+          - "arn:aws:s3:::serverlessfilebucket444/*"
           - "arn:aws:s3:::serverlessfilebucket444"
       - Effect: Allow
         Action:
