@@ -52,15 +52,11 @@ export class DocumentsComponent implements OnInit {
     return new Promise<void>((resolve) => {
     this.sharedDocumentsNames = [];
     this.sharedFolderNames = [];
-    console.log("ispraznio2");
-    console.log(this.sharedFolderNames);
 
-    console.log(this.currentFolder);
     if (this.currentFolder == "Your documents") {
       axios
       .get(this.folderService.url + "getSharedContent", { params: { "email": this.email } })
       .then((response) => {
-        console.log(response.data.data);
         for (let i of response.data.data) {
           i = i.documentName; 
           if (i != '' && this.isFolder(i.substring(i.indexOf("/") + 1)) && !this.sharedFolderNames.includes(i)) this.sharedFolderNames.push(i)
@@ -81,7 +77,6 @@ export class DocumentsComponent implements OnInit {
     return new Promise<void>((resolve) => {
       this.documentsNames = [];
       this.folderNames = [];
-      console.log("ispraznio1");
 
       let pathVariable : string = encodeURIComponent(this.currentPath);
       this.currentFolder = this.getCurrentFolder();
