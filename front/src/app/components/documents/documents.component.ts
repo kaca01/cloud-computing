@@ -43,6 +43,7 @@ export class DocumentsComponent implements OnInit {
   }
 
   updateView() {
+    console.log('uslooo')
     this.getContent();
     this.cdr.markForCheck();
   }
@@ -114,12 +115,13 @@ export class DocumentsComponent implements OnInit {
 
   }
 
-  edit() {
+  edit(fileName: string) {
+    console.log(fileName)
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    dialogConfig.data = { type: "edit" } 
+    dialogConfig.data = { type: "edit", component: this, file: fileName } 
     
     this.dialog.open(UploadFileDialogComponent, dialogConfig);
   }
@@ -132,15 +134,15 @@ export class DocumentsComponent implements OnInit {
 
   }
 
-  download() {
+  download(name: string) {
     axios
-    .get(this.fileService.apiUrl + "/download", { params: { "path": "stat_usmeni_okt1_2020.pdf" } }) // TODO izmeni ovo kasnije
+    .get(this.fileService.apiUrl + "/download", { params: { "path": this.currentPath+"/"+name } }) 
     .then((response) => {
       const base64Data: string = response.data.body;
       const byteCharacters: string = atob(base64Data);
       const byteNumbers: number[] = Array.from(byteCharacters).map((char) => char.charCodeAt(0));
       const byteArray: Uint8Array = new Uint8Array(byteNumbers);
-      const blob: Blob = new Blob([byteArray], { type: "pdf" });
+      const blob: Blob = new Blob([byteArray], { type: "pdf" }); 
 
       // Create URL object for blob
       const downloadUrl = window.URL.createObjectURL(blob);
@@ -148,7 +150,7 @@ export class DocumentsComponent implements OnInit {
       // Create link element
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.download = "stat_usmeni_okt1_2020.pdf"; // TODO izmeni ovo kasnije
+      link.download = name; 
 
       // Simulation of clicking on the link element to download the file
       link.click();
@@ -179,7 +181,7 @@ export class DocumentsComponent implements OnInit {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    dialogConfig.data = { type: "upload" } 
+    dialogConfig.data = { type: "upload", component: this, file: "" } 
     
     this.dialog.open(UploadFileDialogComponent, dialogConfig);
   }
