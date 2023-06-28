@@ -92,11 +92,11 @@ export class UploadFileDialogComponent implements OnInit {
         "user": this.user['attributes']['email']
       }).subscribe((data : any) => {
         this.openSnackBar(data['message'], 'Close');
+        this.documentComponent.updateView();
       })
       this.close();
       this.tags = [];
     }
-    this.documentComponent.updateView();
   }
 
   exportTags(): Array<any>{
@@ -122,7 +122,7 @@ export class UploadFileDialogComponent implements OnInit {
     // TODO prvo setuj tags i description od trenutnog fajla
     if(this.file != undefined) {
       console.log(this.file['type'].split('/')[1])
-      if(this.file['type'].split('/')[1] != this.currentFile.split('.')[1]) // TODO proveri da li radi
+      if(this.file['type'].split('/')[1] != this.currentFile.split('.')[1]) 
         this.openSnackBar('Invalid file type', 'Close');
       else 
         this.callEditFunction();
@@ -135,7 +135,7 @@ export class UploadFileDialogComponent implements OnInit {
   callEditFunction() {
     this.fileService.editFile({     
       "fileContent": this.fileContent,
-      "fileName": this.currentPath+"/"+this.currentFile,  // TODO proveri da li radi
+      "fileName": this.currentPath+"/"+this.currentFile, 
       "description": this.description,
       "tags": this.exportTags()
     }).subscribe((data : any) => {
