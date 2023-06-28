@@ -14,6 +14,7 @@ import { DocumentsComponent } from './components/documents/documents.component';
 import { HttpClientModule } from '@angular/common/http';
 import { UploadFileDialogComponent } from './components/dialogs/upload-file-dialog/upload-file-dialog.component';
 import { CreateFolderComponent } from './components/dialogs/create-folder/create-folder.component';
+import { AddPermissionDialogComponent } from './components/dialogs/add-permission-dialog/add-permission-dialog.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { CreateFolderComponent } from './components/dialogs/create-folder/create
     DocumentsComponent,
     UploadFileDialogComponent,
     CreateFolderComponent,
+    AddPermissionDialogComponent,
   ],
   imports: [
     BrowserModule,

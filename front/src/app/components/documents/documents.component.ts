@@ -6,6 +6,7 @@ import { UploadFileDialogComponent } from '../dialogs/upload-file-dialog/upload-
 import { CreateFolderComponent } from '../dialogs/create-folder/create-folder.component';
 import { FolderService } from 'src/app/services/folder.service';
 import { User } from 'src/app/domain';
+import { AddPermissionDialogComponent } from '../dialogs/add-permission-dialog/add-permission-dialog.component';
 
 @Component({
   selector: 'app-documents',
@@ -117,7 +118,12 @@ export class DocumentsComponent implements OnInit {
   }
 
   addPeople() {
+    const dialogConfig = new MatDialogConfig();
 
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    
+    this.dialog.open(AddPermissionDialogComponent, dialogConfig);
   }
 
   download() {
