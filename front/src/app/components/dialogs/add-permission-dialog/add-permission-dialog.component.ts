@@ -5,6 +5,7 @@ import { FileService } from 'src/app/services/file.service';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER, T } from '@angular/cdk/keycodes';
 import { DocumentsComponent } from '../../documents/documents.component';
+import axios from 'axios';
 
 export interface Email {
   email: string;
@@ -30,7 +31,14 @@ export class AddPermissionDialogComponent implements OnInit {
     }
 
   ngOnInit(): void {
-    //todo prikazi one sa kojima se vec dijeli (kod remove)
+    axios
+    .get(this.fileService.permissionUrl + "/seePermission", { params: { "document_path": this.document } })
+    .then((response) => {
+      console.log("success");
+    })
+    .catch((error) => {
+      this.openSnackBar('Get granted users error', 'Close');
+    });
   }
 
   close() : void {

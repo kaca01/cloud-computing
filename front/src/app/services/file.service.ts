@@ -11,6 +11,7 @@ export class FileService {
   constructor(private http: HttpClient) { }
 
   private apiUrl = 'https://3z9beer3v0.execute-api.eu-central-1.amazonaws.com';
+  public permissionUrl = "https://3z9beer3v0.execute-api.eu-central-1.amazonaws.com/dev";
   private stagePath = '/dev';
   private resourcePath = '/dogs';
 
@@ -21,6 +22,6 @@ export class FileService {
   }
 
   addPeople(body: any): Observable<any> {
-    return this.http.put<any>("https://3z9beer3v0.execute-api.eu-central-1.amazonaws.com/dev/addPermission", body)
+    return this.http.put<any>(this.permissionUrl + "/addPermission", body)
   }
 }

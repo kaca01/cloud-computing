@@ -11,12 +11,13 @@ table_name = os.environ['SHARED_TABLE_NAME']
 def lambda_handler(event, context):
 
     # Extract the file/folder path from the event
-    body = json.loads(event['body'])
+    document_path = event['queryStringParameters']['document_path']
     table = dynamodb.Table(table_name)
-    #todo check if all users exist
-    # Put item into table
-    table.put_item(Item={'documentName':body["document_path"], 'grantedUsers':body["granted_users"]})
+
+    # get item from table
+    response = table.get_item(Item={'documentName':document_path})
+    
     body = {
-        'message': "Successfully changed permissions"
+        'data': response['Item']
     }
     return create_response(200, body)
