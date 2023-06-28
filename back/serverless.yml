@@ -1,0 +1,336 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: back555
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: '3'
+	
+plugins:
+  - serverless-iam-roles-per-function
+
+provider:
+  name: aws
+  runtime: python3.8
+  # Deployment stage
+  stage: dev
+  # Deplotment region
+  region: eu-central-1
+  # Global memory configuration (default 1024MB)
+  memorySize: 128 #ovo je najmanja vrednost koju mozemo da dodelimo
+  # Function timeout in seconds (default 6s)
+  timeout: 10
+
+# you can define service wide environment variables here
+  environment:
+    TABLE_NAME:
+      Ref: filesTable
+    BUCKET_NAME:
+      Ref: filesBucket
+    SQS_NAME:
+      Ref: filesSQSQueue
+
+# you can add packaging information here
+package:
+  # Create separate zip for each Lambda function
+  individually: true
+  patterns:
+    # Exclude everything (each Lambda will specify which directory should be included)
+    # To exclude use '!' prefix
+    - '!**/**'
+    # Include utility directory for every Lambda function
+    - 'utility/**'
+
+functions:
+  storageFile:
+    handler: uploadFile/upload_file.storage_file
+    package:
+      include: 'uploadFile/**'
+    environment:
+      UPLOAD_TOPIC: !Ref UploadFileTopic
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+        Resource: "arn:aws:s3:::serverlessfilebucket456/*"
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: 
+          - "Fn::GetAtt": [filesSQSQueue, Arn]
+      - Effect: Allow
+        Action:
+          - sns:Publish
+        Resource:
+          - "*"
+      - Effect: Allow
+        Action:
+          - ses:GetIdentityVerificationAttributes
+        Resource: 
+          - "*"
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: upload
+          # HTTP method for this endpoint
+          method: post
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  storageMetadata:
+    handler: uploadFile/upload_file.storage_metadata
+    package:
+      include: 'uploadFile/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource:
+          - "Fn::GetAtt": [filesTable, Arn]
+    events:
+      - sqs:
+          arn: { "Fn::GetAtt": [filesSQSQueue, Arn] }
+          batchSize: 1
+  sendEmail:
+    handler: notification/send_email.lambda_handler
+    package:
+      include: 'notification/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - ses:SendEmail
+        Resource: 
+          - "*"
+    events:
+      - sns:
+          arn: !Ref UploadFileTopic
+          topicName: upload-file
+      - sns:
+          arn: !Ref EditFileTopic
+          topicName: edit-file
+      - sns:
+          arn: !Ref DeleteFileTopic
+          topicName: delete-file
+    
+  sendVerificationEmail:
+    handler: verification/verification_email.lambda_handler
+    package:
+      include: 'verification/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - ses:SendEmail
+        Resource: 
+          - "*"
+      - Effect: Allow
+        Action:
+          - ses:VerifyEmailIdentity
+        Resource: 
+          - "*"
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: sendVerificationEmail
+          # HTTP method for this endpoint
+          method: post
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  create_folder:
+    runtime: python3.8
+    handler: create_folder/create_folder.create_folder
+    package:
+      # Include 'createDogs' directory and all child directories
+      include: 'create_folder/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+        Resource: "arn:aws:s3:::serverlessfilebucket456/*"
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: create-folder
+          # HTTP method for this endpoint
+          method: post
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  accessContent:
+    handler: accessContent/folder_contents.lambda_handler
+    package:
+      include: 'accessContent/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:ListBucket
+        Resource: "arn:aws:s3:::serverlessfilebucket456"
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource: "arn:aws:s3:::serverlessfilebucket456"
+    events:
+      - http:
+          path: content/{name}
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                name: true
+  downloadFile:
+    handler: downloadFile/download_file.lambda_handler
+    package:
+      include: 'downloadFile/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource: "arn:aws:s3:::serverlessfilebucket456/*"
+    events:
+      - http:
+          path: download
+          method: get
+          cors: true
+  editFile:
+    handler: editFile/edit_file.lambda_handler
+    package:
+      include: 'editFile/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+          - s3:PutObject
+        Resource: "arn:aws:s3:::serverlessfilebucket123/*"
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
+        Resource:
+          - "Fn::GetAtt": [filesTable, Arn]
+    events:
+      - http:
+          path: edit
+          method: post
+          cors: true
+  deleteFolder:
+    handler: deleteFolder/deleteFolder.lambda_handler
+    package:
+      # Include 'createDogs' directory and all child directories
+      include: 'deleteFolder/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+          - s3:GetObjectAcl
+          - s3:DeleteObject
+          - s3:ListObjectsV2
+          - s3:ListBucket
+          - s3:ListBucketVersions
+        Resource: 
+          - "arn:aws:s3:::serverlessfilebucket456/*"
+          - "arn:aws:s3:::serverlessfilebucket456"
+
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource:
+          - "Fn::GetAtt": [filesTable, Arn]
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: deleteFolder
+          # HTTP method for this endpoint
+          method: delete
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  deleteFile:
+    handler: deleteFile/delete_file.lambda_handler
+    package:
+      # Include 'createDogs' directory and all child directories
+      include: 'deleteFile/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+          - s3:GetObjectAcl
+          - s3:DeleteObject
+          - s3:ListObjectsV2
+          - s3:ListBucket
+          - s3:ListBucketVersions
+        Resource: 
+          - "arn:aws:s3:::serverlessfilebucket456/*"
+          - "arn:aws:s3:::serverlessfilebucket456"
+
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource:
+          - "Fn::GetAtt": [filesTable, Arn]
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: deleteFile
+          # HTTP method for this endpoint
+          method: delete
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+# you can add CloudFormation resource templates here
+resources:
+  Parameters:
+    EmailSES:
+      Type: String
+      Default: arn:aws:ses:eu-central-1:522114191780:identity/anastasijas557@gmail.com
+
+  Resources:
+    filesBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: serverlessfilebucket456
+    filesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: serverlessfiletable456
+        AttributeDefinitions:
+          - AttributeName: fileName
+            AttributeType: S
+        KeySchema:
+          - AttributeName: fileName
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    filesSQSQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: queue456
+
+    UploadFileTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: upload-file1
+
+    EditFileTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: edit-file1
+
+    DeleteFileTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: delete-file1

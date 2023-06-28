@@ -1,4 +1,4 @@
-export interface User{
+export interface User {
     email: string,
     password: string, 
     name: string,
@@ -6,4 +6,20 @@ export interface User{
     code: string,
     telephoneNumber: string,
     address: string
+}
+
+export interface UploadFile {
+    fileContent: string, 
+    fileName: string,
+    fileType: string,
+    fileSize: number,
+    fileCreated: string,
+    fileModified: string,
+    description:  string,
+    tags: Array<any>,
+    user: string
+}
+
+export interface Folder {
+    name: string
 }

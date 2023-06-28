@@ -1,0 +1,31 @@
+<img src="../../assets/images/close.png" id="close-dialog" class="close" (click)="close()"/>
+<p id="title" *ngIf="type=='upload'; else editTitle" >Upload Your file!</p>
+
+<ng-template #editTitle>
+    <p id="title">Edit Your file!</p>
+</ng-template>
+
+<div class="form">
+    <div>
+        <input id="input-file" type="file" accept="image/*,video/*,audio/*,text/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation" 
+            (change)="onSelectFile($event)">
+    </div>
+    <mat-form-field id="textarea">
+        <mat-label>Description</mat-label>
+        <textarea matInput [(ngModel)]="description"></textarea>
+    </mat-form-field>
+    <mat-form-field id="tags">
+        <mat-label>Tags</mat-label>
+        <input matInput [(ngModel)]="tagsFromForm">
+        <mat-hint id="hint">{{hint}}</mat-hint>
+    </mat-form-field>
+</div>
+
+<span id="btn-container">
+    <button *ngIf="type=='upload'; else edit" mat-raised-button color="brown" id="upload" (click)="uploadFile()">UPLOAD</button>
+
+    <ng-template #edit>
+        <button mat-raised-button color="brown" id="upload" (click)="editFile()">EDIT</button>
+        <span><img id="trash" src="../../../assets/images/trash.png" (click)="deleteFile()"/></span>
+    </ng-template>
+</span>  
