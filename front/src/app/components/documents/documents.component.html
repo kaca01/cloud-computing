@@ -10,7 +10,7 @@
     <p></p>
 
     <div class="tools">
-        <div class="add" (click)="openDialog()">
+        <div class="add" (click)="openDialog()" *ngIf="sharedBack == ''">
             <img id="plus-icon" src="../../assets/images/plus.png"/>
             <span>Upload file</span>
         </div>
