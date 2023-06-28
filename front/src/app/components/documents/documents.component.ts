@@ -10,6 +10,7 @@ import { FileService } from 'src/app/services/file.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import axios from 'axios';
 import { HttpHeaders } from '@angular/common/http';
+import { FileDetailsComponent } from '../dialogs/file-details/file-details.component';
 
 @Component({
   selector: 'app-documents',
@@ -55,21 +56,20 @@ export class DocumentsComponent implements OnInit {
       let pathVariable : string = encodeURIComponent(this.currentPath);
       this.currentFolder = this.getCurrentFolder();
       this.folderService.getContent(pathVariable).subscribe((data) => 
-              {
-                this.response = JSON.stringify(data, null, '\t')
-                for (let i of data.data) {
-                  i = this.getName(i); 
-                  if (i != '' && this.isFolder(i) && !this.folderNames.includes(i)) this.folderNames.push(i)
-                  else if (i != '' && !this.isFolder(i) && !this.documentsNames.includes(i)) this.documentsNames.push(i);
-                }
-                resolve();
+        {
+          this.response = JSON.stringify(data, null, '\t')
+          for (let i of data.data) {
+            i = this.getName(i); 
+            if (i != '' && this.isFolder(i) && !this.folderNames.includes(i)) this.folderNames.push(i)
+            else if (i != '' && !this.isFolder(i) && !this.documentsNames.includes(i)) this.documentsNames.push(i);
+          }
+          resolve();
 
-              }, error => {
-                console.log("error");
-                console.log(error);
-                resolve();
-              }
-          )
+        }, error => {
+          console.log("error");
+          console.log(error);
+          resolve();
+        });
       });
   }
 
@@ -124,8 +124,27 @@ export class DocumentsComponent implements OnInit {
     this.dialog.open(UploadFileDialogComponent, dialogConfig);
   }
 
-  openInfo() {
+  openInfo(name: string): void {
+    let path: string = this.currentPath + "/" + name;
+    console.log(path);
+    let pathVariable : string = encodeURIComponent(path);
 
+    this.fileService.getDetails(pathVariable).subscribe((data: any) => 
+    {
+      console.log(data);
+
+      const dialogConfig = new MatDialogConfig();
+
+      dialogConfig.disableClose = false;
+      dialogConfig.autoFocus = true;
+      dialogConfig.data = data;
+      
+      this.dialog.open(FileDetailsComponent, dialogConfig);
+
+    }, (error: any) => {
+      console.log("error");
+      console.log(error);
+    });
   }
 
   addPeople() {

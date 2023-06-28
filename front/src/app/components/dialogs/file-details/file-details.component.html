@@ -1,0 +1,38 @@
+<img src="../../assets/images/close.png" id="close-dialog" class="close" (click)="close()"/>
+<p id="title">File Details</p>
+
+<div id="container">
+    <span class="data">
+        <p class="left">File Name</p>
+        <p class="right">{{ file.fileName }}</p>
+    </span>
+    <span class="data">
+        <p class="left">Date Created</p>
+        <p class="right">{{ file.fileCreated }}</p>
+    </span>
+    <span class="data">
+        <p class="left">Date Modified</p>
+        <p class="right">{{ file.fileModified }}</p>
+    </span>
+    <span class="data">
+        <p class="left">Size</p>
+        <p class="right">{{ file.fileSize }}</p>
+    </span>
+    <span class="data">
+        <p class="left">Description</p>
+        <p class="right">{{ file.description }}</p>
+    </span>
+    <span class="data">
+        <p class="left">Type</p>
+        <p class="right">{{ file.fileType }}</p>
+    </span>
+    <span>
+        <span class="data">
+            <p class="left">Tags</p>
+            <mat-list role="list" id="list">
+                <mat-list-item *ngFor="let i of file.tags" role="listitem">{{ i }}</mat-list-item>
+              </mat-list>
+              
+        </span>
+    </span>
+</div>

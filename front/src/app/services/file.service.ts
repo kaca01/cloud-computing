@@ -23,4 +23,9 @@ export class FileService {
   sendVerificationEmail(email: any): Observable<any> {
     return this.http.post<any>(this.apiUrl + '/sendVerificationEmail', email)
   }
+
+  getDetails(file: string): Observable<any> {
+    console.log(this.apiUrl + "/dev/file-details/" + file);
+    return this.http.get<any>(this.apiUrl + "/dev/file-details/" + file);
+  }
 }
