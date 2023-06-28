@@ -14,6 +14,13 @@ export class NavigationComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  inviteMember(){
+
+  }
+
+  controlAccess(){
+    
+  }
   
   logOut(){
     this.cognitoService.signOut()
