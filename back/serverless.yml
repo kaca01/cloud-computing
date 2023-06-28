@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: back
+service: radi
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -66,12 +66,17 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket/*"
+        Resource: "arn:aws:s3:::serverlessfilebucketradi/*"
       - Effect: Allow
         Action:
           - sqs:SendMessage
         Resource: 
           - "Fn::GetAtt": [filesSQSQueue, Arn]
+      - Effect: Allow
+        Action:
+          - sns:Publish
+        Resource:
+          - "*"
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -99,6 +104,12 @@ functions:
     handler: notification/send_email.lambda_handler
     package:
       include: 'notification/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - ses:SendEmail
+        Resource: 
+          - "*"
     events:
       - sns:
           arn: !Ref UploadFileTopic
@@ -121,11 +132,11 @@ resources:
     filesBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: serverlessfilebucket
+        BucketName: serverlessfilebucketradi
     filesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: serverlessfiletable
+        TableName: serverlessfiletableradi
         AttributeDefinitions:
           - AttributeName: fileName
             AttributeType: S
@@ -138,7 +149,7 @@ resources:
     filesSQSQueue:
       Type: "AWS::SQS::Queue"
       Properties:
-        QueueName: queue
+        QueueName: queueradi
 
     UploadFileTopic:
       Type: AWS::SNS::Topic
