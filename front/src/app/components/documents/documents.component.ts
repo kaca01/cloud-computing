@@ -8,7 +8,6 @@ import { FolderService } from 'src/app/services/folder.service';
 import { User } from 'src/app/domain';
 import { AddPermissionDialogComponent } from '../dialogs/add-permission-dialog/add-permission-dialog.component';
 import axios from 'axios';
-import { L } from '@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-documents',
@@ -50,7 +49,7 @@ export class DocumentsComponent implements OnInit {
     this.getSharedContent();
     this.cdr.markForCheck();
   }
-  
+
   private getSharedContent(): Promise<void> {
     return new Promise<void>((resolve) => {
     this.sharedDocumentsNames = [];
