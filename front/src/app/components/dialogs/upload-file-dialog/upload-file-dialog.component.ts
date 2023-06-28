@@ -6,6 +6,7 @@ import { DatePipe } from '@angular/common';
 import axios from 'axios';
 import { CognitoService } from 'src/app/services/cognito.service';
 import { DocumentsComponent } from '../../documents/documents.component';
+import { UploadFile } from 'src/app/domain';
 
 @Component({
   selector: 'app-upload-file-dialog',
@@ -27,6 +28,7 @@ export class UploadFileDialogComponent implements OnInit {
 
   user: any;
   private documentComponent : DocumentsComponent = {} as DocumentsComponent;
+  selectedFile: UploadFile = {} as UploadFile;
 
   constructor(private dialogRef: MatDialogRef<UploadFileDialogComponent>,
               private fileService: FileService,
@@ -37,6 +39,7 @@ export class UploadFileDialogComponent implements OnInit {
                 this.type = data.type;
                 this.documentComponent = data.component;
                 this.currentPath = this.documentComponent.currentPath;
+                this.selectedFile = this.documentComponent.selectedFile;
                 this.currentFile = this.data.file;
                 this.cognitoService.getUser()
                   .then((user: any) => {
@@ -53,9 +56,10 @@ export class UploadFileDialogComponent implements OnInit {
 
   deleteFile(){
     axios
-    .delete(this.fileService.apiUrl + "/deleteFile", { params: { "file_path": "after.pdf" } }) // TODO izmeni ovo kasnije
+    .delete(this.fileService.apiUrl + "/deleteFile", { params: { "file_path": this.currentPath+"/"+this.currentFile } })
     .then((response) => {
       this.openSnackBar('Successfully deleted file', 'Close');
+      this.documentComponent.updateView();
     })
     .catch((error) => {
       this.openSnackBar('Delete error', 'Close');
@@ -118,8 +122,6 @@ export class UploadFileDialogComponent implements OnInit {
   }
 
   editFile() : void {
-    console.log(this.currentFile)
-    // TODO prvo setuj tags i description od trenutnog fajla
     if(this.file != undefined) {
       console.log(this.file['type'].split('/')[1])
       if(this.file['type'].split('/')[1] != this.currentFile.split('.')[1]) 

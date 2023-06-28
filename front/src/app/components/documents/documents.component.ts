@@ -5,11 +5,10 @@ import { CognitoService } from 'src/app/services/cognito.service';
 import { UploadFileDialogComponent } from '../dialogs/upload-file-dialog/upload-file-dialog.component';
 import { CreateFolderComponent } from '../dialogs/create-folder/create-folder.component';
 import { FolderService } from 'src/app/services/folder.service';
-import { User } from 'src/app/domain';
+import { UploadFile, User } from 'src/app/domain';
 import { FileService } from 'src/app/services/file.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import axios from 'axios';
-import { HttpHeaders } from '@angular/common/http';
 import { FileDetailsComponent } from '../dialogs/file-details/file-details.component';
 
 @Component({
@@ -20,6 +19,8 @@ import { FileDetailsComponent } from '../dialogs/file-details/file-details.compo
 export class DocumentsComponent implements OnInit {
 
   private user: User = {} as User;
+
+  public selectedFile: UploadFile = {} as UploadFile;
 
   response = 'The response will show up here';
 
@@ -116,14 +117,24 @@ export class DocumentsComponent implements OnInit {
   }
 
   edit(fileName: string) {
-    console.log(fileName)
-    const dialogConfig = new MatDialogConfig();
+    // console.log(this.currentPath+"/"+fileName)
+    // this.fileService.getDetails(this.currentPath+"/"+fileName).subscribe((data: any) => 
+    // {
+      // this.selectedFile = data
+      console.log(this.selectedFile)
+      console.log(fileName)
+      const dialogConfig = new MatDialogConfig();
 
-    dialogConfig.disableClose = true;
-    dialogConfig.autoFocus = true;
-    dialogConfig.data = { type: "edit", component: this, file: fileName } 
-    
-    this.dialog.open(UploadFileDialogComponent, dialogConfig);
+      dialogConfig.disableClose = true;
+      dialogConfig.autoFocus = true;
+      dialogConfig.data = { type: "edit", component: this, file: fileName } 
+      
+      this.dialog.open(UploadFileDialogComponent, dialogConfig);
+
+    // }, (error: any) => {
+    //   console.log("error");
+    //   console.log(error);
+    // });
   }
 
   openInfo(name: string): void {
@@ -184,11 +195,12 @@ export class DocumentsComponent implements OnInit {
     });
   }
 
-  deleteFolder(){
+  deleteFolder(folderName: string){
     axios
-    .delete(this.fileService.apiUrl + "/deleteFolder", { params: { "folder_path": "test_folder" } }) // TODO izmeni ovo kasnije
+    .delete(this.fileService.apiUrl + "/deleteFolder", { params: { "folder_path": this.currentPath+"/"+folderName } }) 
     .then((response) => {
       this.openSnackBar('Successfully deleted folder', 'Close');
+      this.updateView();
     })
     .catch((error) => {
       this.openSnackBar('Delete error', 'Close');

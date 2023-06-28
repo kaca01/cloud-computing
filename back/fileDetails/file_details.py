@@ -1,12 +1,11 @@
 import boto3
+import os
 from utility.utils import create_response
 from urllib.parse import unquote
 
-
-dynamodb = boto3.resource('dynamodb', region_name='eu-central-1')
-# TODO : change this before merge
-table = dynamodb.Table('serverlessfiletable456')
-
+table_name = os.environ['TABLE_NAME']
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table(table_name)
 
 def lambda_handler(event, context):
     path = event['pathParameters']['name']
