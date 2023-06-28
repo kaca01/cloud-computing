@@ -19,4 +19,8 @@ export class FileService {
   editFile(file: any): Observable<any> {
     return this.http.post<any>(this.apiUrl + "/edit", file)
   }
+
+  sendVerificationEmail(email: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl + '/sendVerificationEmail', email)
+  }
 }

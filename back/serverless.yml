@@ -41,6 +41,8 @@ provider:
       Ref: filesTable
     BUCKET_NAME:
       Ref: filesBucket
+    SQS_NAME:
+      Ref: filesSQSQueue
 
 # you can add packaging information here
 package:
@@ -54,26 +56,96 @@ package:
     - 'utility/**'
 
 functions:
-  uploadFile:
-    handler: uploadFile/upload_file.lambda_handler
+  storageFile:
+    handler: uploadFile/upload_file.storage_file
     package:
-      # Include 'createDogs' directory and all child directories
       include: 'uploadFile/**'
+    environment:
+      UPLOAD_TOPIC: !Ref UploadFileTopic
     iamRoleStatements:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket123/*"
+        Resource: "arn:aws:s3:::serverlessfilebucketradi/*"
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: 
+          - "Fn::GetAtt": [filesSQSQueue, Arn]
+      - Effect: Allow
+        Action:
+          - sns:Publish
+        Resource:
+          - "*"
+      - Effect: Allow
+        Action:
+          - ses:GetIdentityVerificationAttributes
+        Resource: 
+          - "*"
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: upload
+          # HTTP method for this endpoint
+          method: post
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  storageMetadata:
+    handler: uploadFile/upload_file.storage_metadata
+    package:
+      include: 'uploadFile/**'
+    iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:PutItem
         Resource:
           - "Fn::GetAtt": [filesTable, Arn]
     events:
+      - sqs:
+          arn: { "Fn::GetAtt": [filesSQSQueue, Arn] }
+          batchSize: 1
+  sendEmail:
+    handler: notification/send_email.lambda_handler
+    package:
+      include: 'notification/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - ses:SendEmail
+        Resource: 
+          - "*"
+    events:
+      - sns:
+          arn: !Ref UploadFileTopic
+          topicName: upload-file
+      - sns:
+          arn: !Ref EditFileTopic
+          topicName: edit-file
+      - sns:
+          arn: !Ref DeleteFileTopic
+          topicName: delete-file
+    
+  sendVerificationEmail:
+    handler: verification/verification_email.lambda_handler
+    package:
+      include: 'verification/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - ses:SendEmail
+        Resource: 
+          - "*"
+      - Effect: Allow
+        Action:
+          - ses:VerifyEmailIdentity
+        Resource: 
+          - "*"
+    events:
       # REST API endpoint of API Gateway
       - http:
           # Path for this endpoint
-          path: upload
+          path: sendVerificationEmail
           # HTTP method for this endpoint
           method: post
           # Enable CORS. Don't forget to return the right header in your response
@@ -220,6 +292,11 @@ functions:
           cors: true
 # you can add CloudFormation resource templates here
 resources:
+  Parameters:
+    EmailSES:
+      Type: String
+      Default: arn:aws:ses:eu-central-1:522114191780:identity/anastasijas557@gmail.com
+
   Resources:
     filesBucket:
       Type: AWS::S3::Bucket
@@ -238,3 +315,22 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+    filesSQSQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: queueradi
+
+    UploadFileTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: upload-file
+
+    EditFileTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: edit-file
+
+    DeleteFileTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: delete-file
