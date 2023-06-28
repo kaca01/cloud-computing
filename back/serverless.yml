@@ -42,7 +42,7 @@ provider:
     BUCKET_NAME:
       Ref: filesBucket
     SQS_NAME:
-      Ref: filesSqsQueue
+      Ref: filesSQSQueue
 
 # you can add packaging information here
 package:
@@ -60,6 +60,8 @@ functions:
     handler: uploadFile/upload_file.storage_file
     package:
       include: 'uploadFile/**'
+    environment:
+      UPLOAD_TOPIC: !Ref UploadFileTopic
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -69,7 +71,7 @@ functions:
         Action:
           - sqs:SendMessage
         Resource: 
-          - "Fn::GetAtt": [filesSqsQueue, Arn]
+          - "Fn::GetAtt": [filesSQSQueue, Arn]
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -91,11 +93,30 @@ functions:
           - "Fn::GetAtt": [filesTable, Arn]
     events:
       - sqs:
-          arn: { "Fn::GetAtt": [filesSqsQueue, Arn] }
+          arn: { "Fn::GetAtt": [filesSQSQueue, Arn] }
           batchSize: 1
+  sendEmail:
+    handler: notification/send_email.lambda_handler
+    package:
+      include: 'notification/**'
+    events:
+      - sns:
+          arn: !Ref UploadFileTopic
+          topicName: upload-file
+      - sns:
+          arn: !Ref EditFileTopic
+          topicName: edit-file
+      - sns:
+          arn: !Ref DeleteFileTopic
+          topicName: delete-file
 
 # you can add CloudFormation resource templates here
 resources:
+  Parameters:
+    EmailSES:
+      Type: String
+      Default: arn:aws:ses:eu-central-1:522114191780:identity/anastasijas557@gmail.com
+
   Resources:
     filesBucket:
       Type: AWS::S3::Bucket
@@ -114,7 +135,22 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-    filesSqsQueue:
+    filesSQSQueue:
       Type: "AWS::SQS::Queue"
       Properties:
-        QueueName: serverlessfilequeue
+        QueueName: queue
+
+    UploadFileTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: upload-file
+
+    EditFileTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: edit-file
+
+    DeleteFileTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: delete-file

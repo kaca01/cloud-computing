@@ -14,6 +14,8 @@ s3 = boto3.resource('s3')
 sqs_name = os.environ['SQS_NAME']
 sqs = boto3.client('sqs')
 
+topic = os.environ.get('UPLOAD_TOPIC')
+sns = boto3.client('sns')
 
 def storage_file(event, context):
     # treba dodati owner-a (da li moze da se preuzme preko tokena?)
@@ -42,6 +44,16 @@ def storage_file(event, context):
         MessageBody=json.dumps(message_body)
     )
 
+    sns.publish(
+            TopicArn=topic,
+            Message=json.dumps(
+                {
+                    "subject": "Upload file",
+                    "content": f"File '{ body['fileName'] }' uploaded successfully.",
+                    "recipient": "anastasijas557@gmail.com",
+                }
+            ),
+        )
     # Create response
     body = {
         'message': 'Successfully upload file'
