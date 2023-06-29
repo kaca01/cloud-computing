@@ -465,10 +465,14 @@ custom:
         storageMetadata:
           Type: Task
           Resource: arn:aws:lambda:eu-central-1:522114191780:function:back444-dev-storageMetadata
+          InputPath: "$.MessageBody"
           Retry:
             - ErrorEquals: ["States.ALL"]
               MaxAttempts: 3
               IntervalSeconds: 5
+          Catch:
+            - ErrorEquals: ["States.ALL"]
+              Next: consistencyCheck
           End: true
         consistencyCheck:
           Type: Task
@@ -512,11 +516,18 @@ resources:
               "storageMetadata": {
                 "Type": "Task",
                 "Resource": "arn:aws:lambda:eu-central-1:522114191780:function:back444-dev-storageMetadata",
+                "InputPath": "$.MessageBody",
                 "Retry": [
                   {
                     "ErrorEquals": ["States.ALL"],
                     "MaxAttempts": 3,
                     "IntervalSeconds": 5
+                  }
+                ],
+                "Catch": [
+                  {
+                    "ErrorEquals": ["States.ALL"],
+                    "Next": "consistencyCheck"
                   }
                 ],
                 "End": true

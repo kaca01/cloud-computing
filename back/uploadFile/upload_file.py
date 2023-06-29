@@ -57,15 +57,13 @@ def storage_file(event, context):
     bucket.put_object(Bucket=bucket_name, Key=body["fileName"], Body=decoded_data)
 
     message_body = {
-        'fileContent': body['fileContent'],
         'fileName': body['fileName'],
         'fileType': body['fileType'],
         'fileSize': body['fileSize'],
         'fileCreated': body['fileCreated'],
         'fileModified': body['fileModified'],
         'description': body['description'],
-        'tags': body['tags'],
-        'user': body['user']
+        'tags': body['tags']
     }
     sqs.send_message(
         QueueUrl=sqs_name,
@@ -103,12 +101,14 @@ def storage_file(event, context):
 
 
 def storage_metadata(event, context):
+    print('106')
+    print(event)
     for record in event['Records']:
         message_body = json.loads(record['body'])
-        
-        # Put item into DynamoDB table
-        table = dynamodb.Table(table_name)
-        table.put_item(Item=message_body)
+    
+    # Put item into DynamoDB table
+    table = dynamodb.Table(table_name)
+    table.put_item(Item=message_body)
     
     # Create response
     body = {
