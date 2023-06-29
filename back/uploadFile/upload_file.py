@@ -30,18 +30,10 @@ def step(event, context):
     print(current_path)
     body = json.loads(event['body'])
     print(body)
-    # global fileContent
-    # fileContent = body['fileContent']
-    # with open('myfile/myfile.txt', 'w') as file:
-    #     # Write data to the file
-    #     file.write(fileContent)
-    # print('11111111111111')
-    # print(fileContent)
+    
     bucket = s3.Bucket('serverlessfilebucketradi')
     obj = bucket.Object(body['fileName'])
     obj.put(Body=body['fileContent'])
-
-    # s3.put_object(Body=body['fileContent'], Bucket='serverlessfilebucketradi', Key=body['fileName'])
 
     message_body = {
         'fileName': body['fileName'],
@@ -53,14 +45,6 @@ def step(event, context):
         'tags': body['tags'],
         'user': body['user']
     }
-
-    # second_body = {
-    #     'fileName': body['fileName'],
-    #     'fileContent': body['fileContent']
-    # }
-
-    # table = dynamodb.Table(second_table)
-    # table.put_item(Item=second_body)
     
     response = sf_client.start_execution(
         stateMachineArn='arn:aws:states:eu-central-1:522114191780:stateMachine:my-step-function',
@@ -75,7 +59,6 @@ def storage_file(event, context):
     body = event
     print(body)
     print("fileeeeeeee")
-    # print(fileContent)
 
     bucket = s3.Bucket('serverlessfilebucketradi')
     obj = bucket.Object(body['fileName'])
@@ -85,14 +68,6 @@ def storage_file(event, context):
 
     bucket = s3.Bucket(bucket_name)
 
-    # fileContent = "."
-    # with open('myfile/myfile.txt', 'r') as file:
-    #     # Read the contents of the file
-    #     fileContent = file.read()
-    #     print(fileContent)
-
-    # Upload file to s3
-    # fileContent = ''
     print(fileContent)
     decoded_data = base64.b64decode(fileContent.split(',')[1].strip())
     bucket.put_object(Bucket=bucket_name, Key=body["fileName"], Body=decoded_data)
@@ -147,10 +122,6 @@ def storage_metadata(event, context):
     try:
         print('106')
         print(event)
-        # for record in event['Records']:
-        #     message_body = json.loads(record['body'])
-        # TODO : delete the following line
-        # Put item into DynamoDB table
         message_body = event
         table = dynamodb.Table(table_name)
         table.put_item(Item=message_body)
