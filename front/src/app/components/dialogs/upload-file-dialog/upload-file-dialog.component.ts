@@ -138,6 +138,7 @@ export class UploadFileDialogComponent implements OnInit {
     this.fileService.editFile({     
       "fileContent": this.fileContent,
       "fileName": this.currentPath+"/"+this.currentFile, 
+      "fileModified": this.datePipe.transform(Date(), 'dd.MM.yy hh:mm:ss')!,
       "description": this.description,
       "tags": this.exportTags(),
       "user": this.user['attributes']['email']

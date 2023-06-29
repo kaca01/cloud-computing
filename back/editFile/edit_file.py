@@ -20,7 +20,7 @@ def lambda_handler(event, contex):
     body = json.loads(event['body']) 
     file_name = body['fileName']
     file_content = body['fileContent']
-    new_values = {'description': body["description"], 'tags': body["tags"] }
+    new_values = { 'fileModified': body["fileModified"], 'description': body["description"], 'tags': body["tags"] }
 
     # Update matadata
     table = dynamodb.Table(table_name)
