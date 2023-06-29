@@ -4,6 +4,7 @@ import os
 import base64
 
 from utility.utils import create_response
+from botocore.exceptions import ClientError
 
 s3 = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
@@ -15,43 +16,33 @@ clientId = '72tip32rlft3qhhogtbhcfkivj'
 
 def lambda_handler(event, context):
 
-    # body = json.loads(event['body']) 
+    user = event['user']
+    invitedEmail = event['invitedEmail']
 
-    # client = boto3.client('cognito-idp', region_name='eu-central-1') #todo change region
+    client = boto3.client('cognito-idp', region_name='eu-central-1') 
 
-    # #check if invitedEmail exists
-    # try:
-    #     response = client.admin_initiate_auth(
-    #         UserPoolId= userPoolId,
-    #         ClientId= clientId,
-    #         AuthFlow='ADMIN_NO_SRP_AUTH',
-    #         AuthParameters={
-    #             'USERNAME': body['invitedEmail']
-    #         }
-    #     )
-    # except client.exceptions.UserNotFoundException:
-    #     body = {
-    #     'message': "The email of the user that invited you does not exists!"
-    #     }
-    #     return create_response(404, body)
+    #check if invitedEmail exists
+    try:
+        response = client.admin_get_user(
+            UserPoolId=userPoolId,
+            Username=invitedEmail
+        )
+    except Exception:
+        raise UserNotFoundError("The email of the user that invited you does not exist!")
 
-    # # check if user email has been already taken
-    # try:
-    #     response = client.admin_initiate_auth(
-    #         UserPoolId= userPoolId,
-    #         ClientId= clientId,
-    #         AuthFlow='ADMIN_NO_SRP_AUTH',
-    #         AuthParameters={
-    #             'USERNAME': body['email']
-    #         }
-    #     )
-    # except client.exceptions.UserNotFoundException:
-    #     body = {
-    #     'message': "The email already exists! Choose another one!"
-    #     }
-    #     return create_response(400, body)
+    # check if user email has been already taken
+    try:
+        response = client.admin_get_user(
+            UserPoolId=userPoolId,
+            Username=user['email']
+        )
+        raise EmailTakenError("The email already exists! Choose another one!")
+    except Exception:
+        return create_response(200, event)
 
-    body = {
-        'message': event
-    }
-    return create_response(200, body)
+
+class UserNotFoundError(Exception):
+    pass
+
+class EmailTakenError(Exception):
+    pass

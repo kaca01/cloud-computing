@@ -377,6 +377,26 @@ functions:
             parameters:
               paths:
                 name: true
+  lambdaToStartStepFunction:
+    handler: lambdaStepFunction/lambda_step_function.lambda_handler
+    package:
+      include: 'lambdaStepFunction/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - states:StartExecution
+          - states:DescribeExecution
+        Resource: 
+          - arn:aws:states:eu-central-1:522114191780:stateMachine:familyMemberSignup2021
+          - "*"
+    events:
+      - http:
+          # Path for this endpoint
+          path: familyMemberSignup
+          # HTTP method for this endpoint
+          method: put
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
   validatefamilyMemberSignup:
     handler: validateFamilySignup/validate_family_signup.lambda_handler
     package:
@@ -384,9 +404,8 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action:
-          - dynamodb:UpdateItem
-        Resource:
-          - arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable2021
+          - cognito-idp:AdminGetUser
+        Resource: arn:aws:cognito-idp:eu-central-1:522114191780:userpool/eu-central-1_0X24Fz6lx
   createFamilyUser:
     handler: createFamilyUser/create_family_user.lambda_handler
     package:
@@ -415,12 +434,6 @@ stepFunctions:
     # Invokation name
     firstStepFunction:
       name: 'familyMemberSignup2021'
-      # Triggers step function by API Gateway endpoint
-      events: 
-        # Defaults to async invocation
-        - http:
-            path: familyMemberSignup
-            method: put
       # Holds all information about a stepFunction
       definition:
         Comment: "Family memeber step function"
@@ -434,8 +447,23 @@ stepFunctions:
             Type: Task
             # AWS Resource that executes the state (Lambda, SNS, SQS, DynamoDB,...)
             Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back2021-dev-validatefamilyMemberSignup"
+            Catch:
+              - ErrorEquals: [UserNotFoundError]
+                ResultPath: "$.error"
+                Next: HandleUserNotFoundError
+              - ErrorEquals: [EmailTakenError]
+                ResultPath: "$.error"
+                Next: HandleEmailTakenError
             # Next state to go to when finished
             Next: createUser
+          HandleUserNotFoundError:
+            Type: Fail
+            Error: "MyCustomError"
+            Cause: "An error occurred. Stopping execution."
+          HandleEmailTakenError:
+            Type: Fail
+            Error: "MyCustomError"
+            Cause: "An error occurred. Stopping execution."
           createUser:
             Type: Task
             Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back2021-dev-createFamilyUser"

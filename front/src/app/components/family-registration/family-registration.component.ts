@@ -48,21 +48,24 @@ export class FamilyRegistrationComponent implements OnInit {
     }
 
     this.setUserData();
-    console.log(this.user);
 
     if (this.user && this.user.email && this.user.password){
-      this.folderService.familyMemberSignup({
-        "body": this.user
-      }).subscribe((data : any) => {
-        console.log(data);
-        this.openSnackBar("Verification email successfully sent to your family member!");
-      }, error => {
-        console.log("error happened.");
-        console.log(error);
-      });
-    }
-    else{
-      this.openSnackBar("Missing data!");
+      if (this.user && this.user.email && this.user.password){
+        this.folderService.familyMemberSignup({
+          "user": this.user,
+          "invitedEmail": this.registrationForm.get('invitedEmail')?.value!
+        }).subscribe((data : any) => {
+          console.log(data);
+          if (data.cause){
+            this.openSnackBar(data.cause);
+            return;
+          }
+          this.openSnackBar("Verification email successfully sent to your family member!");
+        }, error => {
+          console.log("error happened.");
+          console.log(error);
+        });
+      }
     }
   }
 
