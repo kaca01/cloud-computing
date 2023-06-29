@@ -46,6 +46,8 @@ provider:
       Ref: filesSQSQueue
     SHARED_TABLE_NAME:
       Ref: sharedContentTable
+    USERS_TABLE_NAME:
+      Ref: familyUsersTable
 
 # you can add packaging information here
 package:
@@ -413,9 +415,8 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action:
-          - dynamodb:UpdateItem
-        Resource:
-          - arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable2021
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/family_users2021
   sendFamilyVerification:
     handler: sendFamilyVerification/send_family_verification.lambda_handler
     package:
@@ -449,31 +450,29 @@ stepFunctions:
             Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back2021-dev-validatefamilyMemberSignup"
             Catch:
               - ErrorEquals: [UserNotFoundError]
-                ResultPath: "$.error"
                 Next: HandleUserNotFoundError
               - ErrorEquals: [EmailTakenError]
-                ResultPath: "$.error"
                 Next: HandleEmailTakenError
             # Next state to go to when finished
             Next: createUser
           HandleUserNotFoundError:
             Type: Fail
-            Error: "MyCustomError"
-            Cause: "An error occurred. Stopping execution."
+            Error: "UserNotFoundError"
+            Cause: "The email of the user that invited you does not exist!"
           HandleEmailTakenError:
             Type: Fail
-            Error: "MyCustomError"
-            Cause: "An error occurred. Stopping execution."
+            Error: "EmailTakenError"
+            Cause: "The email already exists! Choose another one!"
           createUser:
             Type: Task
             Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back2021-dev-createFamilyUser"
             # Is end state
+            Next: sendVerification
+          sendVerification:
+            Type: Task
+            Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back2021-dev-sendFamilyVerification"
+            # Is end state
             End: true
-          # sendVerification:
-          #   Type: Task
-          #   Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back2021-dev-sendFamilyVerification"
-          #   # Is end state
-          #   End: true
 
 # you can add CloudFormation resource templates here
 resources:
@@ -528,6 +527,19 @@ resources:
             AttributeType: S
         KeySchema:
           - AttributeName: documentName
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    familyUsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: family_users2021
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1

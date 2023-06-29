@@ -38,7 +38,11 @@ def lambda_handler(event, context):
         )
         raise EmailTakenError("The email already exists! Choose another one!")
     except Exception:
-        return create_response(200, event)
+        data = {
+            "user" : user,
+            "invitedEmail": invitedEmail
+        }
+        return data
 
 
 class UserNotFoundError(Exception):
