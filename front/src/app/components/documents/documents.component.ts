@@ -95,14 +95,21 @@ export class DocumentsComponent implements OnInit {
       this.folderService.getContent(pathVariable).subscribe((data) => 
               {
                 this.response = JSON.stringify(data, null, '\t')
+                console.log('data');
+                console.log(data.data);
                 for (let i of data.data) {
                   let path = i;
                   i = this.getName(i); 
+                  console.log('iiii');
+                  console.log(i);
                   let j: string = this.getSharedDocumentName(path);
+                  console.log('jjjj');
+                  console.log(j);
                   if (this.sharedBack == '') {
                     if (i != '' && this.isFolder(i) && !this.folderNames.includes(i)) this.folderNames.push(i);
                     else if (i != '' && !this.isFolder(i) && !this.documentsNames.includes(i)) this.documentsNames.push(i);
                   } else {
+                    console.log('usao');
                     if (j != '' && this.isFolder(j) && !this.sharedFolderNames.includes(path)) this.sharedFolderNames.push(path); 
                     else if (j != '' && !this.isFolder(j) && !this.sharedDocumentsNames.includes(path)) this.sharedDocumentsNames.push(path);
                   }
@@ -170,8 +177,11 @@ export class DocumentsComponent implements OnInit {
 
   openSharedFolder(path: string) {
     this.sharedPath = path;
+    console.log('pathhh');
+    console.log(path);
     if (this.sharedPath.endsWith('/')) this.sharedPath = this.sharedPath.slice(0, -1);
     this.sharedBack += '/' + this.getSharedDocumentName(this.sharedPath);
+    console.log(this.sharedBack);
     this.getContent();
     this.updateView();
   }
@@ -362,10 +372,32 @@ export class DocumentsComponent implements OnInit {
         if (path.endsWith(this.sharedBack) || path.endsWith(this.sharedBack + "/")) return '';
         const lastSlashIndex = path.lastIndexOf('/');
         const substringAfterLastSlash = path.substring(lastSlashIndex + 1);
-
+        
         const partBeforeSubstring = path.substring(0, lastSlashIndex);
-        if (partBeforeSubstring.trim().endsWith(this.sharedBack.trim()) || partBeforeSubstring.endsWith(this.sharedBack + '/')) {
+        console.log('before');
+        console.log(partBeforeSubstring);
+        // console.log(substringAfterLastSlash);
+        console.log(this.sharedBack);
+        
+        if (partBeforeSubstring.startsWith('/')) partBeforeSubstring.slice(1, partBeforeSubstring.length-1);
+        console.log('partBeforeSubstring');
+        console.log(partBeforeSubstring);
+
+        // if (partBeforeSubstring.trim().endsWith(this.sharedBack.trim())) console.log(true);
+        if (partBeforeSubstring.trim().endsWith(this.sharedBack.trim()) || partBeforeSubstring.trim().endsWith(this.sharedBack.trim() + '/')) {
+          console.log('usaoooo');
           return substringAfterLastSlash;
+        }
+        else if (this.sharedBack.startsWith('/')) {
+          let casee : string = this.sharedBack.slice(1, this.sharedBack.length);
+          console.log('caseee');
+          console.log(casee);
+          casee = casee.trim();
+          if (partBeforeSubstring.trim().endsWith(casee) || partBeforeSubstring.trim().endsWith(casee + '/')) {
+            console.log('usaoooo');
+            return substringAfterLastSlash;
+          }
+          
         }
         return '';
       }
