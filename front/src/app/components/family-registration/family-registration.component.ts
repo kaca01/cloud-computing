@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { User } from 'src/app/domain';
 import { CognitoService } from 'src/app/services/cognito.service';
 import { FolderService } from 'src/app/services/folder.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-family-registration',
@@ -34,6 +35,7 @@ export class FamilyRegistrationComponent implements OnInit {
   constructor(private router: Router,
               private cognitoService: CognitoService, 
               private folderService: FolderService,
+              private userService: UserService,
               private _snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
@@ -52,7 +54,7 @@ export class FamilyRegistrationComponent implements OnInit {
     if (this.user && this.user.email && this.user.password){
       if (this.user && this.user.email && this.user.password){
         this.openSnackBar("Verifying...");
-        this.folderService.familyMemberSignup({
+        this.userService.familyMemberSignup({
           "user": this.user,
           "invitedEmail": this.registrationForm.get('invitedEmail')?.value!
         }).subscribe((data : any) => {

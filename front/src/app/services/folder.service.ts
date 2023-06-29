@@ -23,7 +23,4 @@ export class FolderService {
     return this.http.get<any>(this.url + this.methodGet + '/' + folder);
   }
 
-  familyMemberSignup(user: any): Observable<any> {
-    return this.http.put<any>( this.url+'familyMemberSignup', user);
-  }
 }
