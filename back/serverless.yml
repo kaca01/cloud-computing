@@ -292,6 +292,7 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
+          - dynamodb:GetItem
         Resource:
           - "Fn::GetAtt": [filesTable, Arn]
       - Effect: Allow
