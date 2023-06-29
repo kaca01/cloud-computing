@@ -16,6 +16,8 @@ import { UploadFileDialogComponent } from './components/dialogs/upload-file-dial
 import { CreateFolderComponent } from './components/dialogs/create-folder/create-folder.component';
 import { InviteMemberDialogComponent } from './components/dialogs/invite-member-dialog/invite-member-dialog.component';
 import { FamilyRegistrationComponent } from './components/family-registration/family-registration.component';
+import { FileDetailsComponent } from './components/dialogs/file-details/file-details.component';
+import { AddPermissionDialogComponent } from './components/dialogs/add-permission-dialog/add-permission-dialog.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,8 @@ import { FamilyRegistrationComponent } from './components/family-registration/fa
     CreateFolderComponent,
     InviteMemberDialogComponent,
     FamilyRegistrationComponent,
+    FileDetailsComponent,
+    AddPermissionDialogComponent,
   ],
   imports: [
     BrowserModule,

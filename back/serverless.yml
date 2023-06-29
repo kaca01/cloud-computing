@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: back123
+service: back2021
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -42,6 +42,10 @@ provider:
       Ref: filesTable
     BUCKET_NAME:
       Ref: filesBucket
+    SQS_NAME:
+      Ref: filesSQSQueue
+    SHARED_TABLE_NAME:
+      Ref: sharedContentTable
 
 # you can add packaging information here
 package:
@@ -55,26 +59,96 @@ package:
     - 'utility/**'
 
 functions:
-  uploadFile:
-    handler: uploadFile/upload_file.lambda_handler
+  storageFile:
+    handler: uploadFile/upload_file.storage_file
     package:
-      # Include 'createDogs' directory and all child directories
       include: 'uploadFile/**'
+    environment:
+      UPLOAD_TOPIC: !Ref UploadFileTopic
     iamRoleStatements:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket123/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket2021/*"
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: 
+          - "Fn::GetAtt": [filesSQSQueue, Arn]
+      - Effect: Allow
+        Action:
+          - sns:Publish
+        Resource:
+          - "*"
+      - Effect: Allow
+        Action:
+          - ses:GetIdentityVerificationAttributes
+        Resource: 
+          - "*"
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: upload
+          # HTTP method for this endpoint
+          method: post
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  storageMetadata:
+    handler: uploadFile/upload_file.storage_metadata
+    package:
+      include: 'uploadFile/**'
+    iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:PutItem
         Resource:
           - "Fn::GetAtt": [filesTable, Arn]
     events:
+      - sqs:
+          arn: { "Fn::GetAtt": [filesSQSQueue, Arn] }
+          batchSize: 1
+  sendEmail:
+    handler: notification/send_email.lambda_handler
+    package:
+      include: 'notification/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - ses:SendEmail
+        Resource: 
+          - "*"
+    events:
+      - sns:
+          arn: !Ref UploadFileTopic
+          topicName: upload-file
+      - sns:
+          arn: !Ref EditFileTopic
+          topicName: edit-file
+      - sns:
+          arn: !Ref DeleteFileTopic
+          topicName: delete-file
+    
+  sendVerificationEmail:
+    handler: verification/verification_email.lambda_handler
+    package:
+      include: 'verification/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - ses:SendEmail
+        Resource: 
+          - "*"
+      - Effect: Allow
+        Action:
+          - ses:VerifyEmailIdentity
+        Resource: 
+          - "*"
+    events:
       # REST API endpoint of API Gateway
       - http:
           # Path for this endpoint
-          path: upload
+          path: sendVerificationEmail
           # HTTP method for this endpoint
           method: post
           # Enable CORS. Don't forget to return the right header in your response
@@ -89,7 +163,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket123/*"
+        Resource: "arn:aws:s3:::serverlessfilebucke2021/*"
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -107,11 +181,11 @@ functions:
       - Effect: Allow
         Action:
           - s3:ListBucket
-        Resource: "arn:aws:s3:::serverlessfilebucket123"
+        Resource: "arn:aws:s3:::serverlessfilebucket2021"
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: "arn:aws:s3:::serverlessfilebucket123"
+        Resource: "arn:aws:s3:::serverlessfilebucket2021"
     events:
       - http:
           path: content/{name}
@@ -129,7 +203,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: "arn:aws:s3:::serverlessfilebucket123/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket2021/*"
     events:
       - http:
           path: download
@@ -139,17 +213,29 @@ functions:
     handler: editFile/edit_file.lambda_handler
     package:
       include: 'editFile/**'
+    environment:
+      EDIT_TOPIC: !Ref EditFileTopic
     iamRoleStatements:
       - Effect: Allow
         Action:
           - s3:GetObject
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket123/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket2021/*"
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
         Resource:
           - "Fn::GetAtt": [filesTable, Arn]
+      - Effect: Allow
+        Action:
+          - sns:Publish
+        Resource:
+          - "*"
+      - Effect: Allow
+        Action:
+          - ses:GetIdentityVerificationAttributes
+        Resource: 
+          - "*"
     events:
       - http:
           path: edit
@@ -170,9 +256,8 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
-          - "arn:aws:s3:::serverlessfilebucket123/*"
-          - "arn:aws:s3:::serverlessfilebucket123"
-
+          - "arn:aws:s3:::serverlessfilebucket2021/*"
+          - "arn:aws:s3:::serverlessfilebucket2021"
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
@@ -202,9 +287,7 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
-          - "arn:aws:s3:::serverlessfilebucket123/*"
-          - "arn:aws:s3:::serverlessfilebucket123"
-
+          - "arn:aws:s3:::serverlessfilebucket2021/*"
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
@@ -219,6 +302,81 @@ functions:
           method: delete
           # Enable CORS. Don't forget to return the right header in your response
           cors: true
+  addPermission:
+    handler: addPermission/add_permission.lambda_handler
+    package:
+      include: 'addPermission/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content2021
+    events:
+      - http:
+          # Path for this endpoint
+          path: addPermission
+          # HTTP method for this endpoint
+          method: put
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  seePermission:
+    handler: seePermission/see_permission.lambda_handler
+    package:
+      include: 'seePermission/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content2021
+    events:
+      - http:
+          # Path for this endpoint
+          path: seePermission
+          # HTTP method for this endpoint
+          method: get
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  getSharedContent:
+    handler: getSharedContent/get_shared_content.lambda_handler
+    package:
+      include: 'getSharedContent/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+          - dynamodb:Scan
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content2021
+    events:
+      - http:
+          # Path for this endpoint
+          path: getSharedContent
+          # HTTP method for this endpoint
+          method: get
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  fileDetails:
+    runtime: python3.8
+    handler: fileDetails/file_details.lambda_handler
+    package:
+      include: 'fileDetails/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable2021
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: file-details/{name}
+          # HTTP method for this endpoint
+          method: get
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+          request:
+            parameters:
+              paths:
+                name: true
   validatefamilyMemberSignup:
     handler: validateFamilySignup/validate_family_signup.lambda_handler
     package:
@@ -228,7 +386,7 @@ functions:
         Action:
           - dynamodb:UpdateItem
         Resource:
-          - "Fn::GetAtt": [filesTable, Arn]
+          - arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable2021
   createFamilyUser:
     handler: createFamilyUser/create_family_user.lambda_handler
     package:
@@ -238,7 +396,7 @@ functions:
         Action:
           - dynamodb:UpdateItem
         Resource:
-          - "Fn::GetAtt": [filesTable, Arn]
+          - arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable2021
   sendFamilyVerification:
     handler: sendFamilyVerification/send_family_verification.lambda_handler
     package:
@@ -248,7 +406,7 @@ functions:
         Action:
           - dynamodb:UpdateItem
         Resource:
-          - "Fn::GetAtt": [filesTable, Arn]
+          - arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable2021
 
 # AWS StepFunctions
 stepFunctions:
@@ -256,7 +414,7 @@ stepFunctions:
   stateMachines:
     # Invokation name
     firstStepFunction:
-      name: 'familyMemberSignup'
+      name: 'familyMemberSignup2021'
       # Triggers step function by API Gateway endpoint
       events: 
         # Defaults to async invocation
@@ -275,36 +433,73 @@ stepFunctions:
             # State type
             Type: Task
             # AWS Resource that executes the state (Lambda, SNS, SQS, DynamoDB,...)
-            Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back123-dev-validatefamilyMemberSignup"
+            Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back2021-dev-validatefamilyMemberSignup"
             # Next state to go to when finished
             Next: createUser
           createUser:
             Type: Task
-            Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back123-dev-createFamilyUser"
+            Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back2021-dev-createFamilyUser"
             # Is end state
             End: true
           # sendVerification:
           #   Type: Task
-          #   Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back123-dev-sendFamilyVerification"
+          #   Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back2021-dev-sendFamilyVerification"
           #   # Is end state
           #   End: true
 
 # you can add CloudFormation resource templates here
 resources:
+  Parameters:
+    EmailSES:
+      Type: String
+      Default: arn:aws:ses:eu-central-1:522114191780:identity/anastasijas557@gmail.com
+
   Resources:
     filesBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: serverlessfilebucket123
+        BucketName: serverlessfilebucket2021
     filesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: serverlessfiletable123
+        TableName: serverlessfiletable2021
         AttributeDefinitions:
           - AttributeName: fileName
             AttributeType: S
         KeySchema:
           - AttributeName: fileName
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    filesSQSQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: queue2021
+
+    UploadFileTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: upload-file2021
+
+    EditFileTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: edit-file2021
+
+    DeleteFileTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: delete-file2021
+    sharedContentTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: shared_content2021
+        AttributeDefinitions:
+          - AttributeName: documentName
+            AttributeType: S
+        KeySchema:
+          - AttributeName: documentName
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
