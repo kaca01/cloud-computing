@@ -6,12 +6,17 @@ import base64
 from utility.utils import create_response
 
 s3 = boto3.client('s3')
-dynamodb = boto3.resource('dynamodb')
-bucket_name = os.environ['BUCKET_NAME']
-table_name = os.environ['TABLE_NAME']
-
-userPoolId = 'eu-central-1_0X24Fz6lx'
-clientId = '72tip32rlft3qhhogtbhcfkivj'
 
 def lambda_handler(event, context):
-    return create_response(200, event)
+
+    user = event['user']
+    invitedEmail = event['invitedEmail']  # send email to this email
+    #todo user['email'] should be written in path of front page (link) -> onda na frontu u nginit pozvati cognito preuzeti taj mail i kreirati korisnika
+    #todo ako je prethodno uspjesno, pozvati lambda funkciju za davanje prava za root folder tom korisniku
+
+    # you can change response to whatever you want
+    data = {
+            "user" : user,
+            "invitedEmail": invitedEmail
+        }
+    return create_response(200, data)

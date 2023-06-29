@@ -30,19 +30,20 @@ def lambda_handler(event, context):
     except Exception:
         raise UserNotFoundError("The email of the user that invited you does not exist!")
 
-    # check if user email has been already taken
+    # check if user email has already been taken
     try:
         response = client.admin_get_user(
             UserPoolId=userPoolId,
             Username=user['email']
         )
-        raise EmailTakenError("The email already exists! Choose another one!")
     except Exception:
         data = {
             "user" : user,
             "invitedEmail": invitedEmail
         }
         return data
+    
+    raise EmailTakenError("The email already exists! Choose another one!")
 
 
 class UserNotFoundError(Exception):

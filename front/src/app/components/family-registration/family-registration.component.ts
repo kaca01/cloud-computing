@@ -51,6 +51,7 @@ export class FamilyRegistrationComponent implements OnInit {
 
     if (this.user && this.user.email && this.user.password){
       if (this.user && this.user.email && this.user.password){
+        this.openSnackBar("Verifying...");
         this.folderService.familyMemberSignup({
           "user": this.user,
           "invitedEmail": this.registrationForm.get('invitedEmail')?.value!

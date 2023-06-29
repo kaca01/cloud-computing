@@ -28,6 +28,21 @@ export class CognitoService {
   })
   }
 
+  public signUpWithoutVerification(user: User): Promise<any> {
+    return Auth.signUp({
+      username : user.email,
+      password: user.password,
+      attributes :{
+        email : user.email,
+        given_name: user.name,
+        family_name: user.surname,
+        phone_number: user.telephoneNumber,
+        address: user.address,
+        email_verified: true
+      }
+    })
+    }
+
   public confirmSignUp(user : User): Promise<any>{
   return Auth.confirmSignUp(user.email, user.code);
   }

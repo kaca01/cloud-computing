@@ -18,6 +18,7 @@ import { InviteMemberDialogComponent } from './components/dialogs/invite-member-
 import { FamilyRegistrationComponent } from './components/family-registration/family-registration.component';
 import { FileDetailsComponent } from './components/dialogs/file-details/file-details.component';
 import { AddPermissionDialogComponent } from './components/dialogs/add-permission-dialog/add-permission-dialog.component';
+import { UserActivationComponent } from './components/user-activation/user-activation.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { AddPermissionDialogComponent } from './components/dialogs/add-permissio
     FamilyRegistrationComponent,
     FileDetailsComponent,
     AddPermissionDialogComponent,
+    UserActivationComponent,
   ],
   imports: [
     BrowserModule,
