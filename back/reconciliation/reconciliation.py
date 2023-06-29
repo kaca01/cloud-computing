@@ -47,4 +47,4 @@ def reconciliation():
             'body': 'Error occurred during reconciliation process.'
         }
 
-reconcile_s3_dynamodb()
+# reconcile_s3_dynamodb()

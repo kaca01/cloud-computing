@@ -392,7 +392,7 @@ custom:
       States:
         storageFile:
           Type: Task
-          Resource: arn:aws:lambda:eu-central-1:522114191780:function:${self:service}-storageFile
+          Resource: arn:aws:lambda:eu-central-1:522114191780:function:back444-dev-storageFile
           Retry:
             - ErrorEquals: ["States.ALL"]
               MaxAttempts: 3
@@ -400,10 +400,10 @@ custom:
           Catch:
             - ErrorEquals: ["States.ALL"]
               Next: reconciliation
-          End: true
+          Next: storageMetadata
         storageMetadata:
           Type: Task
-          Resource: arn:aws:lambda:eu-central-1:522114191780:function:${self:service}-storageMetadata
+          Resource: arn:aws:lambda:eu-central-1:522114191780:function:back444-dev-storageMetadata
           Retry:
             - ErrorEquals: ["States.ALL"]
               MaxAttempts: 3
@@ -411,7 +411,7 @@ custom:
           End: true
         reconciliation:
           Type: Task
-          Resource: arn:aws:lambda:eu-central-1:522114191780:function:${self:service}-reconciliation
+          Resource: arn:aws:lambda:eu-central-1:522114191780:function:back444-dev-reconciliation
           End: true
 # you can add CloudFormation resource templates here
 resources:
@@ -421,6 +421,54 @@ resources:
       Default: arn:aws:ses:eu-central-1:522114191780:identity/anastasijas557@gmail.com
 
   Resources:
+    StateMachine:
+      Type: AWS::StepFunctions::StateMachine
+      Properties:
+        StateMachineName: my-step-function
+        DefinitionString: |
+          {
+            "Comment": "A step function to handle storage operations",
+            "StartAt": "storageFile",
+            "States": {
+              "storageFile": {
+                "Type": "Task",
+                "Resource": "arn:aws:lambda:eu-central-1:522114191780:function:back444-dev-storageFile",
+                "Retry": [
+                  {
+                    "ErrorEquals": ["States.ALL"],
+                    "MaxAttempts": 3,
+                    "IntervalSeconds": 5
+                  }
+                ],
+                "Catch": [
+                  {
+                    "ErrorEquals": ["States.ALL"],
+                    "Next": "reconciliation"
+                  }
+                ],
+                "Next": "storageMetadata"
+              },
+              "storageMetadata": {
+                "Type": "Task",
+                "Resource": "arn:aws:lambda:eu-central-1:522114191780:function:back444-dev-storageMetadata",
+                "Retry": [
+                  {
+                    "ErrorEquals": ["States.ALL"],
+                    "MaxAttempts": 3,
+                    "IntervalSeconds": 5
+                  }
+                ],
+                "End": true
+              },
+              "reconciliation": {
+                "Type": "Task",
+                "Resource": "arn:aws:lambda:eu-central-1:522114191780:function:back444-dev-reconciliation",
+                "End": true
+              }
+            }
+          }
+        RoleArn: arn:aws:iam::522114191780:role/ConsistencyRole
+
     filesBucket:
       Type: AWS::S3::Bucket
       Properties:
