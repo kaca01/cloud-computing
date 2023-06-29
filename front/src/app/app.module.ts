@@ -19,6 +19,7 @@ import { FamilyRegistrationComponent } from './components/family-registration/fa
 import { FileDetailsComponent } from './components/dialogs/file-details/file-details.component';
 import { AddPermissionDialogComponent } from './components/dialogs/add-permission-dialog/add-permission-dialog.component';
 import { UserActivationComponent } from './components/user-activation/user-activation.component';
+import { LoginVerificationComponent } from './components/login-verification/login-verification.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { UserActivationComponent } from './components/user-activation/user-activ
     FileDetailsComponent,
     AddPermissionDialogComponent,
     UserActivationComponent,
+    LoginVerificationComponent,
   ],
   imports: [
     BrowserModule,

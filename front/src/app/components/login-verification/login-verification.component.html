@@ -1,0 +1,29 @@
+<div class="background">
+    <img src="../../assets/images/close.png" id="bgCloseImg" class="close" [routerLink]="['/welcome-page']"/>
+    <div class="row">
+
+    <mat-card id="verification">
+        <mat-card-content>
+            <div id="verificationHeader">
+              Login verification
+            </div>    
+      
+            <form [formGroup]="registrationForm" fxLayout="column" (ngSubmit)="verifyLogin()">
+                <div class="email-input">
+                    <mat-form-field class="full-width" appearance="outline">
+                        <mat-label>Email</mat-label>
+                        <input type="email" name="email" matInput formControlName="email" >
+                        <mat-error *ngIf="!registrationForm.controls['email'].valid"></mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="full-width" appearance="outline">
+                        <mat-label>Code</mat-label>
+                        <input type="text" name="code" matInput placeholder="Ex. 941305" formControlName="code">
+                        <mat-error *ngIf="!registrationForm.controls['code'].valid"></mat-error>
+                    </mat-form-field>
+                </div>
+                
+                <button mat-raised-button type="submit" class="reg-btn">Confirm</button>
+            </form>
+          </mat-card-content>
+    </mat-card>
+</div>
