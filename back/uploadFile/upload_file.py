@@ -44,7 +44,6 @@ def storage_file(event, context):
 
     # Check verification email
     try:
-        print(ses.get_identity_verification_attributes(Identities=[body['user']]))
         verification_attributes = ses.get_identity_verification_attributes(Identities=[body['user']])['VerificationAttributes']
         is_verified = verification_attributes[body['user']]['VerificationStatus'] == 'Success'
 
@@ -54,7 +53,7 @@ def storage_file(event, context):
                     Message=json.dumps(
                         {
                             "subject": 'Upload file',
-                            "content": f"File '{ body['fileName'] }' uploaded successfully.",
+                            "content": f"File '{ body['fileName'].split('/')[-1] }' uploaded successfully by { body['user'] }.",
                             "recipient": body['user'],
                         }
                     ),

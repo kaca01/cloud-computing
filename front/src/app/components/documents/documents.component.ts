@@ -263,7 +263,7 @@ export class DocumentsComponent implements OnInit {
 
   deleteFolder(folderName: string){
     axios
-    .delete(this.fileService.apiUrl + "/deleteFolder", { params: { "folder_path": this.currentPath+"/"+folderName } }) 
+    .delete(this.fileService.apiUrl + "/deleteFolder", { params: { "folder_path": this.currentPath+"/"+folderName, "user": this.email } }) 
     .then((response) => {
       this.openSnackBar('Successfully deleted folder', 'Close');
       this.updateView();

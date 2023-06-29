@@ -20,7 +20,7 @@ def lambda_handler(event, contex):
     body = json.loads(event['body']) 
     file_name = body['fileName']
     file_content = body['fileContent']
-    new_values = {'description': body["description"], 'tags': body["tags"] }
+    new_values = { 'fileModified': body["fileModified"], 'description': body["description"], 'tags': body["tags"] }
 
     # Update matadata
     table = dynamodb.Table(table_name)
@@ -45,8 +45,30 @@ def lambda_handler(event, contex):
         decoded_data = base64.b64decode(file_content.split(',')[1].strip())
         s3.put_object(Bucket=bucket_name, Key=file_name, Body=decoded_data)
 
-    # Create response
-    body = {
-        'message': 'Successfully edited file'
-    }
-    return create_response(200, body)
+    # Check verification email
+    try:
+        verification_attributes = ses.get_identity_verification_attributes(Identities=[body['user']])['VerificationAttributes']
+        is_verified = verification_attributes[body['user']]['VerificationStatus'] == 'Success'
+
+        if is_verified:
+            sns.publish(
+                    TopicArn=topic,
+                    Message=json.dumps(
+                        {
+                            "subject": 'Edited file',
+                            "content": f"File '{ body['fileName'].split('/')[-1] }' edited successfully by { body['user'] }.",
+                            "recipient": body['user'],
+                        }
+                    ),
+                )
+            # Create response
+            body = {
+                'message': 'Successfully edited file. \nCheck email'
+            }
+            return create_response(200, body)
+    except:
+        # Create response
+        body = {
+            'message': 'Successfully edited file but you have not verified email'
+        }
+        return create_response(200, body)
