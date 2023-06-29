@@ -14,9 +14,9 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent},
   { path: 'registration', component: RegistrationPageComponent},
   { path: 'folders', component: FoldersComponent},
+  { path: 'activation/:id', component: UserActivationComponent},
   { path: 'documents', component: DocumentsComponent},
   { path: 'family-registration', component: FamilyRegistrationComponent},
-  { path: 'activate:email', component: UserActivationComponent},
   { path: '**', component: WelcomePageComponent },
   { path: '', redirectTo: '/welcome-page', pathMatch: 'full' },
 ];

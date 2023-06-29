@@ -379,6 +379,23 @@ functions:
             parameters:
               paths:
                 name: true
+  getFamilyMember:
+    handler: getFamilyMember/get_family_member.lambda_handler
+    package:
+      include: 'getFamilyMember/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/family_users2021
+    events:
+      - http:
+          # Path for this endpoint
+          path: getFamilyMember/{email}
+          # HTTP method for this endpoint
+          method: get
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
   lambdaToStartStepFunction:
     handler: lambdaStepFunction/lambda_step_function.lambda_handler
     package:
