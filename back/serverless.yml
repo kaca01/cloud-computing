@@ -194,6 +194,13 @@ functions:
             parameters:
               paths:
                 name: true
+  reconciliation:
+    handler: reconciliation/reconciliation.reconciliation
+    events:
+        - schedule: cron(00 3 * * ? *)
+          input:
+            time: 03:00
+            timezone: "Europe/Madrid"
   downloadFile:
     handler: downloadFile/download_file.lambda_handler
     package:
@@ -376,6 +383,36 @@ functions:
             parameters:
               paths:
                 name: true
+custom:
+  stepFunction:
+    name: my-step-function
+    definition:
+      Comment: "A step function to handle storage operations"
+      StartAt: storageFile
+      States:
+        storageFile:
+          Type: Task
+          Resource: arn:aws:lambda:eu-central-1:522114191780:function:${self:service}-storageFile
+          Retry:
+            - ErrorEquals: ["States.ALL"]
+              MaxAttempts: 3
+              IntervalSeconds: 5
+          Catch:
+            - ErrorEquals: ["States.ALL"]
+              Next: reconciliation
+          End: true
+        storageMetadata:
+          Type: Task
+          Resource: arn:aws:lambda:eu-central-1:522114191780:function:${self:service}-storageMetadata
+          Retry:
+            - ErrorEquals: ["States.ALL"]
+              MaxAttempts: 3
+              IntervalSeconds: 5
+          End: true
+        reconciliation:
+          Type: Task
+          Resource: arn:aws:lambda:eu-central-1:522114191780:function:${self:service}-reconciliation
+          End: true
 # you can add CloudFormation resource templates here
 resources:
   Parameters:
