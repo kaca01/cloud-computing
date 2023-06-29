@@ -22,4 +22,5 @@ export class FolderService {
   getContent(folder: string): Observable<any> {
     return this.http.get<any>(this.url + this.methodGet + '/' + folder);
   }
+
 }

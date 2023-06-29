@@ -69,6 +69,11 @@ functions:
         Resource: "arn:aws:s3:::serverlessfilebucket444/*"
       - Effect: Allow
         Action:
+          - s3:PutObject
+          - s3:GetObject
+        Resource: "arn:aws:s3:::serverlessfilebucketradi"
+      - Effect: Allow
+        Action:
           - sqs:SendMessage
         Resource: 
           - "Fn::GetAtt": [filesSQSQueue, Arn]
@@ -103,6 +108,11 @@ functions:
         Resource: "arn:aws:s3:::serverlessfilebucket444/*"
       - Effect: Allow
         Action:
+          - s3:PutObject
+          - s3:GetObject
+        Resource: "arn:aws:s3:::serverlessfilebucketradi"
+      - Effect: Allow
+        Action:
           - sqs:SendMessage
         Resource: 
           - "Fn::GetAtt": [filesSQSQueue, Arn]
@@ -135,6 +145,11 @@ functions:
           - dynamodb:PutItem
         Resource:
           - "Fn::GetAtt": [filesTable, Arn]
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+          - s3:GetObject
+        Resource: "arn:aws:s3:::serverlessfilebucketradi"
     events:
       - sqs:
           arn: { "Fn::GetAtt": [filesSQSQueue, Arn] }

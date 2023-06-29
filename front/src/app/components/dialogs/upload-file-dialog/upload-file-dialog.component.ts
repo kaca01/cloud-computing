@@ -8,6 +8,7 @@ import { CognitoService } from 'src/app/services/cognito.service';
 import { DocumentsComponent } from '../../documents/documents.component';
 import { UploadFile } from 'src/app/domain';
 
+
 @Component({
   selector: 'app-upload-file-dialog',
   templateUrl: './upload-file-dialog.component.html',
