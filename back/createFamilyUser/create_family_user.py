@@ -14,10 +14,10 @@ def lambda_handler(event, context):
     invitedEmail = event['invitedEmail']
 
     table = dynamodb.Table(table_name)
-    table.put_item(Item={'email':user["email"], 'password':user["password"], 'telephoneNumber': user["telephoneNumber"], 'address': user["address"], 'name': user["name"], 'surname': user["surname"]})
+    table.put_item(Item={'email':user["email"], 'invitedEmail':invitedEmail, 'password':user["password"], 'telephoneNumber': user["telephoneNumber"], 'address': user["address"], 'name': user["name"], 'surname': user["surname"]})
     
     data = {
             "user" : user,
             "invitedEmail": invitedEmail
         }
-    return create_response(200, data)
+    return data

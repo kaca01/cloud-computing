@@ -51,7 +51,6 @@ export class LoginVerificationComponent implements OnInit {
         this.fileService.sendVerificationEmail({ "email" : this.registrationForm.get('email')?.value! }).subscribe((data : any) => {
           this.openSnackBar(data['message']);
         })
-        //todo dobij pristup svim fajlovima
       })
       .catch((error: any) => {
         console.log(error.message);

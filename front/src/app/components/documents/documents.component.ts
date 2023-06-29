@@ -293,8 +293,11 @@ export class DocumentsComponent implements OnInit {
     this.dialog.open(CreateFolderComponent, dialogConfig);
   }
 
-  private isFolder(name: string): boolean { 
-    return !name.includes('.');
+  private isFolder(name: string): boolean {
+    name = name.trim();
+    if (name.endsWith('.com')) return true;
+    else if (name.includes('.')) return false;
+    else return true;
   }
 
   private findExtension(name: string): string {

@@ -165,7 +165,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucke2021/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket2021/*"
     events:
       # REST API endpoint of API Gateway
       - http:

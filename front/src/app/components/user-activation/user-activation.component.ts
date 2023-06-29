@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { User } from 'src/app/domain';
 import { CognitoService } from 'src/app/services/cognito.service';
 import { UserService } from 'src/app/services/user.service';
+import axios from 'axios';
+import { FileService } from 'src/app/services/file.service';
 
 @Component({
   selector: 'app-user-activation',
@@ -14,8 +16,12 @@ export class UserActivationComponent implements OnInit {
 
   @ViewChild('message') message!: ElementRef;
   email!: string | null;
+  emails: String[] = [];
 
-  constructor(private service: CognitoService, private userService: UserService, private activatedRoute: ActivatedRoute) {}
+  constructor(private service: CognitoService,
+     private userService: UserService,
+      private activatedRoute: ActivatedRoute,
+      private fileService : FileService) {}
 
   ngOnInit(): void {
       this.email = this.activatedRoute.snapshot.paramMap.get('id');
@@ -28,6 +34,7 @@ export class UserActivationComponent implements OnInit {
               console.log(1);
               const p = document.getElementById("message");
               p!.innerHTML = "You have successfully verified the account of your family memeber. A login code has been sent to their email address!";
+              this.givePermission(user.user.Item);
             }
             else if (this.service.status=="failure"){
               console.log(2);
@@ -40,6 +47,29 @@ export class UserActivationComponent implements OnInit {
           console.log("error happened.");
         }
       );
+  }
+
+  givePermission(user: any){
+    axios
+    .get(this.fileService.apiUrl + "/seePermission", { params: { "document_path": user.invitedEmail } })
+    .then((response) => {
+      console.log(response);
+      if(response.data.data.grantedUsers != undefined && response.data.data.grantedUsers.length != 0){
+        for (const el in response.data.data.grantedUsers)
+        this.emails.push(response.data.data.grantedUsers[el]);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    if (!this.emails.includes(user.email))
+      this.emails.push(user.email)
+    this.fileService.addPeople({     
+      "granted_users": this.emails,
+      "document_path": user.invitedEmail,
+    }).subscribe((data : any) => {
+      console.log(data['message']);
+    })
   }
 
   sleep(ms: number): Promise<void> {
