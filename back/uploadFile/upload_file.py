@@ -19,6 +19,30 @@ sns = boto3.client('sns')
 
 ses = boto3.client("ses")
 
+sf_client = boto3.client('stepfunctions')
+
+
+def step(event, context):
+    body = json.loads(event['body'])
+    print(body)
+
+    message_body = {
+        'fileName': body['fileName'],
+        'fileType': body['fileType'],
+        'fileSize': body['fileSize'],
+        'fileCreated': body['fileCreated'],
+        'fileModified': body['fileModified'],
+        'description': body['description'],
+        'tags': body['tags']
+    }
+    
+    response = sf_client.start_execution(
+        stateMachineArn='arn:aws:states:eu-central-1:522114191780:stateMachine:my-step-function',
+        input=json.dumps(message_body)
+    )
+
+    print(response)
+
 def storage_file(event, context):
     body = json.loads(event['body'])
 

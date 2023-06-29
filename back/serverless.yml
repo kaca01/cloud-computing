@@ -58,6 +58,38 @@ package:
     - 'utility/**'
 
 functions:
+  step:
+    handler: uploadFile/upload_file.step
+    package:
+      include: 'uploadFile/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+        Resource: "arn:aws:s3:::serverlessfilebucket444/*"
+      - Effect: Allow
+        Action:
+          - sqs:SendMessage
+        Resource: 
+          - "Fn::GetAtt": [filesSQSQueue, Arn]
+      - Effect: Allow
+        Action:
+          - sns:Publish
+        Resource:
+          - "*"
+      - Effect: Allow
+        Action:
+          - ses:GetIdentityVerificationAttributes
+        Resource: 
+          - "*"
+    events:
+      # REST API endpoint of API Gateway
+      - http:
+          # Path for this endpoint
+          path: step
+          # HTTP method for this endpoint
+          method: post
+          # Enable CORS. Don't forget to return the right header in your response
   storageFile:
     handler: uploadFile/upload_file.storage_file
     package:
@@ -519,41 +551,41 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
 
-    ApiGatewayRestApi:
-      Type: AWS::ApiGateway::RestApi
-      Properties:
-        Name: MyStepFunctionApi
+    # ApiGatewayRestApi:
+    #   Type: AWS::ApiGateway::RestApi
+    #   Properties:
+    #     Name: MyStepFunctionApi
 
-    ApiGatewayResource:
-      Type: AWS::ApiGateway::Resource
-      Properties:
-        RestApiId:
-          Ref: ApiGatewayRestApi
-        ParentId:
-          Fn::GetAtt: [ApiGatewayRestApi, RootResourceId]
-        PathPart: my-step-function
+    # ApiGatewayResource:
+    #   Type: AWS::ApiGateway::Resource
+    #   Properties:
+    #     RestApiId:
+    #       Ref: ApiGatewayRestApi
+    #     ParentId:
+    #       Fn::GetAtt: [ApiGatewayRestApi, RootResourceId]
+    #     PathPart: my-step-function
 
-    ApiGatewayMethod:
-      Type: AWS::ApiGateway::Method
-      Properties:
-        RestApiId:
-          Ref: ApiGatewayRestApi
-        ResourceId:
-          Ref: ApiGatewayResource
-        HttpMethod: POST
-        AuthorizationType: NONE
-        Integration:
-          Type: AWS
-          IntegrationHttpMethod: POST
-          Uri:
-            Fn::Sub:
-              - "arn:aws:apigateway:eu-central-1:states:action/StartExecution"
-              - AWS::AccountId: !Ref AWS::AccountId
-                StateMachineArn:
-                  Fn::Sub: "arn:aws:states:eu-central-1:522114191780:stateMachine:my-step-function"
-          IntegrationResponses:
-            - StatusCode: 200
-              ResponseTemplates:
-                application/json: ''
-        MethodResponses:
-          - StatusCode: 200
+    # ApiGatewayMethod:
+    #   Type: AWS::ApiGateway::Method
+    #   Properties:
+    #     RestApiId:
+    #       Ref: ApiGatewayRestApi
+    #     ResourceId:
+    #       Ref: ApiGatewayResource
+    #     HttpMethod: POST
+    #     AuthorizationType: NONE
+    #     Integration:
+    #       Type: AWS
+    #       IntegrationHttpMethod: POST
+    #       Uri:
+    #         Fn::Sub:
+    #           - "arn:aws:apigateway:eu-central-1:states:action/StartExecution"
+    #           - AWS::AccountId: !Ref AWS::AccountId
+    #             StateMachineArn:
+    #               Fn::Sub: "arn:aws:states:eu-central-1:522114191780:stateMachine:my-step-function"
+    #       IntegrationResponses:
+    #         - StatusCode: 200
+    #           ResponseTemplates:
+    #             application/json: ''
+    #     MethodResponses:
+    #       - StatusCode: 200
