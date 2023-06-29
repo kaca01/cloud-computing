@@ -258,10 +258,10 @@ functions:
         Resource:
           - "Fn::GetAtt": [filesTable, Arn]
     events:
-        - schedule: cron(00 3 * * ? *)
-          input:
-            time: 03:00
-            timezone: "Europe/Madrid"
+        # - schedule: cron(00 3 * * ? *)
+        #   input:
+        #     time: 03:00
+        #     timezone: "Europe/Madrid"
   downloadFile:
     handler: downloadFile/download_file.lambda_handler
     package:
@@ -465,7 +465,7 @@ custom:
         storageMetadata:
           Type: Task
           Resource: arn:aws:lambda:eu-central-1:522114191780:function:back444-dev-storageMetadata
-          InputPath: "$.MessageBody"
+          InputPath: "$"
           Retry:
             - ErrorEquals: ["States.ALL"]
               MaxAttempts: 3
@@ -516,7 +516,7 @@ resources:
               "storageMetadata": {
                 "Type": "Task",
                 "Resource": "arn:aws:lambda:eu-central-1:522114191780:function:back444-dev-storageMetadata",
-                "InputPath": "$.MessageBody",
+                "InputPath": "$",
                 "Retry": [
                   {
                     "ErrorEquals": ["States.ALL"],

@@ -91,7 +91,8 @@ def storage_file(event, context):
             body = {
                 'message': 'Successfully upload file. \nCheck email'
             }
-            return create_response(200, body)
+            # return create_response(200, body)
+            return message_body
     except:
         # Create response
         body = {
@@ -103,9 +104,10 @@ def storage_file(event, context):
 def storage_metadata(event, context):
     print('106')
     print(event)
-    for record in event['Records']:
-        message_body = json.loads(record['body'])
-    
+    # for record in event['Records']:
+    #     message_body = json.loads(record['body'])
+    # TODO : delete the following line
+    message_body = event
     # Put item into DynamoDB table
     table = dynamodb.Table(table_name)
     table.put_item(Item=message_body)
