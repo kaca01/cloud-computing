@@ -143,16 +143,24 @@ def storage_file(event, context):
 
 
 def storage_metadata(event, context):
-    print('106')
-    print(event)
-    # for record in event['Records']:
-    #     message_body = json.loads(record['body'])
-    # TODO : delete the following line
-    message_body = event
-    # Put item into DynamoDB table
-    table = dynamodb.Table(table_name)
-    table.put_item(Item=message_body)
+
+    try:
+        print('106')
+        print(event)
+        # for record in event['Records']:
+        #     message_body = json.loads(record['body'])
+        # TODO : delete the following line
+        # Put item into DynamoDB table
+        message_body = event
+        table = dynamodb.Table(table_name)
+        table.put_item(Item=message_body)
     
+    except Exception:
+        for record in event['Records']:
+            message_body = json.loads(record['body'])
+            table = dynamodb.Table(table_name)
+            table.put_item(Item=message_body)
+        
     # Create response
     body = {
         'message': 'Successfully uploaded file'
