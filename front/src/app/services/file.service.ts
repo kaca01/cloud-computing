@@ -14,7 +14,7 @@ export class FileService {
   public permissionUrl = "https://0n5qvfuh5m.execute-api.eu-central-1.amazonaws.com/dev";
 
   uploadFile(file: UploadFile): Observable<UploadFile> {
-      return this.http.post<UploadFile>(this.apiUrl + "/upload", file)
+      return this.http.post<UploadFile>(this.apiUrl + "/my-step-function", file)
   }
 
   editFile(file: any): Observable<any> {

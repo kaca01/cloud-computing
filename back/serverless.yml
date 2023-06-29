@@ -518,3 +518,42 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
+    ApiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: MyStepFunctionApi
+
+    ApiGatewayResource:
+      Type: AWS::ApiGateway::Resource
+      Properties:
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ParentId:
+          Fn::GetAtt: [ApiGatewayRestApi, RootResourceId]
+        PathPart: my-step-function
+
+    ApiGatewayMethod:
+      Type: AWS::ApiGateway::Method
+      Properties:
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ResourceId:
+          Ref: ApiGatewayResource
+        HttpMethod: POST
+        AuthorizationType: NONE
+        Integration:
+          Type: AWS
+          IntegrationHttpMethod: POST
+          Uri:
+            Fn::Sub:
+              - "arn:aws:apigateway:eu-central-1:states:action/StartExecution"
+              - AWS::AccountId: !Ref AWS::AccountId
+                StateMachineArn:
+                  Fn::Sub: "arn:aws:states:eu-central-1:522114191780:stateMachine:my-step-function"
+          IntegrationResponses:
+            - StatusCode: 200
+              ResponseTemplates:
+                application/json: ''
+        MethodResponses:
+          - StatusCode: 200
