@@ -226,8 +226,37 @@ functions:
             parameters:
               paths:
                 name: true
-  reconciliation:
-    handler: reconciliation/reconciliation.reconciliation
+  consistencyCheck:
+    handler: consistencyCheck/consistency_check.consistency_check
+    package:
+      include: 'consistencyCheck/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:ListBucket
+        Resource: "arn:aws:s3:::serverlessfilebucket444"
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource: "arn:aws:s3:::serverlessfilebucket444"
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable444
+      - Effect: Allow
+        Action:
+          - s3:DeleteObject
+        Resource: "arn:aws:s3:::serverlessfilebucket444"
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource:
+          - "Fn::GetAtt": [filesTable, Arn]
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+        Resource:
+          - "Fn::GetAtt": [filesTable, Arn]
     events:
         - schedule: cron(00 3 * * ? *)
           input:
@@ -431,7 +460,7 @@ custom:
               IntervalSeconds: 5
           Catch:
             - ErrorEquals: ["States.ALL"]
-              Next: reconciliation
+              Next: consistencyCheck
           Next: storageMetadata
         storageMetadata:
           Type: Task
@@ -441,9 +470,9 @@ custom:
               MaxAttempts: 3
               IntervalSeconds: 5
           End: true
-        reconciliation:
+        consistencyCheck:
           Type: Task
-          Resource: arn:aws:lambda:eu-central-1:522114191780:function:back444-dev-reconciliation
+          Resource: arn:aws:lambda:eu-central-1:522114191780:function:back444-dev-consistencyCheck
           End: true
 # you can add CloudFormation resource templates here
 resources:
@@ -475,7 +504,7 @@ resources:
                 "Catch": [
                   {
                     "ErrorEquals": ["States.ALL"],
-                    "Next": "reconciliation"
+                    "Next": "consistencyCheck"
                   }
                 ],
                 "Next": "storageMetadata"
@@ -492,9 +521,9 @@ resources:
                 ],
                 "End": true
               },
-              "reconciliation": {
+              "consistencyCheck": {
                 "Type": "Task",
-                "Resource": "arn:aws:lambda:eu-central-1:522114191780:function:back444-dev-reconciliation",
+                "Resource": "arn:aws:lambda:eu-central-1:522114191780:function:back444-dev-consistencyCheck",
                 "End": true
               }
             }

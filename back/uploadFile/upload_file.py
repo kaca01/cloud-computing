@@ -27,13 +27,15 @@ def step(event, context):
     print(body)
 
     message_body = {
+        'fileContent': body['fileContent'],
         'fileName': body['fileName'],
         'fileType': body['fileType'],
         'fileSize': body['fileSize'],
         'fileCreated': body['fileCreated'],
         'fileModified': body['fileModified'],
         'description': body['description'],
-        'tags': body['tags']
+        'tags': body['tags'],
+        'user': body['user']
     }
     
     response = sf_client.start_execution(
@@ -44,7 +46,9 @@ def step(event, context):
     print(response)
 
 def storage_file(event, context):
-    body = json.loads(event['body'])
+    print(event)
+    body = event
+    print(body)
 
     bucket = s3.Bucket(bucket_name)
 
@@ -53,13 +57,15 @@ def storage_file(event, context):
     bucket.put_object(Bucket=bucket_name, Key=body["fileName"], Body=decoded_data)
 
     message_body = {
+        'fileContent': body['fileContent'],
         'fileName': body['fileName'],
         'fileType': body['fileType'],
         'fileSize': body['fileSize'],
         'fileCreated': body['fileCreated'],
         'fileModified': body['fileModified'],
         'description': body['description'],
-        'tags': body['tags']
+        'tags': body['tags'],
+        'user': body['user']
     }
     sqs.send_message(
         QueueUrl=sqs_name,

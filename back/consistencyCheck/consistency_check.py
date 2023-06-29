@@ -8,7 +8,7 @@ bucket_name = os.environ['BUCKET_NAME']
 s3 = boto3.resource('s3')
 
 
-def reconciliation():
+def consistency_check(event, context):
     table = dynamodb.Table(table_name)
     bucket = s3.Bucket(bucket_name)
 
