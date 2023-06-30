@@ -117,3 +117,16 @@ form {
     width: 100%;
     color: red;
 }
+
+#verify-div{
+    text-align: center;
+}
+
+
+#verify-link{
+    color: #c4ae78;
+}
+
+#verify-link:hover{
+    cursor: pointer;
+}

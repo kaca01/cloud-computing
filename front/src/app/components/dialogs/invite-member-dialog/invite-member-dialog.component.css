@@ -1,0 +1,40 @@
+#close-dialog {
+    float: right;
+    width: 20px;
+    height: 20px;
+    margin-right: 20px;
+    margin-top: 5%;
+}
+
+.close:hover {
+    background-color: rgb(243, 237, 237);
+    cursor: pointer;
+}
+
+p {
+    margin-left: 1em;
+}
+
+#title {
+    width: 17em;
+    margin-right: 5%;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-size: x-large;
+    font-weight: bold;
+}
+
+#name {
+    width: 85%;
+    margin-top: 1em;
+    margin-left: 1.5em;
+}
+
+#create {
+    width: 40%;
+    vertical-align: top;
+    margin-top: 10%;
+    font-size: larger;
+    margin-left: 25%;
+    margin-bottom: 5%;
+}

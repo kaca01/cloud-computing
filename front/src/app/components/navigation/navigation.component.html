@@ -7,6 +7,13 @@
         <li><a  class="nav">Hello, Ana</a></li>
       </ul>
     </div>
+      <div id="family">
+        <button mat-button [matMenuTriggerFor]="menu">Family member options</button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="inviteMember()">Invite a member</button>
+          <button mat-menu-item (click)="controlAccess()">Control access for root</button>
+        </mat-menu>
+      </div>
       <span [routerLink]="['/home-page']" class="clickable, logout" (click)="logOut()">LogOut
           <img id="logout-img" src="../../../assets/images/logout.png" />
       </span>

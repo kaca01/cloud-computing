@@ -9,6 +9,7 @@ import { User } from '../domain';
 export class CognitoService {
 
   private token: string = '';
+  status: string = {} as string;
 
   constructor() {
     Amplify.configure({
@@ -28,6 +29,43 @@ export class CognitoService {
       address: user.address,
     }
   })
+  }
+
+  public signUpWithoutVerification(user: User): Promise<any> {
+    Auth.signUp({
+      username : user.email,
+      password: user.password,
+      attributes :{
+        email : user.email,
+        given_name: user.name,
+        family_name: user.surname,
+        phone_number: user.telephoneNumber,
+        address: user.address,
+      }
+    }).then(data => {
+      console.log("success");
+      this.status = "success";
+    })
+    .catch(error => {
+      console.error(error);
+      console.log("failure");
+      this.status = "failure";
+    });
+
+    return new Promise<any>((resolve, reject) => {
+      // Perform asynchronous operation
+      // For example, make an HTTP request
+      fetch('https://api.example.com/data')
+        .then(response => response.json())
+        .then(data => {
+          // Resolve the Promise with the retrieved data
+          resolve(data);
+        })
+        .catch(error => {
+          // Reject the Promise with the encountered error
+          reject(error);
+        });
+    });
   }
 
   public confirmSignUp(user : User): Promise<any>{
