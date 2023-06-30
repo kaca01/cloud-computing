@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: back555
+service: back00
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -68,7 +68,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket456/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket00/*"
       - Effect: Allow
         Action:
           - sqs:SendMessage
@@ -93,6 +93,10 @@ functions:
           method: post
           # Enable CORS. Don't forget to return the right header in your response
           cors: true
+          authorizer:
+            name: MyAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:eu-central-1:522114191780:userpool/eu-central-1_0X24Fz6lx
   storageMetadata:
     handler: uploadFile/upload_file.storage_metadata
     package:
@@ -162,7 +166,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket456/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket00/*"
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -180,11 +184,11 @@ functions:
       - Effect: Allow
         Action:
           - s3:ListBucket
-        Resource: "arn:aws:s3:::serverlessfilebucket456"
+        Resource: "arn:aws:s3:::serverlessfilebucket00"
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: "arn:aws:s3:::serverlessfilebucket456"
+        Resource: "arn:aws:s3:::serverlessfilebucket00"
     events:
       - http:
           path: content/{name}
@@ -202,7 +206,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: "arn:aws:s3:::serverlessfilebucket456/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket00/*"
     events:
       - http:
           path: download
@@ -219,7 +223,7 @@ functions:
         Action:
           - s3:GetObject
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket456/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket00/*"
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
@@ -255,8 +259,8 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
-          - "arn:aws:s3:::serverlessfilebucket456/*"
-          - "arn:aws:s3:::serverlessfilebucket456"
+          - "arn:aws:s3:::serverlessfilebucket00/*"
+          - "arn:aws:s3:::serverlessfilebucket00"
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
@@ -288,7 +292,7 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
-          - "arn:aws:s3:::serverlessfilebucket456/*"
+          - "arn:aws:s3:::serverlessfilebucket00/*"
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
@@ -321,7 +325,7 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:PutItem
-        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content1
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content00
     events:
       - http:
           # Path for this endpoint
@@ -338,7 +342,7 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content1
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content00
     events:
       - http:
           # Path for this endpoint
@@ -356,7 +360,7 @@ functions:
         Action:
           - dynamodb:GetItem
           - dynamodb:Scan
-        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content1
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content00
     events:
       - http:
           # Path for this endpoint
@@ -374,7 +378,7 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable456
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable00
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -396,14 +400,19 @@ resources:
       Default: arn:aws:ses:eu-central-1:522114191780:identity/anastasijas557@gmail.com
 
   Resources:
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: gallery-app-cognito
+
     filesBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: serverlessfilebucket456
+        BucketName: serverlessfilebucket00
     filesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: serverlessfiletable456
+        TableName: serverlessfiletable00
         AttributeDefinitions:
           - AttributeName: fileName
             AttributeType: S
@@ -416,27 +425,27 @@ resources:
     filesSQSQueue:
       Type: "AWS::SQS::Queue"
       Properties:
-        QueueName: queue1
+        QueueName: queue00
 
     UploadFileTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: upload-file1
+        TopicName: upload-file00
 
     EditFileTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: edit-file1
+        TopicName: edit-file00
 
     DeleteFileTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: delete-file1
+        TopicName: delete-file00
         
     sharedContentTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: shared_content1
+        TableName: shared_content00
         AttributeDefinitions:
           - AttributeName: documentName
             AttributeType: S
