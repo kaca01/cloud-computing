@@ -16,6 +16,8 @@ import { UploadFileDialogComponent } from './components/dialogs/upload-file-dial
 import { CreateFolderComponent } from './components/dialogs/create-folder/create-folder.component';
 import { FileDetailsComponent } from './components/dialogs/file-details/file-details.component';
 import { AddPermissionDialogComponent } from './components/dialogs/add-permission-dialog/add-permission-dialog.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http'
+import { TokenInterceptor } from './interceptor/tokenInterceptor';
 
 @NgModule({
   declarations: [
@@ -40,7 +42,13 @@ import { AddPermissionDialogComponent } from './components/dialogs/add-permissio
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { HttpHeaders } from '@angular/common/http';
 import { FileService } from 'src/app/services/file.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
@@ -115,7 +116,6 @@ export class UploadFileDialogComponent implements OnInit {
       })
       this.close();
       this.tags = [];
-
     }
   }
 
