@@ -200,13 +200,21 @@ export class DocumentsComponent implements OnInit {
     });
   }
 
-  openInfo(name: string): void {
+  openSharedInfo(name : string){
+    this.openInfo(name, true);
+  }
+
+  openInfo(name: string, flag : boolean = false): void {
     let pathVariable: string = '';
     if (this.sharedBack == '') {
       let path: string = this.currentPath + "/" + name;
       pathVariable = encodeURIComponent(path);
     } 
     else {
+      let path: string = name;
+      pathVariable = encodeURIComponent(path);
+    }
+    if (flag){
       let path: string = name;
       pathVariable = encodeURIComponent(path);
     }
@@ -236,7 +244,11 @@ export class DocumentsComponent implements OnInit {
     this.dialog.open(AddPermissionDialogComponent, dialogConfig);
   }
 
-  download(name: string) {
+  downloadSharedFile(name : string){
+    this.download(name, true);
+  }
+
+  download(name: string, flag: boolean = false) {
     let pathVariable: string = '';
     if (this.sharedBack == '') {
       pathVariable = this.currentPath+"/"+name
@@ -244,6 +256,8 @@ export class DocumentsComponent implements OnInit {
     else {
       pathVariable = name;
     }
+    if (flag) 
+      pathVariable = name;
 
     axios
     .get(this.fileService.apiUrl + "/download", { params: { "path": pathVariable } }) 

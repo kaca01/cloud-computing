@@ -64,8 +64,8 @@
         <span class="item" *ngFor="let i of sharedDocumentsNames;" (dblclick)="openFile(i)">
             <img class="item-image" [src]="choosePicture(i)"/>
             <div class="hover-element">
-                <span><img class="option" src="../../../assets/images/information.png" (click)="openInfo(i)"/></span>
-                <span><img class="option" src="../../../assets/images/download.png" (click)="download(i)"/></span>
+                <span><img class="option" src="../../../assets/images/information.png" (click)="openSharedInfo(i)"/></span>
+                <span><img class="option" src="../../../assets/images/download.png" (click)="downloadSharedFile(i)"/></span>
             </div>
             <div class="tooltip">
                 <p class="folder-name">{{ getSharedDocumentName(i) }}</p>
