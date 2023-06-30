@@ -5,6 +5,7 @@ import { CognitoService } from 'src/app/services/cognito.service';
 import { UserService } from 'src/app/services/user.service';
 import axios from 'axios';
 import { FileService } from 'src/app/services/file.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-user-activation',
@@ -21,32 +22,34 @@ export class UserActivationComponent implements OnInit {
   constructor(private service: CognitoService,
      private userService: UserService,
       private activatedRoute: ActivatedRoute,
-      private fileService : FileService) {}
+      private fileService : FileService, private _snackBar: MatSnackBar,) {}
 
   ngOnInit(): void {
       this.email = this.activatedRoute.snapshot.paramMap.get('id');
-      if (this.email)
-        this.userService.getFamilyMember(this.email).subscribe(async (user : any) => {
-          if (user.user.Item){
-            this.service.signUpWithoutVerification(user.user.Item);
-            await this.sleep(2000); 
-            if (this.service.status == "success"){
-              console.log(1);
-              const p = document.getElementById("message");
-              p!.innerHTML = "You have successfully verified the account of your family memeber. A login code has been sent to their email address!";
-              this.givePermission(user.user.Item);
-            }
-            else if (this.service.status=="failure"){
-              console.log(2);
-              const p = document.getElementById("message");
-              p!.innerHTML = "An account with this email has already been created!";
-            }
-            else console.log(3);
+      if (this.email){
+      this.openSnackBar("verifying...please wait");
+      this.userService.getFamilyMember(this.email).subscribe(async (user : any) => {
+        if (user.user.Item){
+          this.service.signUpWithoutVerification(user.user.Item);
+          await this.sleep(2000); 
+          if (this.service.status == "success"){
+            console.log(1);
+            const p = document.getElementById("message");
+            p!.innerHTML = "You have successfully verified the account of your family memeber. A login code has been sent to their email address!";
+            this.givePermission(user.user.Item);
           }
-        }, error => {
-          console.log("error happened.");
+          else if (this.service.status=="failure"){
+            console.log(2);
+            const p = document.getElementById("message");
+            p!.innerHTML = "An account with this email has already been created!";
+          }
+          else console.log(3);
         }
+      }, error => {
+        console.log("error happened.");
+      }
       );
+    }
   }
 
   givePermission(user: any){
@@ -75,4 +78,10 @@ export class UserActivationComponent implements OnInit {
   sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
+  private openSnackBar(snackMsg : string) : void {
+    this._snackBar.open(snackMsg, "Dismiss", {
+      duration: 2000
+    });
+  }  
 }
