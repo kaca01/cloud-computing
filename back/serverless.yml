@@ -444,6 +444,11 @@ functions:
           - dynamodb:UpdateItem
         Resource:
           - arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable2021
+      - Effect: Allow
+        Action:
+          - ses:SendEmail
+        Resource:
+          - "*"
 
 # AWS StepFunctions
 stepFunctions:
