@@ -9,6 +9,7 @@ s3 = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
 bucket_name = os.environ['BUCKET_NAME']
 table_name = os.environ['TABLE_NAME']
+shared_table_name = os.environ['SHARED_TABLE_NAME']
 
 def lambda_handler(event, context):
 
@@ -27,8 +28,12 @@ def lambda_handler(event, context):
             table.delete_item(
                 Key = {'fileName' : obj['Key']}
             )
-
-    #todo delete user permisions?
+    
+    # also delete from shared table
+    shared_table = dynamodb.Table(shared_table_name)
+    shared_table.delete_item(
+        Key = {'documentName' : folder_path}
+    )
 
     # Delete the folder
     s3.delete_object(Bucket=bucket_name, Key=folder_path)
