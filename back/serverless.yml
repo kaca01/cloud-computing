@@ -379,6 +379,23 @@ functions:
             parameters:
               paths:
                 name: true
+  inviteMember:
+    handler: inviteMember/invite_member.lambda_handler
+    package:
+      include: 'inviteMember/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - ses:SendEmail
+        Resource: "*"
+    events:
+      - http:
+          # Path for this endpoint
+          path: inviteMember
+          # HTTP method for this endpoint
+          method: put
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
   getFamilyMember:
     handler: getFamilyMember/get_family_member.lambda_handler
     package:
@@ -439,11 +456,6 @@ functions:
     package:
       include: 'sendFamilyVerification/**'
     iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:UpdateItem
-        Resource:
-          - arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable2021
       - Effect: Allow
         Action:
           - ses:SendEmail

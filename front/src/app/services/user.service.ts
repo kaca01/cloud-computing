@@ -18,4 +18,8 @@ export class UserService {
   getFamilyMember(email: string): Observable<any> {
     return this.http.get<any>(this.url + 'getFamilyMember/' + email);
   }
+
+  inviteMember(user: any): Observable<any> {
+    return this.http.put<any>( this.url+'inviteMember', user);
+  }
 }

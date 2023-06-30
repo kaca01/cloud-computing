@@ -7,7 +7,6 @@ ses = boto3.client("ses")
 from utility.utils import create_response
 
 s3 = boto3.client('s3')
-topic = os.environ.get('VERIFY_FAMILY_TOPIC')
 sns = boto3.client('sns')
 
 def lambda_handler(event, context):

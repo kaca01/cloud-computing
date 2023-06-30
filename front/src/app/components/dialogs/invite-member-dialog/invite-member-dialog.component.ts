@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { DocumentsComponent } from '../../documents/documents.component';
+import { UserService } from 'src/app/services/user.service';
+import { CognitoService } from 'src/app/services/cognito.service';
 
 @Component({
   selector: 'app-invite-member-dialog',
@@ -13,7 +15,7 @@ export class InviteMemberDialogComponent implements OnInit {
   name: string = '';
 
   constructor(private dialogRef: MatDialogRef<DocumentsComponent>,
-    private snackBar: MatSnackBar,) { }
+    private snackBar: MatSnackBar, private userService : UserService, private cognitoService : CognitoService) { }
 
   ngOnInit(): void {
   }
@@ -23,20 +25,24 @@ export class InviteMemberDialogComponent implements OnInit {
       this.openSnackBar("Please enter the user email", "Close");
       return;
     }
-    // this.service.createFolder({
-    //   "body": {
-    //   "folderName": this.name,
-    //   "folderPath": this.path
-    //   }
-    // }).subscribe((data : any) => {
-    //   this.openSnackBar("Successfully sent email!", "Close");
-    // }, error => {
-    //   console.log("error happened.");
-    //   console.log(error);
-    //   this.openSnackBar("Successfully sent email!", "Close");
-    // });
-
-    this.dialogRef.close();
+    return new Promise<void>((resolve) => {
+      this.cognitoService.getUser()
+      .then((user: any) => {
+        if (user){
+          this.userService.inviteMember({
+            "email": this.name,
+            "invitedEmail" : user.attributes.email, 
+          }).subscribe((data : any) => {
+            this.openSnackBar("Successfully sent invitation email!", "Close");
+          }, error => {
+            console.log("error happened.");
+            console.log(error);
+            this.openSnackBar("Some error ocurred", "Close");
+          }); 
+          this.dialogRef.close();
+          resolve();
+        }
+      })})
   }
 
   close() : void {
