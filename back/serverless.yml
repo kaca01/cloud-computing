@@ -377,10 +377,6 @@ functions:
           method: get
           # Enable CORS. Don't forget to return the right header in your response
           cors: true
-          authorizer:
-            name: MyAuthorizer
-            type: COGNITO_USER_POOLS
-            arn: arn:aws:cognito-idp:eu-central-1:522114191780:userpool/eu-central-1_0X24Fz6lx
   fileDetails:
     runtime: python3.8
     handler: fileDetails/file_details.lambda_handler
