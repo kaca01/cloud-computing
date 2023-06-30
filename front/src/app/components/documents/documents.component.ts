@@ -43,7 +43,7 @@ export class DocumentsComponent implements OnInit {
               private folderService: FolderService,
               private fileService: FileService,
               private cdr: ChangeDetectorRef,
-              private snackBar: MatSnackBar) { }
+              private snackBar: MatSnackBar) { this.cognitoService.setToken(); }
 
   async ngOnInit() {
     await this.getUserDetails();
