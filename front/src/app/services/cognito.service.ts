@@ -8,6 +8,8 @@ import { User } from '../domain';
 })
 export class CognitoService {
 
+  private token: string = '';
+
   constructor() {
     Amplify.configure({
       Auth:environment.cognito
@@ -36,12 +38,12 @@ export class CognitoService {
     return Auth.currentUserInfo();
   }
 
-  public getToken(): any{ 
+  public setToken(): any{ 
     Auth.currentSession()
     .then((session) => {
       // Access the user token
       const idToken = session.getIdToken().getJwtToken();
-      console.log('User token:', idToken);
+      this.token = idToken;
       return idToken;
     })
     .catch((error) => {
@@ -56,5 +58,14 @@ export class CognitoService {
 
   public signOut(): Promise<any>{
     return Auth.signOut();
+  }
+
+  public tokenIsPresent() {
+    this.setToken();
+    return this.token != '';
+  }
+
+  public getToken() {
+    return this.token;
   }
 }
