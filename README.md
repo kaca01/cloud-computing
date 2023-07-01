@@ -19,3 +19,5 @@ Kao dodatan algoritam smo implementirali lambda funkciju koja će raditi u pozad
 
 **Uređivanje (edit) dokumenata**
 Kod uređivanja dokumenta ne može doći do nekonzistentnosti, jer ne možemo promijeniti naziv dokumenta. Time zaključujemo, da neće biti potrebni mehanizmi prevencije nekonzistentnosti.
+
+**Consistency se ne nalazi na main grani, već na fix/consistency grani.**
