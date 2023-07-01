@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Folder } from '../domain';
+import { Folder, User } from '../domain';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -10,7 +10,7 @@ export class FolderService {
 
   constructor(private http: HttpClient) { }
 
-  public url = 'https://0n5qvfuh5m.execute-api.eu-central-1.amazonaws.com/dev/';
+  public url = 'https://whrd6fl7ml.execute-api.eu-central-1.amazonaws.com/dev/';
   private methodCreate = 'create-folder';
   private methodGet = 'content';
 
@@ -22,4 +22,5 @@ export class FolderService {
   getContent(folder: string): Observable<any> {
     return this.http.get<any>(this.url + this.methodGet + '/' + folder);
   }
+
 }

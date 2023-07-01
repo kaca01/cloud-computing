@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: back444
+service: back00
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -22,6 +22,7 @@ frameworkVersion: '3'
 	
 plugins:
   - serverless-iam-roles-per-function
+  - serverless-step-functions
 
 provider:
   name: aws
@@ -45,6 +46,8 @@ provider:
       Ref: filesSQSQueue
     SHARED_TABLE_NAME:
       Ref: sharedContentTable
+    USERS_TABLE_NAME:
+      Ref: familyUsersTable
 
 # you can add packaging information here
 package:
@@ -68,7 +71,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket444/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket00/*"
       - Effect: Allow
         Action:
           - sqs:SendMessage
@@ -93,6 +96,10 @@ functions:
           method: post
           # Enable CORS. Don't forget to return the right header in your response
           cors: true
+          authorizer:
+            name: MyAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:eu-central-1:522114191780:userpool/eu-central-1_0X24Fz6lx
   storageMetadata:
     handler: uploadFile/upload_file.storage_metadata
     package:
@@ -162,7 +169,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket444/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket00/*"
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -172,6 +179,10 @@ functions:
           method: post
           # Enable CORS. Don't forget to return the right header in your response
           cors: true
+          authorizer:
+            name: MyAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:eu-central-1:522114191780:userpool/eu-central-1_0X24Fz6lx
   accessContent:
     handler: accessContent/folder_contents.lambda_handler
     package:
@@ -180,11 +191,11 @@ functions:
       - Effect: Allow
         Action:
           - s3:ListBucket
-        Resource: "arn:aws:s3:::serverlessfilebucket444"
+        Resource: "arn:aws:s3:::serverlessfilebucket00"
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: "arn:aws:s3:::serverlessfilebucket444"
+        Resource: "arn:aws:s3:::serverlessfilebucket00"
     events:
       - http:
           path: content/{name}
@@ -202,7 +213,7 @@ functions:
       - Effect: Allow
         Action:
           - s3:GetObject
-        Resource: "arn:aws:s3:::serverlessfilebucket444/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket00/*"
     events:
       - http:
           path: download
@@ -212,22 +223,38 @@ functions:
     handler: editFile/edit_file.lambda_handler
     package:
       include: 'editFile/**'
+    environment:
+      EDIT_TOPIC: !Ref EditFileTopic
     iamRoleStatements:
       - Effect: Allow
         Action:
           - s3:GetObject
           - s3:PutObject
-        Resource: "arn:aws:s3:::serverlessfilebucket444/*"
+        Resource: "arn:aws:s3:::serverlessfilebucket00/*"
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
         Resource:
           - "Fn::GetAtt": [filesTable, Arn]
+      - Effect: Allow
+        Action:
+          - sns:Publish
+        Resource:
+          - "*"
+      - Effect: Allow
+        Action:
+          - ses:GetIdentityVerificationAttributes
+        Resource: 
+          - "*"
     events:
       - http:
           path: edit
           method: post
           cors: true
+          authorizer:
+            name: MyAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:eu-central-1:522114191780:userpool/eu-central-1_0X24Fz6lx
   deleteFolder:
     handler: deleteFolder/deleteFolder.lambda_handler
     package:
@@ -243,12 +270,18 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
-          - "arn:aws:s3:::serverlessfilebucket444"
+          - "arn:aws:s3:::serverlessfilebucket00/*"
+          - "arn:aws:s3:::serverlessfilebucket00"
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
         Resource:
           - "Fn::GetAtt": [filesTable, Arn]
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource:
+          - "Fn::GetAtt": [sharedContentTable, Arn]
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -263,6 +296,8 @@ functions:
     package:
       # Include 'createDogs' directory and all child directories
       include: 'deleteFile/**'
+    environment:
+      DELETE_TOPIC: !Ref DeleteFileTopic
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -273,12 +308,28 @@ functions:
           - s3:ListBucket
           - s3:ListBucketVersions
         Resource: 
-          - "arn:aws:s3:::serverlessfilebucket444/*"
+          - "arn:aws:s3:::serverlessfilebucket00/*"
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+          - dynamodb:GetItem
+        Resource:
+          - "Fn::GetAtt": [filesTable, Arn]
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
         Resource:
-          - "Fn::GetAtt": [filesTable, Arn]
+          - "Fn::GetAtt": [sharedContentTable, Arn]
+      - Effect: Allow
+        Action:
+          - sns:Publish
+        Resource:
+          - "*"
+      - Effect: Allow
+        Action:
+          - ses:GetIdentityVerificationAttributes
+        Resource: 
+          - "*"
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -296,7 +347,7 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:PutItem
-        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content444
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content00
     events:
       - http:
           # Path for this endpoint
@@ -313,7 +364,7 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content444
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content00
     events:
       - http:
           # Path for this endpoint
@@ -331,7 +382,7 @@ functions:
         Action:
           - dynamodb:GetItem
           - dynamodb:Scan
-        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content444
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/shared_content00
     events:
       - http:
           # Path for this endpoint
@@ -349,7 +400,7 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable444
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/serverlessfiletable00
     events:
       # REST API endpoint of API Gateway
       - http:
@@ -363,6 +414,142 @@ functions:
             parameters:
               paths:
                 name: true
+          authorizer:
+            name: MyAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:eu-central-1:522114191780:userpool/eu-central-1_0X24Fz6lx
+  inviteMember:
+    handler: inviteMember/invite_member.lambda_handler
+    package:
+      include: 'inviteMember/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - ses:SendEmail
+        Resource: "*"
+    events:
+      - http:
+          # Path for this endpoint
+          path: inviteMember
+          # HTTP method for this endpoint
+          method: put
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+          authorizer:
+            name: MyAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: arn:aws:cognito-idp:eu-central-1:522114191780:userpool/eu-central-1_0X24Fz6lx
+  getFamilyMember:
+    handler: getFamilyMember/get_family_member.lambda_handler
+    package:
+      include: 'getFamilyMember/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/family_users00
+    events:
+      - http:
+          # Path for this endpoint
+          path: getFamilyMember/{email}
+          # HTTP method for this endpoint
+          method: get
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  lambdaToStartStepFunction:
+    handler: lambdaStepFunction/lambda_step_function.lambda_handler
+    package:
+      include: 'lambdaStepFunction/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - states:StartExecution
+          - states:DescribeExecution
+        Resource: 
+          - arn:aws:states:eu-central-1:522114191780:stateMachine:familyMemberSignup00
+          - "*"
+    events:
+      - http:
+          # Path for this endpoint
+          path: familyMemberSignup
+          # HTTP method for this endpoint
+          method: put
+          # Enable CORS. Don't forget to return the right header in your response
+          cors: true
+  validatefamilyMemberSignup:
+    handler: validateFamilySignup/validate_family_signup.lambda_handler
+    package:
+      include: 'validateFamilySignup/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - cognito-idp:AdminGetUser
+        Resource: arn:aws:cognito-idp:eu-central-1:522114191780:userpool/eu-central-1_0X24Fz6lx
+  createFamilyUser:
+    handler: createFamilyUser/create_family_user.lambda_handler
+    package:
+      include: 'createFamilyUser/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:eu-central-1:522114191780:table/family_users00
+  sendFamilyVerification:
+    handler: sendFamilyVerification/send_family_verification.lambda_handler
+    package:
+      include: 'sendFamilyVerification/**'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - ses:SendEmail
+        Resource:
+          - "*"
+
+stepFunctions:
+  # State machine defines one proccess
+  stateMachines:
+    # Invokation name
+    firstStepFunction:
+      name: 'familyMemberSignup00'
+      # Holds all information about a stepFunction
+      definition:
+        Comment: "Family memeber step function"
+        # Point of entry state
+        StartAt: validatefamilyMemberSignup
+        # All states
+        States:
+          # State key
+          validatefamilyMemberSignup:
+            # State type
+            Type: Task
+            # AWS Resource that executes the state (Lambda, SNS, SQS, DynamoDB,...)
+            Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back00-dev-validatefamilyMemberSignup"
+            Catch:
+              - ErrorEquals: [UserNotFoundError]
+                Next: HandleUserNotFoundError
+              - ErrorEquals: [EmailTakenError]
+                Next: HandleEmailTakenError
+            # Next state to go to when finished
+            Next: createUser
+          HandleUserNotFoundError:
+            Type: Fail
+            Error: "UserNotFoundError"
+            Cause: "The email of the user that invited you does not exist!"
+          HandleEmailTakenError:
+            Type: Fail
+            Error: "EmailTakenError"
+            Cause: "The email already exists! Choose another one!"
+          createUser:
+            Type: Task
+            Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back00-dev-createFamilyUser"
+            # Is end state
+            Next: sendVerification
+          sendVerification:
+            Type: Task
+            Resource: "arn:aws:lambda:eu-central-1:522114191780:function:back00-dev-sendFamilyVerification"
+            # Is end state
+            End: true
+
 # you can add CloudFormation resource templates here
 resources:
   Parameters:
@@ -371,14 +558,19 @@ resources:
       Default: arn:aws:ses:eu-central-1:522114191780:identity/anastasijas557@gmail.com
 
   Resources:
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: gallery-app-cognito
+
     filesBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: serverlessfilebucket444
+        BucketName: serverlessfilebucket00
     filesTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: serverlessfiletable444
+        TableName: serverlessfiletable00
         AttributeDefinitions:
           - AttributeName: fileName
             AttributeType: S
@@ -391,31 +583,45 @@ resources:
     filesSQSQueue:
       Type: "AWS::SQS::Queue"
       Properties:
-        QueueName: queue444
+        QueueName: queue00
 
     UploadFileTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: upload-file444
+        TopicName: upload-file00
 
     EditFileTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: edit-file444
+        TopicName: edit-file00
 
     DeleteFileTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: delete-file444
+        TopicName: delete-file00
+        
     sharedContentTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: shared_content444
+        TableName: shared_content00
         AttributeDefinitions:
           - AttributeName: documentName
             AttributeType: S
         KeySchema:
           - AttributeName: documentName
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    familyUsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: family_users00
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1

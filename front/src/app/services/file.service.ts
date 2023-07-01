@@ -1,20 +1,21 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UploadFile } from '../domain';
+import { CognitoService } from './cognito.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FileService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private cognitoService: CognitoService) { }
 
-  public apiUrl = 'https://0n5qvfuh5m.execute-api.eu-central-1.amazonaws.com/dev'
-  public permissionUrl = " https://0n5qvfuh5m.execute-api.eu-central-1.amazonaws.com/dev";
+  public apiUrl = 'https://whrd6fl7ml.execute-api.eu-central-1.amazonaws.com/dev'
+  public permissionUrl = "https://whrd6fl7ml.execute-api.eu-central-1.amazonaws.com/dev";
 
   uploadFile(file: UploadFile): Observable<UploadFile> {
-      return this.http.post<UploadFile>(this.apiUrl + "/upload", file)
+    return this.http.post<UploadFile>(this.apiUrl + "/upload", file)
   }
 
   editFile(file: any): Observable<any> {

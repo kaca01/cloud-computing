@@ -44,7 +44,10 @@
           
           <button mat-raised-button color="brown" type="submit" class="login-btn">Login</button>
         </form>
-  
+        <div id="verify-div">
+          <span>Didn't verify your account? Click </span>
+          <span id="verify-link" [routerLink]="['/login-verification']">here</span>
+        </div>
       </mat-card-content>
     </mat-card>
     

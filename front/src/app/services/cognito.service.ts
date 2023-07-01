@@ -8,6 +8,9 @@ import { User } from '../domain';
 })
 export class CognitoService {
 
+  private token: string = '';
+  status: string = {} as string;
+
   constructor() {
     Amplify.configure({
       Auth:environment.cognito
@@ -28,6 +31,43 @@ export class CognitoService {
   })
   }
 
+  public signUpWithoutVerification(user: User): Promise<any> {
+    Auth.signUp({
+      username : user.email,
+      password: user.password,
+      attributes :{
+        email : user.email,
+        given_name: user.name,
+        family_name: user.surname,
+        phone_number: user.telephoneNumber,
+        address: user.address,
+      }
+    }).then(data => {
+      console.log("success");
+      this.status = "success";
+    })
+    .catch(error => {
+      console.error(error);
+      console.log("failure");
+      this.status = "failure";
+    });
+
+    return new Promise<any>((resolve, reject) => {
+      // Perform asynchronous operation
+      // For example, make an HTTP request
+      fetch('https://api.example.com/data')
+        .then(response => response.json())
+        .then(data => {
+          // Resolve the Promise with the retrieved data
+          resolve(data);
+        })
+        .catch(error => {
+          // Reject the Promise with the encountered error
+          reject(error);
+        });
+    });
+  }
+
   public confirmSignUp(user : User): Promise<any>{
   return Auth.confirmSignUp(user.email, user.code);
   }
@@ -36,12 +76,12 @@ export class CognitoService {
     return Auth.currentUserInfo();
   }
 
-  public getToken(): any{ 
+  public setToken(): any{ 
     Auth.currentSession()
     .then((session) => {
       // Access the user token
       const idToken = session.getIdToken().getJwtToken();
-      console.log('User token:', idToken);
+      this.token = idToken;
       return idToken;
     })
     .catch((error) => {
@@ -56,5 +96,14 @@ export class CognitoService {
 
   public signOut(): Promise<any>{
     return Auth.signOut();
+  }
+
+  public tokenIsPresent() {
+    this.setToken();
+    return this.token != '';
+  }
+
+  public getToken() {
+    return this.token;
   }
 }

@@ -1,10 +1,13 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { HttpHeaders } from '@angular/common/http';
 import { FileService } from 'src/app/services/file.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
 import axios from 'axios';
 import { CognitoService } from 'src/app/services/cognito.service';
+import { DocumentsComponent } from '../../documents/documents.component';
+import { UploadFile } from 'src/app/domain';
 
 @Component({
   selector: 'app-upload-file-dialog',
@@ -20,26 +23,42 @@ export class UploadFileDialogComponent implements OnInit {
 
   fileContent: string = '';
   file: any;
-
+  currentPath: string = "";
+  currentFile: string = "";
   type: string = "";
 
   user: any;
+  private documentComponent : DocumentsComponent = {} as DocumentsComponent;
+  selectedFile: UploadFile = {} as UploadFile;
+
   constructor(private dialogRef: MatDialogRef<UploadFileDialogComponent>,
               private fileService: FileService,
               private snackBar: MatSnackBar,
               private datePipe: DatePipe,
               private cognitoService: CognitoService,
               @Inject(MAT_DIALOG_DATA) public data: any) {
+                console.log(data);
                 this.type = data.type;
-                {
-                  this.cognitoService.getUser()
-                    .then((user: any) => {
-                      if (user){
-                        // loged in
-                        this.user = user
-                      }})
+                this.documentComponent = data.component;
+                this.currentPath = this.documentComponent.currentPath;
+                this.selectedFile = this.documentComponent.selectedFile;
+                if (this.type == 'edit') {
+                  this.description = this.selectedFile.description;
+                  for (let i of this.selectedFile.tags) {
+                    this.tagsFromForm += i + ",";
+                  }
+                } else {
+                  this.description = '';
+                  this.tagsFromForm = '';
                 }
-              }
+                console.log(this.selectedFile);
+                this.currentFile = this.data.file;
+                this.cognitoService.getUser()
+                  .then((user: any) => {
+                    if (user) {
+                      this.user = user
+                  }})
+                }
 
   ngOnInit(): void { }
 
@@ -49,9 +68,10 @@ export class UploadFileDialogComponent implements OnInit {
 
   deleteFile(){
     axios
-    .delete(this.fileService.apiUrl + "/deleteFile", { params: { "file_path": "after.pdf" } }) // TODO izmeni ovo kasnije
+    .delete(this.fileService.apiUrl + "/deleteFile", { params: { "file_path": this.currentPath+"/"+this.currentFile, "user": this.user['attributes']['email'] } })
     .then((response) => {
-      this.openSnackBar('Successfully deleted file', 'Close');
+      this.openSnackBar(response.data.message, 'Close');
+      this.documentComponent.updateView();
     })
     .catch((error) => {
       this.openSnackBar('Delete error', 'Close');
@@ -72,15 +92,13 @@ export class UploadFileDialogComponent implements OnInit {
   }
 
   uploadFile() {
-    console.log(this.user)
-    console.log(this.user['attributes']['email'])
     if(this.file == undefined) {
       this.openSnackBar('Choose file', 'Close');
     }
     else {
       this.fileService.uploadFile({     
         "fileContent": this.fileContent,
-        "fileName": this.file['name'],
+        "fileName": this.currentPath+"/"+this.file['name'],
         "fileType": this.file['type'],
         "fileSize": this.file['size'],
         "fileCreated": this.datePipe.transform(Date(), 'dd.MM.yy hh:mm:ss')!,
@@ -90,6 +108,11 @@ export class UploadFileDialogComponent implements OnInit {
         "user": this.user['attributes']['email']
       }).subscribe((data : any) => {
         this.openSnackBar(data['message'], 'Close');
+        this.documentComponent.updateView();
+      }, (error: any) => {
+        console.log("error");
+        console.log(error);
+        this.documentComponent.updateView();
       })
       this.close();
       this.tags = [];
@@ -115,10 +138,9 @@ export class UploadFileDialogComponent implements OnInit {
   }
 
   editFile() : void {
-    // TODO prvo setuj tags i description od trenutnog fajla
     if(this.file != undefined) {
       console.log(this.file['type'].split('/')[1])
-      if(this.file['type'].split('/')[1] != 'pdf') // TODO promeniti da ne bude pdf nego tip izabranog fajla
+      if(this.file['type'].split('/')[1] != this.currentFile.split('.')[1]) 
         this.openSnackBar('Invalid file type', 'Close');
       else 
         this.callEditFunction();
@@ -131,9 +153,11 @@ export class UploadFileDialogComponent implements OnInit {
   callEditFunction() {
     this.fileService.editFile({     
       "fileContent": this.fileContent,
-      "fileName": "stat_usmeni_okt1_2020.pdf",  // TODO uzmi naziv od izabranog fajla
+      "fileName": this.currentPath+"/"+this.currentFile, 
+      "fileModified": this.datePipe.transform(Date(), 'dd.MM.yy hh:mm:ss')!,
       "description": this.description,
-      "tags": this.exportTags()
+      "tags": this.exportTags(),
+      "user": this.user['attributes']['email']
     }).subscribe((data : any) => {
       console.log(data)
       this.openSnackBar(data['message'], 'Close');

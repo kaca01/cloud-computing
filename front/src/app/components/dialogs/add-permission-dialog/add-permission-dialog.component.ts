@@ -32,7 +32,7 @@ export class AddPermissionDialogComponent implements OnInit {
 
   ngOnInit(): void {
     axios
-    .get(this.fileService.permissionUrl + "/seePermission", { params: { "document_path": this.document } })
+    .get(this.fileService.apiUrl + "/seePermission", { params: { "document_path": this.document } })
     .then((response) => {
       console.log(response);
       if(response.data.data.grantedUsers != undefined && response.data.data.grantedUsers.length != 0){

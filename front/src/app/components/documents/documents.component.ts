@@ -5,10 +5,9 @@ import { CognitoService } from 'src/app/services/cognito.service';
 import { UploadFileDialogComponent } from '../dialogs/upload-file-dialog/upload-file-dialog.component';
 import { CreateFolderComponent } from '../dialogs/create-folder/create-folder.component';
 import { FolderService } from 'src/app/services/folder.service';
-import { User } from 'src/app/domain';
+import { UploadFile, User } from 'src/app/domain';
 import { FileService } from 'src/app/services/file.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { HttpHeaders } from '@angular/common/http';
 import { FileDetailsComponent } from '../dialogs/file-details/file-details.component';
 import { AddPermissionDialogComponent } from '../dialogs/add-permission-dialog/add-permission-dialog.component';
 import axios from 'axios';
@@ -22,6 +21,8 @@ export class DocumentsComponent implements OnInit {
 
   private user: User = {} as User;
   private email: string = {} as string;
+
+  public selectedFile: UploadFile = {} as UploadFile;
 
   response = 'The response will show up here';
 
@@ -42,7 +43,7 @@ export class DocumentsComponent implements OnInit {
               private folderService: FolderService,
               private fileService: FileService,
               private cdr: ChangeDetectorRef,
-              private snackBar: MatSnackBar) { }
+              private snackBar: MatSnackBar) { this.cognitoService.setToken(); }
 
   async ngOnInit() {
     await this.getUserDetails();
@@ -179,24 +180,46 @@ export class DocumentsComponent implements OnInit {
 
   }
 
-  edit() {
-    const dialogConfig = new MatDialogConfig();
-
-    dialogConfig.disableClose = true;
-    dialogConfig.autoFocus = true;
-    dialogConfig.data = { type: "edit" } 
-    
-    this.dialog.open(UploadFileDialogComponent, dialogConfig);
-  }
-
-  openInfo(name: string): void {
-    let path: string = this.currentPath + "/" + name;
-    console.log(path);
+  edit(fileName: string) {
+    let path: string = this.currentPath+"/"+fileName;
     let pathVariable : string = encodeURIComponent(path);
-
     this.fileService.getDetails(pathVariable).subscribe((data: any) => 
     {
-      console.log(data);
+      this.selectedFile = data
+      const dialogConfig = new MatDialogConfig();
+
+      dialogConfig.disableClose = true;
+      dialogConfig.autoFocus = true;
+      dialogConfig.data = { type: "edit", component: this, file: fileName } 
+      
+      this.dialog.open(UploadFileDialogComponent, dialogConfig);
+
+    }, (error: any) => {
+      console.log("error");
+      console.log(error);
+    });
+  }
+
+  openSharedInfo(name : string){
+    this.openInfo(name, true);
+  }
+
+  openInfo(name: string, flag : boolean = false): void {
+    let pathVariable: string = '';
+    if (this.sharedBack == '') {
+      let path: string = this.currentPath + "/" + name;
+      pathVariable = encodeURIComponent(path);
+    } 
+    else {
+      let path: string = name;
+      pathVariable = encodeURIComponent(path);
+    }
+    if (flag){
+      let path: string = name;
+      pathVariable = encodeURIComponent(path);
+    }
+    this.fileService.getDetails(pathVariable).subscribe((data: any) => 
+    {
 
       const dialogConfig = new MatDialogConfig();
 
@@ -221,15 +244,29 @@ export class DocumentsComponent implements OnInit {
     this.dialog.open(AddPermissionDialogComponent, dialogConfig);
   }
 
-  download() {
+  downloadSharedFile(name : string){
+    this.download(name, true);
+  }
+
+  download(name: string, flag: boolean = false) {
+    let pathVariable: string = '';
+    if (this.sharedBack == '') {
+      pathVariable = this.currentPath+"/"+name
+    }
+    else {
+      pathVariable = name;
+    }
+    if (flag) 
+      pathVariable = name;
+
     axios
-    .get(this.fileService.apiUrl + "/download", { params: { "path": "stat_usmeni_okt1_2020.pdf" } }) // TODO izmeni ovo kasnije
+    .get(this.fileService.apiUrl + "/download", { params: { "path": pathVariable } }) 
     .then((response) => {
       const base64Data: string = response.data.body;
       const byteCharacters: string = atob(base64Data);
       const byteNumbers: number[] = Array.from(byteCharacters).map((char) => char.charCodeAt(0));
       const byteArray: Uint8Array = new Uint8Array(byteNumbers);
-      const blob: Blob = new Blob([byteArray], { type: "pdf" });
+      const blob: Blob = new Blob([byteArray], { type: "pdf" }); 
 
       // Create URL object for blob
       const downloadUrl = window.URL.createObjectURL(blob);
@@ -237,7 +274,7 @@ export class DocumentsComponent implements OnInit {
       // Create link element
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.download = "stat_usmeni_okt1_2020.pdf"; // TODO izmeni ovo kasnije
+      link.download = name; 
 
       // Simulation of clicking on the link element to download the file
       link.click();
@@ -252,11 +289,12 @@ export class DocumentsComponent implements OnInit {
     });
   }
 
-  deleteFolder(){
+  deleteFolder(folderName: string){
     axios
-    .delete(this.fileService.apiUrl + "/deleteFolder", { params: { "folder_path": "test_folder" } }) // TODO izmeni ovo kasnije
+    .delete(this.fileService.apiUrl + "/deleteFolder", { params: { "folder_path": this.currentPath+"/"+folderName, "user": this.email } }) 
     .then((response) => {
       this.openSnackBar('Successfully deleted folder', 'Close');
+      this.updateView();
     })
     .catch((error) => {
       this.openSnackBar('Delete error', 'Close');
@@ -268,7 +306,7 @@ export class DocumentsComponent implements OnInit {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    dialogConfig.data = { type: "upload" } 
+    dialogConfig.data = { type: "upload", component: this, file: "" } 
     
     this.dialog.open(UploadFileDialogComponent, dialogConfig);
   }
@@ -283,8 +321,11 @@ export class DocumentsComponent implements OnInit {
     this.dialog.open(CreateFolderComponent, dialogConfig);
   }
 
-  private isFolder(name: string): boolean { 
-    return !name.includes('.');
+  private isFolder(name: string): boolean {
+    name = name.trim();
+    if (name.endsWith('.com')) return true;
+    else if (name.includes('.')) return false;
+    else return true;
   }
 
   private findExtension(name: string): string {
@@ -349,10 +390,21 @@ export class DocumentsComponent implements OnInit {
         if (path.endsWith(this.sharedBack) || path.endsWith(this.sharedBack + "/")) return '';
         const lastSlashIndex = path.lastIndexOf('/');
         const substringAfterLastSlash = path.substring(lastSlashIndex + 1);
-
+        
         const partBeforeSubstring = path.substring(0, lastSlashIndex);
-        if (partBeforeSubstring.trim().endsWith(this.sharedBack.trim()) || partBeforeSubstring.endsWith(this.sharedBack + '/')) {
+        
+        if (partBeforeSubstring.startsWith('/')) partBeforeSubstring.slice(1, partBeforeSubstring.length-1);
+
+        if (partBeforeSubstring.trim().endsWith(this.sharedBack.trim()) || partBeforeSubstring.trim().endsWith(this.sharedBack.trim() + '/')) {
           return substringAfterLastSlash;
+        }
+        else if (this.sharedBack.startsWith('/')) {
+          let casee : string = this.sharedBack.slice(1, this.sharedBack.length);
+          casee = casee.trim();
+          if (partBeforeSubstring.trim().endsWith(casee) || partBeforeSubstring.trim().endsWith(casee + '/')) {
+            return substringAfterLastSlash;
+          }
+          
         }
         return '';
       }
